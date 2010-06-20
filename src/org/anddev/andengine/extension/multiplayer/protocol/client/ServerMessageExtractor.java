@@ -38,8 +38,7 @@ public class ServerMessageExtractor extends BaseMessageExtractor<BaseServerMessa
 	// ===========================================================
 
 	@Override
-	public BaseServerMessage readMessage(final DataInputStream pDataInputStream) throws IOException {
-		final short pFlag = this.readFlag(pDataInputStream);
+	public BaseServerMessage readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		switch(pFlag) {
 			case FLAG_SERVERMESSAGE_CONNECTION_ACCEPTED:
 				return new ConnectionAcceptedServerMessage(pDataInputStream);

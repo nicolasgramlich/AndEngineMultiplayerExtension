@@ -91,7 +91,8 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 			while (!this.isInterrupted()) {
 				try {
 
-					final T message = this.mMessageExtractor.readMessage(this.mDataInputStream);
+					final short flag = this.mMessageExtractor.readFlag(this.mDataInputStream);
+					final T message = this.mMessageExtractor.readMessage(flag, this.mDataInputStream);
 					this.mMessageSwitch.doSwitch(message);
 
 				} catch (final SocketException se){

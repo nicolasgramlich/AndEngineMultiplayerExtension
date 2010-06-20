@@ -30,7 +30,7 @@ public abstract class BaseMessageExtractor<T extends IMessage> {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	public abstract T readMessage(final DataInputStream pDataInputStream) throws IOException;
+	public abstract T readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException;
 
 	// ===========================================================
 	// Methods

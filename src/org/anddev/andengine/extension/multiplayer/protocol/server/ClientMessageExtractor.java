@@ -37,8 +37,7 @@ public class ClientMessageExtractor extends BaseMessageExtractor<BaseClientMessa
 	// ===========================================================
 
 	@Override
-	public BaseClientMessage readMessage(final DataInputStream pDataInputStream) throws IOException {
-		final short pFlag = this.readFlag(pDataInputStream);
+	public BaseClientMessage readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		switch(pFlag) {
 			case FLAG_CLIENTMESSAGE_CONNECTION_ESTABLISH:
 				return new ConnectionEstablishClientMessage(pDataInputStream);
