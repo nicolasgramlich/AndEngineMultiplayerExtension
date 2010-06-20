@@ -11,7 +11,7 @@ public interface ClientMessageFlags {
 
 	public static final short COUNT_FLAG_CLIENTMESSAGE_CONNECTION = 64;
 
-	public static final short INDEX_FLAG_CLIENTMESSAGE_CONNECTION_FIRST = 0;
+	public static final short INDEX_FLAG_CLIENTMESSAGE_CONNECTION_FIRST = Short.MIN_VALUE;
 	public static final short INDEX_FLAG_CLIENTMESSAGE_CONNECTION_LAST = INDEX_FLAG_CLIENTMESSAGE_CONNECTION_FIRST + COUNT_FLAG_CLIENTMESSAGE_CONNECTION - 1;
 
 	/* Connection ClientMessages */
