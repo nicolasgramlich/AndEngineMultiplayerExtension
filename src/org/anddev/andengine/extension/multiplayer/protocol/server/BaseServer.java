@@ -1,5 +1,6 @@
 package org.anddev.andengine.extension.multiplayer.protocol.server;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import javax.net.ServerSocketFactory;
 
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
@@ -179,6 +181,14 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	
+	public void sendBroadcastServerMessage(final BaseServerMessage pServerMessage) throws IOException {
+		if(this.mRunning == true && this.mTerminated == false) {
+			for(ClientConnector cc : this.mClientConnectors) {
+				cc.sendServerMessage(pServerMessage);
+			}
+		}
+	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes
