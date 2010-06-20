@@ -36,7 +36,7 @@ public abstract class BaseMessageExtractor<T extends IMessage> {
 	// Methods
 	// ===========================================================
 
-	public short readFlag(final DataInputStream pDataInputStream) throws IOException {
+	public short readMessageFlag(final DataInputStream pDataInputStream) throws IOException {
 		return pDataInputStream.readShort();
 	}
 
