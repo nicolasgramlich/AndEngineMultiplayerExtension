@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.server;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseConnectionListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseConnector;
+import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
@@ -20,12 +21,12 @@ public abstract class BaseClientConnectionListener extends BaseConnectionListene
 	public static class DefaultClientConnectionListener extends BaseClientConnectionListener {
 		@Override
 		protected void onConnectInner(final BaseConnector<BaseClientMessage> pConnector) {
-			System.out.println("Accepted Client-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
+			Debug.d("Accepted Client-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
 		}
 
 		@Override
 		protected void onDisconnectInner(final BaseConnector<BaseClientMessage> pConnector) {
-			System.err.println("Closed Client-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
+			Debug.d("Closed Client-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
 		}
 	}
 }

@@ -191,10 +191,10 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 
 		public static class DefaultServerStateListener implements IServerStateListener {
 			public void onStarted(final int pPort) {
-				System.out.println("AndRemote-Server is listening on Port: " + pPort);
+				Debug.d("AndRemote-Server is listening on Port: " + pPort);
 			}
 			public void onTerminated(final int pPort) {
-				System.err.println("AndRemote-Server terminated on Port: " + pPort);
+				Debug.d("AndRemote-Server terminated on Port: " + pPort);
 			}
 			public void onException(final Throwable pThrowable) {
 				Debug.e(pThrowable);
