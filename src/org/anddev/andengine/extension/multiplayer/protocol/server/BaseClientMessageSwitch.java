@@ -26,7 +26,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// Fields
 	// ===========================================================
 
-	private BaseClientConnector mClientConnector;
+	private ClientConnector mClientConnector;
 
 	// ===========================================================
 	// Constructors
@@ -34,13 +34,13 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 
 	/**
 	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link BaseClientConnector} to be set, so the
+	 * {@link ClientConnector} to be set, so the
 	 * {@link BaseClientMessageSwitch} can directly respond to
 	 * {@link BaseClientMessage} from the client.
 	 *
-	 * You will need to call: {@link BaseClientMessageSwitch#setClientConnector(BaseClientConnector)} !
+	 * You will need to call: {@link BaseClientMessageSwitch#setClientConnector(ClientConnector)} !
 	 *
-	 * @see BaseClientMessageSwitch#setClientConnector(BaseClientConnector)
+	 * @see BaseClientMessageSwitch#setClientConnector(ClientConnector)
 	 *
 	 */
 	public BaseClientMessageSwitch() {
@@ -49,13 +49,13 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 
 	/**
 	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link BaseClientConnector} to be set, so the
+	 * {@link ClientConnector} to be set, so the
 	 * {@link BaseClientMessageSwitch} can directly respond to
 	 * {@link BaseClientMessage} from the client.
 	 *
 	 * @param pClientConnector
 	 */
-	public BaseClientMessageSwitch(final BaseClientConnector pClientConnector) {
+	public BaseClientMessageSwitch(final ClientConnector pClientConnector) {
 		this.mClientConnector = pClientConnector;
 	}
 
@@ -63,19 +63,19 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// Getter & Setter
 	// ===========================================================
 
-	public BaseClientConnector getClientConnector() {
+	public ClientConnector getClientConnector() {
 		return this.mClientConnector;
 	}
 
 	/**
 	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link BaseClientConnector} to be set, so the
+	 * {@link ClientConnector} to be set, so the
 	 * {@link BaseClientMessageSwitch} can directly respond to
 	 * {@link BaseClientMessage} from the client.
 	 *
 	 * @param pClientConnector
 	 */
-	public void setClientConnector(final BaseClientConnector pClientConnector) {
+	public void setClientConnector(final ClientConnector pClientConnector) {
 		this.mClientConnector = pClientConnector;
 	}
 

@@ -24,7 +24,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// Fields
 	// ===========================================================
 
-	private BaseServerConnector mServerConnector;
+	private ServerConnector mServerConnector;
 
 	// ===========================================================
 	// Constructors
@@ -32,13 +32,13 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 
 	/**
 	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link BaseServerConnector} to be set, so the
+	 * {@link ServerConnector} to be set, so the
 	 * {@link AbstractServerMessageSwitch} can directly respond to
 	 * {@link BaseServerMessage} from the server.
 	 *
-	 * You will need to call: {@link AbstractServerMessageSwitch#setServerConnector(BaseServerConnector)} !
+	 * You will need to call: {@link AbstractServerMessageSwitch#setServerConnector(ServerConnector)} !
 	 *
-	 * @see AbstractServerMessageSwitch#setServerConnector(BaseServerConnector)
+	 * @see AbstractServerMessageSwitch#setServerConnector(ServerConnector)
 	 *
 	 */
 	public BaseServerMessageSwitch() {
@@ -47,13 +47,13 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 
 	/**
 	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link BaseServerConnector} to be set, so the
+	 * {@link ServerConnector} to be set, so the
 	 * {@link AbstractServerMessageSwitch} can directly respond to
 	 * {@link BaseServerMessage} from the server.
 	 *
 	 * @param pServerConnector
 	 */
-	public BaseServerMessageSwitch(final BaseServerConnector pServerConnector) {
+	public BaseServerMessageSwitch(final ServerConnector pServerConnector) {
 		this.mServerConnector = pServerConnector;
 	}
 
@@ -61,19 +61,19 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// Getter & Setter
 	// ===========================================================
 
-	public BaseServerConnector getServerConnector() {
+	public ServerConnector getServerConnector() {
 		return this.mServerConnector;
 	}
 
 	/**
 	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link BaseServerConnector} to be set, so the
+	 * {@link ServerConnector} to be set, so the
 	 * {@link AbstractServerMessageSwitch} can directly respond to
 	 * {@link BaseServerMessage} from the server.
 	 *
 	 * @param pServerConnector
 	 */
-	public void setServerConnector(final BaseServerConnector pServerConnector) {
+	public void setServerConnector(final ServerConnector pServerConnector) {
 		this.mServerConnector = pServerConnector;
 	}
 

@@ -15,7 +15,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class BaseServerConnector extends BaseConnector<BaseServerMessage> {
+public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -28,7 +28,7 @@ public class BaseServerConnector extends BaseConnector<BaseServerMessage> {
 	// Constructors
 	// ===========================================================
 
-	public BaseServerConnector(final Socket pSocket, final BaseServerConnectionListener pConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
+	public ServerConnector(final Socket pSocket, final BaseServerConnectionListener pConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pServerMessageExtractor, pServerMessageSwitch);
 
 		/* Initiate communication with the server,

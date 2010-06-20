@@ -28,7 +28,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	private final int mServerPort;
 	private ServerSocket mServerSocket;
 
-	private final List<BaseClientConnector> mClientConnectors = new ArrayList<BaseClientConnector>();
+	private final List<ClientConnector> mClientConnectors = new ArrayList<ClientConnector>();
 	private final BaseClientConnectionListener mClientConnectionListener;
 	private final IServerStateListener mServerStateListener;
 	private boolean mRunning = false;
@@ -104,7 +104,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract BaseClientConnector newClientConnector(final Socket pClientSocket, final BaseClientConnectionListener pClientConnectionListener) throws Exception;
+	protected abstract ClientConnector newClientConnector(final Socket pClientSocket, final BaseClientConnectionListener pClientConnectionListener) throws Exception;
 
 	@Override
 	public void run() {
@@ -122,7 +122,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 					final Socket clientSocket = this.mServerSocket.accept();
 
 					/* Spawn a new ClientConnector, which send and receive data to and from the client. */
-					final BaseClientConnector cc = this.newClientConnector(clientSocket, this.mClientConnectionListener);
+					final ClientConnector cc = this.newClientConnector(clientSocket, this.mClientConnectionListener);
 					this.mClientConnectors.add(cc);
 
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
@@ -161,7 +161,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 			super.interrupt();
 
 			/* First interrupt all Clients. */
-			for(final BaseClientConnector acc : this.mClientConnectors){
+			for(final ClientConnector acc : this.mClientConnectors){
 				acc.interrupt();
 			}
 

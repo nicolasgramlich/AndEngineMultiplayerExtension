@@ -14,7 +14,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class BaseClientConnector extends BaseConnector<BaseClientMessage> {
+public class ClientConnector extends BaseConnector<BaseClientMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,7 +27,7 @@ public class BaseClientConnector extends BaseConnector<BaseClientMessage> {
 	// Constructors
 	// ===========================================================
 
-	public BaseClientConnector(final Socket pSocket, final BaseClientConnectionListener pConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
+	public ClientConnector(final Socket pSocket, final BaseClientConnectionListener pConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pClientMessageExtractor, pClientMessageSwitch);
 	}
 
