@@ -36,9 +36,9 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	 * {@link AbstractServerMessageSwitch} can directly respond to
 	 * {@link BaseServerMessage} from the server.
 	 *
-	 * You will need to call: {@link AbstractServerMessageSwitch#setServerConnector(ServerConnector)} !
+	 * You will need to call: {@link AbstractServerMessageSwitch#setConnector(ServerConnector)} !
 	 *
-	 * @see AbstractServerMessageSwitch#setServerConnector(ServerConnector)
+	 * @see AbstractServerMessageSwitch#setConnector(ServerConnector)
 	 *
 	 */
 	public BaseServerMessageSwitch() {

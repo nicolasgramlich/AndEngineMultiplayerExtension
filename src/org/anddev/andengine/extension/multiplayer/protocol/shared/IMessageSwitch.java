@@ -18,4 +18,6 @@ public interface IMessageSwitch<T extends IMessage> {
 	// ===========================================================
 
 	public void doSwitch(final T pMessage) throws IOException;
+
+	public void setConnector(final BaseConnector<T> pConnector);
 }

@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.client;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageSwitch;
 
 /**
@@ -23,4 +24,6 @@ public interface IServerMessageSwitch extends IMessageSwitch<BaseServerMessage> 
 	// ===========================================================
 
 	public void doSwitch(final BaseServerMessage pServerMessage) throws IOException;
+
+	public void setConnector(final BaseConnector<BaseServerMessage> pServerConnector);
 }
