@@ -28,8 +28,10 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// Constructors
 	// ===========================================================
 
-	public ServerConnector(final Socket pSocket, final BaseServerConnectionListener pConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
+	public ServerConnector(final Socket pSocket, final BaseServerConnectionListener pConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final BaseServerMessageSwitch pServerMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pServerMessageExtractor, pServerMessageSwitch);
+		
+		pServerMessageSwitch.setServerConnector(this);
 
 		/* Initiate communication with the server,
 		 * by sending a ConnectionEstablishClientMessage
