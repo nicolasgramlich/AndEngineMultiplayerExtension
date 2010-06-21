@@ -42,7 +42,7 @@ public abstract class BaseConnectionListener<T extends IMessage, C extends BaseC
 	public void onConnect(final C pConnector){
 		this.onConnectInner(pConnector);
 	}
-	
+
 	public void onDisconnect(final C pConnector){
 		if(this.mDisconnectCalled == true) {
 			return;

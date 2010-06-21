@@ -63,6 +63,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// Getter & Setter
 	// ===========================================================
 
+	@Override
 	public ClientConnector getClientConnector() {
 		return this.mClientConnector;
 	}
@@ -75,6 +76,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	 *
 	 * @param pClientConnector
 	 */
+	@Override
 	public void setClientConnector(final ClientConnector pClientConnector) {
 		this.mClientConnector = pClientConnector;
 	}

@@ -163,8 +163,8 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 			super.interrupt();
 
 			/* First interrupt all Clients. */
-			for(final ClientConnector acc : this.mClientConnectors){
-				acc.interrupt();
+			for(final ClientConnector cc : this.mClientConnectors){
+				cc.interrupt();
 			}
 
 			this.mClientConnectors.clear();
@@ -181,10 +181,10 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+
 	public void sendBroadcastServerMessage(final BaseServerMessage pServerMessage) throws IOException {
 		if(this.mRunning == true && this.mTerminated == false) {
-			for(ClientConnector cc : this.mClientConnectors) {
+			for(final ClientConnector cc : this.mClientConnectors) {
 				cc.sendServerMessage(pServerMessage);
 			}
 		}

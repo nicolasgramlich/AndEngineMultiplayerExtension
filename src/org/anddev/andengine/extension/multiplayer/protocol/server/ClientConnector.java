@@ -29,8 +29,8 @@ public class ClientConnector extends BaseConnector<BaseClientMessage> {
 
 	public ClientConnector(final Socket pSocket, final BaseClientConnectionListener pConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pClientMessageExtractor, pClientMessageSwitch);
-		
-		pClientMessageSwitch.setConnector(this);
+
+		pClientMessageSwitch.setClientConnector(this);
 	}
 
 	// ===========================================================
