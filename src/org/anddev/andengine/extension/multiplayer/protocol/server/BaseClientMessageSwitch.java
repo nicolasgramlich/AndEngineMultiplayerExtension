@@ -94,7 +94,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 		}
 	}
 
-	private void onHandleConnectionPingClientMessage(final ConnectionPingClientMessage pClientMessage) throws IOException {
+	protected void onHandleConnectionPingClientMessage(final ConnectionPingClientMessage pClientMessage) throws IOException {
 		this.mClientConnector.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
 	}
 
@@ -102,7 +102,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 
 	}
 
-	private void onHandleConnectionCloseClientMessage(final ConnectionCloseClientMessage pClientMessage) throws IOException {
+	protected void onHandleConnectionCloseClientMessage(final ConnectionCloseClientMessage pClientMessage) throws IOException {
 		if(this.mClientConnector.hasConnectionListener()){
 			this.mClientConnector.getConnectionListener().onDisconnect(this.mClientConnector);
 		}

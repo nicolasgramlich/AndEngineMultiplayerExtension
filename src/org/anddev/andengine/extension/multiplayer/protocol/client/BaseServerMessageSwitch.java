@@ -88,7 +88,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 
 	protected abstract void onHandleConnectionAcceptedServerMessage(final ConnectionAcceptedServerMessage pServerMessage);
 
-	private void onHandleConnectionPingServerMessage(final ConnectionPingServerMessage pServerMessage) throws IOException {
+	protected void onHandleConnectionPingServerMessage(final ConnectionPingServerMessage pServerMessage) throws IOException {
 		this.mServerConnector.sendClientMessage(new ConnectionPongClientMessage(pServerMessage));
 	}
 
@@ -96,7 +96,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 
 	}
 
-	private void onHandleConnectionCloseServerMessage(final ConnectionCloseServerMessage pServerMessage) {
+	protected void onHandleConnectionCloseServerMessage(final ConnectionCloseServerMessage pServerMessage) {
 		if(this.mServerConnector.hasConnectionListener()){
 			this.mServerConnector.getConnectionListener().onDisconnect(this.mServerConnector);
 		}
