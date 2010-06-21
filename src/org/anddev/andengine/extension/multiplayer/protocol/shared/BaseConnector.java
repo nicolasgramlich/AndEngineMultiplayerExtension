@@ -78,6 +78,8 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
+	protected abstract void handleMessage(final T pMessage) throws IOException;
+
 	protected abstract void onSendConnectionClose();
 
 	@Override
@@ -93,7 +95,7 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 
 					final short messageFlag = this.mMessageExtractor.readMessageFlag(this.mDataInputStream);
 					final T message = this.mMessageExtractor.readMessage(messageFlag, this.mDataInputStream);
-					this.mMessageSwitch.doSwitch(message);
+					this.handleMessage(message);
 
 				} catch (final SocketException se){
 					this.interrupt();

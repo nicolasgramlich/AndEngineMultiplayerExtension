@@ -31,8 +31,6 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	public ServerConnector(final Socket pSocket, final BaseServerConnectionListener pConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pServerMessageExtractor, pServerMessageSwitch);
 
-		pServerMessageSwitch.setServerConnector(this);
-
 		/* Initiate communication with the server,
 		 * by sending a ConnectionEstablishClientMessage
 		 * which contains the Protocol version. */
@@ -51,6 +49,11 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+
+	@Override
+	protected void handleMessage(final BaseServerMessage pMessage) throws IOException {
+		this.getMessageSwitch().doSwitch(this, pMessage);
+	}
 
 	@Override
 	protected void onSendConnectionClose() {

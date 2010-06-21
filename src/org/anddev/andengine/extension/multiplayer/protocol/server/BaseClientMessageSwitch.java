@@ -26,85 +26,42 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// Fields
 	// ===========================================================
 
-	private ClientConnector mClientConnector;
-
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	/**
-	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link ClientConnector} to be set, so the
-	 * {@link BaseClientMessageSwitch} can directly respond to
-	 * {@link BaseClientMessage} from the client.
-	 *
-	 * You will need to call: {@link BaseClientMessageSwitch#setClientConnector(ClientConnector)} !
-	 *
-	 * @see BaseClientMessageSwitch#setClientConnector(ClientConnector)
-	 *
-	 */
 	public BaseClientMessageSwitch() {
-		this(null);
-	}
-
-	/**
-	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link ClientConnector} to be set, so the
-	 * {@link BaseClientMessageSwitch} can directly respond to
-	 * {@link BaseClientMessage} from the client.
-	 *
-	 * @param pClientConnector
-	 */
-	public BaseClientMessageSwitch(final ClientConnector pClientConnector) {
-		this.mClientConnector = pClientConnector;
+		
 	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
 
-	@Override
-	public ClientConnector getClientConnector() {
-		return this.mClientConnector;
-	}
-
-	/**
-	 * The {@link BaseClientMessageSwitch} requires a
-	 * {@link ClientConnector} to be set, so the
-	 * {@link BaseClientMessageSwitch} can directly respond to
-	 * {@link BaseClientMessage} from the client.
-	 *
-	 * @param pClientConnector
-	 */
-	@Override
-	public void setClientConnector(final ClientConnector pClientConnector) {
-		this.mClientConnector = pClientConnector;
-	}
-
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
 	/* Connection-Handlers */
-	protected void onHandleConnectionEstablishClientMessage(final ConnectionEstablishClientMessage pClientMessage) throws IOException {
+	protected void onHandleConnectionEstablishClientMessage(final ClientConnector pClientConnector, final ConnectionEstablishClientMessage pClientMessage) throws IOException {
 		if(pClientMessage.getProtocolVersion() == ProtocolConstants.PROTOCOL_VERSION){
-			this.mClientConnector.sendServerMessage(new ConnectionAcceptedServerMessage());
+			pClientConnector.sendServerMessage(new ConnectionAcceptedServerMessage());
 		}else{
-			this.mClientConnector.sendServerMessage(new ConnectionRefusedServerMessage());
+			pClientConnector.sendServerMessage(new ConnectionRefusedServerMessage());
 		}
 	}
 
-	protected void onHandleConnectionPingClientMessage(final ConnectionPingClientMessage pClientMessage) throws IOException {
-		this.mClientConnector.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
+	protected void onHandleConnectionPingClientMessage(final ClientConnector pClientConnector, final ConnectionPingClientMessage pClientMessage) throws IOException {
+		pClientConnector.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
 	}
 
-	protected void onHandleConnectionPongClientMessage(final ConnectionPongClientMessage pClientMessage) {
+	protected void onHandleConnectionPongClientMessage(final ClientConnector pClientConnector, final ConnectionPongClientMessage pClientMessage) {
 
 	}
 
-	protected void onHandleConnectionCloseClientMessage(final ConnectionCloseClientMessage pClientMessage) throws IOException {
-		if(this.mClientConnector.hasConnectionListener()){
-			this.mClientConnector.getConnectionListener().onDisconnect(this.mClientConnector);
+	protected void onHandleConnectionCloseClientMessage(final ClientConnector pClientConnector, final ConnectionCloseClientMessage pClientMessage) throws IOException {
+		if(pClientConnector.hasConnectionListener()){
+			pClientConnector.getConnectionListener().onDisconnect(pClientConnector);
 		}
 	}
 
@@ -115,20 +72,20 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	/* (non-Javadoc)
 	 * @see org.anddev.andremote.protocol.IClientMessageSwitch#doSwitch(org.anddev.andremote.protocol.adt.cmd.AbstractClientMessage)
 	 */
-	public void doSwitch(final BaseClientMessage pClientMessage) throws IOException {
+	public void doSwitch(final ClientConnector pClientConnector, final BaseClientMessage pClientMessage) throws IOException {
 		/* Choose the correct handle method for pClientMessage. */
 		switch(pClientMessage.getFlag()){
 			case FLAG_CLIENTMESSAGE_CONNECTION_ESTABLISH:
-				this.onHandleConnectionEstablishClientMessage((ConnectionEstablishClientMessage)pClientMessage);
+				this.onHandleConnectionEstablishClientMessage(pClientConnector, (ConnectionEstablishClientMessage)pClientMessage);
 				break;
 			case FLAG_CLIENTMESSAGE_CONNECTION_CLOSE:
-				this.onHandleConnectionCloseClientMessage((ConnectionCloseClientMessage)pClientMessage);
+				this.onHandleConnectionCloseClientMessage(pClientConnector, (ConnectionCloseClientMessage)pClientMessage);
 				break;
 			case FLAG_CLIENTMESSAGE_CONNECTION_PING:
-				this.onHandleConnectionPingClientMessage((ConnectionPingClientMessage)pClientMessage);
+				this.onHandleConnectionPingClientMessage(pClientConnector, (ConnectionPingClientMessage)pClientMessage);
 				break;
 			case FLAG_CLIENTMESSAGE_CONNECTION_PONG:
-				this.onHandleConnectionPongClientMessage((ConnectionPongClientMessage)pClientMessage);
+				this.onHandleConnectionPongClientMessage(pClientConnector, (ConnectionPongClientMessage)pClientMessage);
 				break;
 		}
 	}

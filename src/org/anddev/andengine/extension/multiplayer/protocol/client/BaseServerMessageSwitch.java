@@ -24,81 +24,36 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// Fields
 	// ===========================================================
 
-	private ServerConnector mServerConnector;
-
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-
-	/**
-	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link ServerConnector} to be set, so the
-	 * {@link AbstractServerMessageSwitch} can directly respond to
-	 * {@link BaseServerMessage} from the server.
-	 *
-	 * You will need to call: {@link AbstractServerMessageSwitch#setServerConnector(ServerConnector)} !
-	 *
-	 * @see AbstractServerMessageSwitch#setServerConnector(ServerConnector)
-	 *
-	 */
 	public BaseServerMessageSwitch() {
-		this(null);
+		
 	}
-
-	/**
-	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link ServerConnector} to be set, so the
-	 * {@link AbstractServerMessageSwitch} can directly respond to
-	 * {@link BaseServerMessage} from the server.
-	 *
-	 * @param pServerConnector
-	 */
-	public BaseServerMessageSwitch(final ServerConnector pServerConnector) {
-		this.mServerConnector = pServerConnector;
-	}
-
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-
-	@Override
-	public ServerConnector getServerConnector() {
-		return this.mServerConnector;
-	}
-
-	/**
-	 * The {@link AbstractServerMessageSwitch} requires a
-	 * {@link ServerConnector} to be set, so the
-	 * {@link AbstractServerMessageSwitch} can directly respond to
-	 * {@link BaseServerMessage} from the server.
-	 *
-	 * @param pServerConnector
-	 */
-	@Override
-	public void setServerConnector(final ServerConnector pServerConnector) {
-		this.mServerConnector = pServerConnector;
-	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
 	/* Connection-Handlers */
-	protected abstract void onHandleConnectionRefusedServerMessage(final ConnectionRefusedServerMessage pServerMessage);
+	protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnector pServerConnector, final ConnectionRefusedServerMessage pServerMessage);
 
-	protected abstract void onHandleConnectionAcceptedServerMessage(final ConnectionAcceptedServerMessage pServerMessage);
+	protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnector pServerConnector, final ConnectionAcceptedServerMessage pServerMessage);
 
-	protected void onHandleConnectionPingServerMessage(final ConnectionPingServerMessage pServerMessage) throws IOException {
-		this.mServerConnector.sendClientMessage(new ConnectionPongClientMessage(pServerMessage));
+	protected void onHandleConnectionPingServerMessage(final ServerConnector pServerConnector, final ConnectionPingServerMessage pServerMessage) throws IOException {
+		pServerConnector.sendClientMessage(new ConnectionPongClientMessage(pServerMessage));
 	}
 
-	protected void onHandleConnectionPongServerMessage(final ConnectionPongServerMessage pServerMessage) {
+	protected void onHandleConnectionPongServerMessage(final ServerConnector pServerConnector, final ConnectionPongServerMessage pServerMessage) {
 
 	}
 
-	protected void onHandleConnectionCloseServerMessage(final ConnectionCloseServerMessage pServerMessage) {
-		if(this.mServerConnector.hasConnectionListener()){
-			this.mServerConnector.getConnectionListener().onDisconnect(this.mServerConnector);
+	protected void onHandleConnectionCloseServerMessage(final ServerConnector pServerConnector, final ConnectionCloseServerMessage pServerMessage) {
+		if(pServerConnector.hasConnectionListener()){
+			pServerConnector.getConnectionListener().onDisconnect(pServerConnector);
 		}
 	}
 
@@ -109,23 +64,23 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	/* (non-Javadoc)
 	 * @see org.anddev.andremote.protocol.IServerMessageSwitch#doSwitch(org.anddev.andremote.protocol.adt.message.AbstractServerMessage)
 	 */
-	public void doSwitch(final BaseServerMessage pServerMessage) throws IOException {
+	public void doSwitch(final ServerConnector pServerConnector, final BaseServerMessage pServerMessage) throws IOException {
 		/* Choose the correct handle method for pServerMessage. */
 		switch(pServerMessage.getFlag()){
 			case FLAG_SERVERMESSAGE_CONNECTION_ACCEPTED:
-				this.onHandleConnectionAcceptedServerMessage((ConnectionAcceptedServerMessage)pServerMessage);
+				this.onHandleConnectionAcceptedServerMessage(pServerConnector, (ConnectionAcceptedServerMessage)pServerMessage);
 				break;
 			case FLAG_SERVERMESSAGE_CONNECTION_REFUSED:
-				this.onHandleConnectionRefusedServerMessage((ConnectionRefusedServerMessage)pServerMessage);
+				this.onHandleConnectionRefusedServerMessage(pServerConnector, (ConnectionRefusedServerMessage)pServerMessage);
 				break;
 			case FLAG_SERVERMESSAGE_CONNECTION_CLOSE:
-				this.onHandleConnectionCloseServerMessage((ConnectionCloseServerMessage)pServerMessage);
+				this.onHandleConnectionCloseServerMessage(pServerConnector, (ConnectionCloseServerMessage)pServerMessage);
 				break;
 			case FLAG_SERVERMESSAGE_CONNECTION_PING:
-				this.onHandleConnectionPingServerMessage((ConnectionPingServerMessage)pServerMessage);
+				this.onHandleConnectionPingServerMessage(pServerConnector, (ConnectionPingServerMessage)pServerMessage);
 				break;
 			case FLAG_SERVERMESSAGE_CONNECTION_PONG:
-				this.onHandleConnectionPongServerMessage((ConnectionPongServerMessage)pServerMessage);
+				this.onHandleConnectionPongServerMessage(pServerConnector, (ConnectionPongServerMessage)pServerMessage);
 				break;
 		}
 	}

@@ -29,8 +29,6 @@ public class ClientConnector extends BaseConnector<BaseClientMessage> {
 
 	public ClientConnector(final Socket pSocket, final BaseClientConnectionListener pConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
 		super(pSocket, pConnectionListener, pClientMessageExtractor, pClientMessageSwitch);
-
-		pClientMessageSwitch.setClientConnector(this);
 	}
 
 	// ===========================================================
@@ -45,6 +43,11 @@ public class ClientConnector extends BaseConnector<BaseClientMessage> {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+
+	@Override
+	protected void handleMessage(final BaseClientMessage pMessage) throws IOException {
+		this.getMessageSwitch().doSwitch(this, pMessage);
+	}
 
 	@Override
 	protected void onSendConnectionClose() {
@@ -64,7 +67,7 @@ public class ClientConnector extends BaseConnector<BaseClientMessage> {
 		pServerMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();
 	}
-
+	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================

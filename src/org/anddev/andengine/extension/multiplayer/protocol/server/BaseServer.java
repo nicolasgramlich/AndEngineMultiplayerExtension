@@ -110,8 +110,9 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 
 	@Override
 	public void run() {
-		this.mServerStateListener.onStarted(this.mServerPort);
 		this.mRunning = true;
+		this.mTerminated = false;
+		this.mServerStateListener.onStarted(this.mServerPort);
 		try {
 			/* The Thread accepting the Sockets may run at minor Priority. */
 			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
@@ -185,7 +186,11 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	public void sendBroadcastServerMessage(final BaseServerMessage pServerMessage) throws IOException {
 		if(this.mRunning == true && this.mTerminated == false) {
 			for(final ClientConnector cc : this.mClientConnectors) {
-				cc.sendServerMessage(pServerMessage);
+				try{
+					cc.sendServerMessage(pServerMessage);
+				}catch(IOException e) {
+					this.mServerStateListener.onException(e);
+				}
 			}
 		}
 	}
