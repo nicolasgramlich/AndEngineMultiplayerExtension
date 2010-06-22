@@ -6,7 +6,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
  * @author Nicolas Gramlich
  * @since 21:36:23 - 19.09.2009
  */
-public interface IMessageSwitch<T extends IMessage> {
+public interface IMessageSwitch<M extends IMessage> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================

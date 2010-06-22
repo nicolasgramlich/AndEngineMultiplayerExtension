@@ -52,7 +52,7 @@ public class ConnectionEstablishClientMessage extends BaseClientMessage {
 
 	@Override
 	public short getFlag() {
-		return FLAG_CLIENTMESSAGE_CONNECTION_ESTABLISH;
+		return FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH;
 	}
 
 	@Override

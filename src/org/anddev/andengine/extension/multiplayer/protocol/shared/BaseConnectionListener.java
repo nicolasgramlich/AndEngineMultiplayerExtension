@@ -8,7 +8,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
  * @param <K>
  * @since 00:37:18 - 20.09.2009
  */
-public abstract class BaseConnectionListener<T extends IMessage, C extends BaseConnector<T>> {
+public abstract class BaseConnectionListener<M extends IMessage, C extends BaseConnector<M>> {
 	// ===========================================================
 	// Constants
 	// ===========================================================

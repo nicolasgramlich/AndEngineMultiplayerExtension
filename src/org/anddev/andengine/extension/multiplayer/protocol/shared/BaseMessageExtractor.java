@@ -9,7 +9,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class BaseMessageExtractor<T extends IMessage> {
+public abstract class BaseMessageExtractor<M extends IMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -30,7 +30,7 @@ public abstract class BaseMessageExtractor<T extends IMessage> {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	public abstract T readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException;
+	public abstract M readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException;
 
 	// ===========================================================
 	// Methods

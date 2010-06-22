@@ -15,7 +15,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public abstract class BaseConnector<T extends IMessage> extends Thread {
+public abstract class BaseConnector<M extends IMessage> extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,16 +27,16 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 	private final Socket mSocket;
 	private final DataInputStream mDataInputStream;
 	private final DataOutputStream mDataOutputStream;
-	private final IMessageSwitch<T> mMessageSwitch;
-	private final BaseConnectionListener<T, BaseConnector<T>> mConnectionListener;
+	private final IMessageSwitch<M> mMessageSwitch;
+	private final BaseConnectionListener<M, BaseConnector<M>> mConnectionListener;
 	private boolean mConnectionCloseSent = false;
-	private final BaseMessageExtractor<T> mMessageExtractor;
+	private final BaseMessageExtractor<M> mMessageExtractor;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public BaseConnector(final Socket pSocket, final BaseConnectionListener<T, BaseConnector<T>> pConnectionListener, final BaseMessageExtractor<T> pMessageExtractor, final IMessageSwitch<T> pMessageSwitch) throws IOException {
+	public BaseConnector(final Socket pSocket, final BaseConnectionListener<M, BaseConnector<M>> pConnectionListener, final BaseMessageExtractor<M> pMessageExtractor, final IMessageSwitch<M> pMessageSwitch) throws IOException {
 		this.mSocket = pSocket;
 		this.mConnectionListener = pConnectionListener;
 		this.mMessageExtractor = pMessageExtractor;
@@ -62,7 +62,7 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 		return this.mDataInputStream;
 	}
 
-	public IMessageSwitch<T> getMessageSwitch() {
+	public IMessageSwitch<M> getMessageSwitch() {
 		return this.mMessageSwitch;
 	}
 
@@ -70,7 +70,7 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 		return this.mConnectionListener != null;
 	}
 
-	public BaseConnectionListener<T, BaseConnector<T>> getConnectionListener() {
+	public BaseConnectionListener<M, BaseConnector<M>> getConnectionListener() {
 		return this.mConnectionListener;
 	}
 
@@ -78,7 +78,7 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void handleMessage(final T pMessage) throws IOException;
+	protected abstract void handleMessage(final M pMessage) throws IOException;
 
 	protected abstract void onSendConnectionClose();
 
@@ -94,7 +94,7 @@ public abstract class BaseConnector<T extends IMessage> extends Thread {
 				try {
 
 					final short messageFlag = this.mMessageExtractor.readMessageFlag(this.mDataInputStream);
-					final T message = this.mMessageExtractor.readMessage(messageFlag, this.mDataInputStream);
+					final M message = this.mMessageExtractor.readMessage(messageFlag, this.mDataInputStream);
 					this.handleMessage(message);
 
 				} catch (final SocketException se){

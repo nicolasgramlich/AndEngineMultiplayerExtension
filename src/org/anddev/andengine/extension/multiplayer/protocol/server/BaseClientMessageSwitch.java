@@ -75,16 +75,16 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	public void doSwitch(final ClientConnector pClientConnector, final BaseClientMessage pClientMessage) throws IOException {
 		/* Choose the correct handle method for pClientMessage. */
 		switch(pClientMessage.getFlag()){
-			case FLAG_CLIENTMESSAGE_CONNECTION_ESTABLISH:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
 				this.onHandleConnectionEstablishClientMessage(pClientConnector, (ConnectionEstablishClientMessage)pClientMessage);
 				break;
-			case FLAG_CLIENTMESSAGE_CONNECTION_CLOSE:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE:
 				this.onHandleConnectionCloseClientMessage(pClientConnector, (ConnectionCloseClientMessage)pClientMessage);
 				break;
-			case FLAG_CLIENTMESSAGE_CONNECTION_PING:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_PING:
 				this.onHandleConnectionPingClientMessage(pClientConnector, (ConnectionPingClientMessage)pClientMessage);
 				break;
-			case FLAG_CLIENTMESSAGE_CONNECTION_PONG:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_PONG:
 				this.onHandleConnectionPongClientMessage(pClientConnector, (ConnectionPongClientMessage)pClientMessage);
 				break;
 		}

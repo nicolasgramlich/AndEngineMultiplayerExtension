@@ -52,7 +52,7 @@ public class ConnectionPongServerMessage extends BaseServerMessage {
 
 	@Override
 	public short getFlag() {
-		return FLAG_SERVERMESSAGE_CONNECTION_PONG;
+		return FLAG_MESSAGE_SERVER_CONNECTION_PONG;
 	}
 
 	@Override

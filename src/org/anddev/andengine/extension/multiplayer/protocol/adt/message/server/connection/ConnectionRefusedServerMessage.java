@@ -43,7 +43,7 @@ public class ConnectionRefusedServerMessage extends BaseServerMessage {
 
 	@Override
 	public short getFlag() {
-		return FLAG_SERVERMESSAGE_CONNECTION_REFUSED;
+		return FLAG_MESSAGE_SERVER_CONNECTION_REFUSED;
 	}
 
 	@Override

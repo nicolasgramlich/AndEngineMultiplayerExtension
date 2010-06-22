@@ -39,13 +39,13 @@ public class ClientMessageExtractor extends BaseMessageExtractor<BaseClientMessa
 	@Override
 	public BaseClientMessage readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		switch(pFlag) {
-			case FLAG_CLIENTMESSAGE_CONNECTION_ESTABLISH:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
 				return new ConnectionEstablishClientMessage(pDataInputStream);
-			case FLAG_CLIENTMESSAGE_CONNECTION_CLOSE:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE:
 				return new ConnectionCloseClientMessage(pDataInputStream);
-			case FLAG_CLIENTMESSAGE_CONNECTION_PING:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_PING:
 				return new ConnectionPingClientMessage(pDataInputStream);
-			case FLAG_CLIENTMESSAGE_CONNECTION_PONG:
+			case FLAG_MESSAGE_CLIENT_CONNECTION_PONG:
 				return new ConnectionPongClientMessage(pDataInputStream);
 			default:
 				throw new IllegalArgumentException("Unknown flag: " + pFlag);

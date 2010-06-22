@@ -41,7 +41,7 @@ public class ConnectionCloseClientMessage extends BaseClientMessage {
 
 	@Override
 	public short getFlag() {
-		return FLAG_CLIENTMESSAGE_CONNECTION_CLOSE;
+		return FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE;
 	}
 
 	@Override

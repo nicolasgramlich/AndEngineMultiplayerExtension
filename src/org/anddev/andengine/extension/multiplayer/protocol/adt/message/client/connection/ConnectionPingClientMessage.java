@@ -51,7 +51,7 @@ public class ConnectionPingClientMessage extends BaseClientMessage {
 
 	@Override
 	public short getFlag() {
-		return FLAG_CLIENTMESSAGE_CONNECTION_PING;
+		return FLAG_MESSAGE_CLIENT_CONNECTION_PING;
 	}
 
 	@Override

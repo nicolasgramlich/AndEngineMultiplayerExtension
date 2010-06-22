@@ -67,19 +67,19 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	public void doSwitch(final ServerConnector pServerConnector, final BaseServerMessage pServerMessage) throws IOException {
 		/* Choose the correct handle method for pServerMessage. */
 		switch(pServerMessage.getFlag()){
-			case FLAG_SERVERMESSAGE_CONNECTION_ACCEPTED:
+			case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:
 				this.onHandleConnectionAcceptedServerMessage(pServerConnector, (ConnectionAcceptedServerMessage)pServerMessage);
 				break;
-			case FLAG_SERVERMESSAGE_CONNECTION_REFUSED:
+			case FLAG_MESSAGE_SERVER_CONNECTION_REFUSED:
 				this.onHandleConnectionRefusedServerMessage(pServerConnector, (ConnectionRefusedServerMessage)pServerMessage);
 				break;
-			case FLAG_SERVERMESSAGE_CONNECTION_CLOSE:
+			case FLAG_MESSAGE_SERVER_CONNECTION_CLOSE:
 				this.onHandleConnectionCloseServerMessage(pServerConnector, (ConnectionCloseServerMessage)pServerMessage);
 				break;
-			case FLAG_SERVERMESSAGE_CONNECTION_PING:
+			case FLAG_MESSAGE_SERVER_CONNECTION_PING:
 				this.onHandleConnectionPingServerMessage(pServerConnector, (ConnectionPingServerMessage)pServerMessage);
 				break;
-			case FLAG_SERVERMESSAGE_CONNECTION_PONG:
+			case FLAG_MESSAGE_SERVER_CONNECTION_PONG:
 				this.onHandleConnectionPongServerMessage(pServerConnector, (ConnectionPongServerMessage)pServerMessage);
 				break;
 		}

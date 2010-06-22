@@ -40,15 +40,15 @@ public class ServerMessageExtractor extends BaseMessageExtractor<BaseServerMessa
 	@Override
 	public BaseServerMessage readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		switch(pFlag) {
-			case FLAG_SERVERMESSAGE_CONNECTION_ACCEPTED:
+			case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:
 				return new ConnectionAcceptedServerMessage(pDataInputStream);
-			case FLAG_SERVERMESSAGE_CONNECTION_REFUSED:
+			case FLAG_MESSAGE_SERVER_CONNECTION_REFUSED:
 				return new ConnectionRefusedServerMessage(pDataInputStream);
-			case FLAG_SERVERMESSAGE_CONNECTION_CLOSE:
+			case FLAG_MESSAGE_SERVER_CONNECTION_CLOSE:
 				return new ConnectionCloseServerMessage(pDataInputStream);
-			case FLAG_SERVERMESSAGE_CONNECTION_PING:
+			case FLAG_MESSAGE_SERVER_CONNECTION_PING:
 				return new ConnectionPingServerMessage(pDataInputStream);
-			case FLAG_SERVERMESSAGE_CONNECTION_PONG:
+			case FLAG_MESSAGE_SERVER_CONNECTION_PONG:
 				return new ConnectionPongServerMessage(pDataInputStream);
 			default:
 				throw new IllegalArgumentException("Unknown flag: " + pFlag);

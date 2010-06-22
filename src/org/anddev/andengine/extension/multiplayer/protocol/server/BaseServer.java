@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.net.ServerSocketFactory;
 
@@ -18,7 +17,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class BaseServer extends Thread implements ProtocolConstants {
+public abstract class BaseServer<CC extends ClientConnector> extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -30,7 +29,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	private final int mServerPort;
 	private ServerSocket mServerSocket;
 
-	private final List<ClientConnector> mClientConnectors = new ArrayList<ClientConnector>();
+	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
 	private final BaseClientConnectionListener mClientConnectionListener;
 	private final IServerStateListener mServerStateListener;
 	private boolean mRunning = false;
@@ -106,7 +105,7 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract ClientConnector newClientConnector(final Socket pClientSocket, final BaseClientConnectionListener pClientConnectionListener) throws Exception;
+	protected abstract CC newClientConnector(final Socket pClientSocket, final BaseClientConnectionListener pClientConnectionListener) throws Exception;
 
 	@Override
 	public void run() {
@@ -125,11 +124,11 @@ public abstract class BaseServer extends Thread implements ProtocolConstants {
 					final Socket clientSocket = this.mServerSocket.accept();
 
 					/* Spawn a new ClientConnector, which send and receive data to and from the client. */
-					final ClientConnector cc = this.newClientConnector(clientSocket, this.mClientConnectionListener);
-					this.mClientConnectors.add(cc);
+					final CC clientConnector = this.newClientConnector(clientSocket, this.mClientConnectionListener);
+					this.mClientConnectors.add(clientConnector);
 
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
-					cc.start();
+					clientConnector.start();
 				}catch (final SocketException se){
 					if(!se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_CLOSED) && !se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_IS_CLOSED)) {
 						this.mServerStateListener.onException(se);
