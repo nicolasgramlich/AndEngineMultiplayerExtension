@@ -22,5 +22,5 @@ public interface IClientMessageSwitch extends IMessageSwitch<BaseClientMessage> 
 	// Methods
 	// ===========================================================
 
-	public void doSwitch(final ClientConnector pClientConnector, final BaseClientMessage pClientMessage) throws IOException;
+	public void doSwitch(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException;
 }

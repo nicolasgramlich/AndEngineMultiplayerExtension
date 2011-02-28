@@ -40,21 +40,21 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// ===========================================================
 
 	/* Connection-Handlers */
-	protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnector pServerConnector, final ConnectionRefusedServerMessage pConnectionRefusedServerMessage);
+	protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnection pServerConnection, final ConnectionRefusedServerMessage pConnectionRefusedServerMessage);
 
-	protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnector pServerConnector, final ConnectionAcceptedServerMessage pConnectionAcceptedServerMessage);
+	protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnection pServerConnection, final ConnectionAcceptedServerMessage pConnectionAcceptedServerMessage);
 
-	protected void onHandleConnectionPingServerMessage(final ServerConnector pServerConnector, final ConnectionPingServerMessage pConnectionPingServerMessage) throws IOException {
-		pServerConnector.sendClientMessage(new ConnectionPongClientMessage(pConnectionPingServerMessage));
+	protected void onHandleConnectionPingServerMessage(final ServerConnection pServerConnection, final ConnectionPingServerMessage pConnectionPingServerMessage) throws IOException {
+		pServerConnection.sendClientMessage(new ConnectionPongClientMessage(pConnectionPingServerMessage));
 	}
 
-	protected void onHandleConnectionPongServerMessage(final ServerConnector pServerConnector, final ConnectionPongServerMessage pConnectionPongServerMessage) {
+	protected void onHandleConnectionPongServerMessage(final ServerConnection pServerConnection, final ConnectionPongServerMessage pConnectionPongServerMessage) {
 
 	}
 
-	protected void onHandleConnectionCloseServerMessage(final ServerConnector pServerConnector, final ConnectionCloseServerMessage pConnectionCloseServerMessage) {
-		if(pServerConnector.hasConnectionListener()){
-			pServerConnector.getConnectionListener().onDisconnect(pServerConnector);
+	protected void onHandleConnectionCloseServerMessage(final ServerConnection pServerConnection, final ConnectionCloseServerMessage pConnectionCloseServerMessage) {
+		if(pServerConnection.hasConnectionListener()){
+			pServerConnection.getConnectionListener().onDisconnect(pServerConnection);
 		}
 	}
 
@@ -63,26 +63,26 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// ===========================================================
 
 	/* (non-Javadoc)
-	 * @see org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.client.ServerConnector, org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage)
+	 * @see org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.client.ServerConnection, org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage)
 	 */
 	@Override
-	public void doSwitch(final ServerConnector pServerConnector, final BaseServerMessage pServerMessage) throws IOException {
+	public void doSwitch(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException {
 		/* Choose the correct handle method for pServerMessage. */
 		switch(pServerMessage.getFlag()){
 			case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:
-				this.onHandleConnectionAcceptedServerMessage(pServerConnector, (ConnectionAcceptedServerMessage)pServerMessage);
+				this.onHandleConnectionAcceptedServerMessage(pServerConnection, (ConnectionAcceptedServerMessage)pServerMessage);
 				break;
 			case FLAG_MESSAGE_SERVER_CONNECTION_REFUSED:
-				this.onHandleConnectionRefusedServerMessage(pServerConnector, (ConnectionRefusedServerMessage)pServerMessage);
+				this.onHandleConnectionRefusedServerMessage(pServerConnection, (ConnectionRefusedServerMessage)pServerMessage);
 				break;
 			case FLAG_MESSAGE_SERVER_CONNECTION_CLOSE:
-				this.onHandleConnectionCloseServerMessage(pServerConnector, (ConnectionCloseServerMessage)pServerMessage);
+				this.onHandleConnectionCloseServerMessage(pServerConnection, (ConnectionCloseServerMessage)pServerMessage);
 				break;
 			case FLAG_MESSAGE_SERVER_CONNECTION_PING:
-				this.onHandleConnectionPingServerMessage(pServerConnector, (ConnectionPingServerMessage)pServerMessage);
+				this.onHandleConnectionPingServerMessage(pServerConnection, (ConnectionPingServerMessage)pServerMessage);
 				break;
 			case FLAG_MESSAGE_SERVER_CONNECTION_PONG:
-				this.onHandleConnectionPongServerMessage(pServerConnector, (ConnectionPongServerMessage)pServerMessage);
+				this.onHandleConnectionPongServerMessage(pServerConnection, (ConnectionPongServerMessage)pServerMessage);
 				break;
 		}
 	}

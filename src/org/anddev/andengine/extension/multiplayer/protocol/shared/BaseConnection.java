@@ -15,7 +15,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public abstract class BaseConnector<M extends IMessage> extends Thread {
+public abstract class BaseConnection<M extends IMessage> extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -28,7 +28,7 @@ public abstract class BaseConnector<M extends IMessage> extends Thread {
 	private final DataInputStream mDataInputStream;
 	private final DataOutputStream mDataOutputStream;
 	private final IMessageSwitch<M> mMessageSwitch;
-	private final BaseConnectionListener<M, BaseConnector<M>> mConnectionListener;
+	private final BaseConnectionListener<M, BaseConnection<M>> mConnectionListener;
 	private boolean mConnectionCloseSent = false;
 	private final BaseMessageExtractor<M> mMessageExtractor;
 
@@ -36,7 +36,7 @@ public abstract class BaseConnector<M extends IMessage> extends Thread {
 	// Constructors
 	// ===========================================================
 
-	public BaseConnector(final Socket pSocket, final BaseConnectionListener<M, BaseConnector<M>> pConnectionListener, final BaseMessageExtractor<M> pMessageExtractor, final IMessageSwitch<M> pMessageSwitch) throws IOException {
+	public BaseConnection(final Socket pSocket, final BaseConnectionListener<M, BaseConnection<M>> pConnectionListener, final BaseMessageExtractor<M> pMessageExtractor, final IMessageSwitch<M> pMessageSwitch) throws IOException {
 		this.mSocket = pSocket;
 		this.mConnectionListener = pConnectionListener;
 		this.mMessageExtractor = pMessageExtractor;
@@ -70,7 +70,7 @@ public abstract class BaseConnector<M extends IMessage> extends Thread {
 		return this.mConnectionListener != null;
 	}
 
-	public BaseConnectionListener<M, BaseConnector<M>> getConnectionListener() {
+	public BaseConnectionListener<M, BaseConnection<M>> getConnectionListener() {
 		return this.mConnectionListener;
 	}
 

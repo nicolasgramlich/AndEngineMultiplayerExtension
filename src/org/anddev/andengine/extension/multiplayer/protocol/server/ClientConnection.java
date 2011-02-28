@@ -1,21 +1,20 @@
-package org.anddev.andengine.extension.multiplayer.protocol.client;
+package org.anddev.andengine.extension.multiplayer.protocol.server;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseConnector;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseConnection;
 import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class ServerConnector extends BaseConnector<BaseServerMessage> {
+public class ClientConnection extends BaseConnection<BaseClientMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -28,13 +27,8 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// Constructors
 	// ===========================================================
 
-	public ServerConnector(final Socket pSocket, final BaseServerConnectionListener pServerConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
-		super(pSocket, pServerConnectionListener, pServerMessageExtractor, pServerMessageSwitch);
-
-		/* Initiate communication with the server,
-		 * by sending a ConnectionEstablishClientMessage
-		 * which contains the Protocol version. */
-		this.sendClientMessage(new ConnectionEstablishClientMessage());
+	public ClientConnection(final Socket pSocket, final BaseClientConnectionListener pClientConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
+		super(pSocket, pClientConnectionListener, pClientMessageExtractor, pClientMessageSwitch);
 	}
 
 	// ===========================================================
@@ -42,8 +36,8 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// ===========================================================
 
 	@Override
-	public IServerMessageSwitch getMessageSwitch() {
-		return (IServerMessageSwitch)super.getMessageSwitch();
+	public IClientMessageSwitch getMessageSwitch() {
+		return (IClientMessageSwitch)super.getMessageSwitch();
 	}
 
 	// ===========================================================
@@ -51,14 +45,14 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// ===========================================================
 
 	@Override
-	protected void handleMessage(final BaseServerMessage pMessage) throws IOException {
+	protected void handleMessage(final BaseClientMessage pMessage) throws IOException {
 		this.getMessageSwitch().doSwitch(this, pMessage);
 	}
 
 	@Override
 	protected void onSendConnectionClose() {
 		try {
-			this.sendClientMessage(new ConnectionCloseClientMessage());
+			this.sendServerMessage(new ConnectionCloseServerMessage());
 		} catch (final Throwable pThrowable) {
 			Debug.e(pThrowable);
 		}
@@ -68,12 +62,12 @@ public class ServerConnector extends BaseConnector<BaseServerMessage> {
 	// Methods
 	// ===========================================================
 
-	public void sendClientMessage(final BaseClientMessage pClientMessage) throws IOException {
+	public void sendServerMessage(final BaseServerMessage pServerMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.getDataOutputStream();
-		pClientMessage.transmit(dataOutputStream);
+		pServerMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();
 	}
-
+	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================

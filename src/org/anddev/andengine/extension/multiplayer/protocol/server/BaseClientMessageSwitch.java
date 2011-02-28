@@ -43,25 +43,25 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// ===========================================================
 
 	/* Connection-Handlers */
-	protected void onHandleConnectionEstablishClientMessage(final ClientConnector pClientConnector, final ConnectionEstablishClientMessage pClientMessage) throws IOException {
+	protected void onHandleConnectionEstablishClientMessage(final ClientConnection pClientConnection, final ConnectionEstablishClientMessage pClientMessage) throws IOException {
 		if(pClientMessage.getProtocolVersion() == ProtocolConstants.PROTOCOL_VERSION){
-			pClientConnector.sendServerMessage(new ConnectionAcceptedServerMessage());
+			pClientConnection.sendServerMessage(new ConnectionAcceptedServerMessage());
 		}else{
-			pClientConnector.sendServerMessage(new ConnectionRefusedServerMessage());
+			pClientConnection.sendServerMessage(new ConnectionRefusedServerMessage());
 		}
 	}
 
-	protected void onHandleConnectionPingClientMessage(final ClientConnector pClientConnector, final ConnectionPingClientMessage pClientMessage) throws IOException {
-		pClientConnector.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
+	protected void onHandleConnectionPingClientMessage(final ClientConnection pClientConnection, final ConnectionPingClientMessage pClientMessage) throws IOException {
+		pClientConnection.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
 	}
 
-	protected void onHandleConnectionPongClientMessage(final ClientConnector pClientConnector, final ConnectionPongClientMessage pClientMessage) {
+	protected void onHandleConnectionPongClientMessage(final ClientConnection pClientConnection, final ConnectionPongClientMessage pClientMessage) {
 
 	}
 
-	protected void onHandleConnectionCloseClientMessage(final ClientConnector pClientConnector, final ConnectionCloseClientMessage pClientMessage) throws IOException {
-		if(pClientConnector.hasConnectionListener()){
-			pClientConnector.getConnectionListener().onDisconnect(pClientConnector);
+	protected void onHandleConnectionCloseClientMessage(final ClientConnection pClientConnection, final ConnectionCloseClientMessage pClientMessage) throws IOException {
+		if(pClientConnection.hasConnectionListener()){
+			pClientConnection.getConnectionListener().onDisconnect(pClientConnection);
 		}
 	}
 
@@ -70,23 +70,23 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// ===========================================================
 
 	/* (non-Javadoc)
-	 * @see org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector, org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage)
+	 * @see org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection, org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage)
 	 */
 	@Override
-	public void doSwitch(final ClientConnector pClientConnector, final BaseClientMessage pClientMessage) throws IOException {
+	public void doSwitch(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException {
 		/* Choose the correct handle method for pClientMessage. */
 		switch(pClientMessage.getFlag()){
 			case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
-				this.onHandleConnectionEstablishClientMessage(pClientConnector, (ConnectionEstablishClientMessage)pClientMessage);
+				this.onHandleConnectionEstablishClientMessage(pClientConnection, (ConnectionEstablishClientMessage)pClientMessage);
 				break;
 			case FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE:
-				this.onHandleConnectionCloseClientMessage(pClientConnector, (ConnectionCloseClientMessage)pClientMessage);
+				this.onHandleConnectionCloseClientMessage(pClientConnection, (ConnectionCloseClientMessage)pClientMessage);
 				break;
 			case FLAG_MESSAGE_CLIENT_CONNECTION_PING:
-				this.onHandleConnectionPingClientMessage(pClientConnector, (ConnectionPingClientMessage)pClientMessage);
+				this.onHandleConnectionPingClientMessage(pClientConnection, (ConnectionPingClientMessage)pClientMessage);
 				break;
 			case FLAG_MESSAGE_CLIENT_CONNECTION_PONG:
-				this.onHandleConnectionPongClientMessage(pClientConnector, (ConnectionPongClientMessage)pClientMessage);
+				this.onHandleConnectionPongClientMessage(pClientConnection, (ConnectionPongClientMessage)pClientMessage);
 				break;
 		}
 	}

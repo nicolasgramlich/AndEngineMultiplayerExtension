@@ -22,5 +22,5 @@ public interface IServerMessageSwitch extends IMessageSwitch<BaseServerMessage> 
 	// Methods
 	// ===========================================================
 
-	public void doSwitch(final ServerConnector pServerConnector, final BaseServerMessage pServerMessage) throws IOException;
+	public void doSwitch(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException;
 }
