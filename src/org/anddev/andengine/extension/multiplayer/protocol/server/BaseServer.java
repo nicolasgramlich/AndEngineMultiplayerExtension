@@ -74,8 +74,9 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 		this.mServerStateListener = pServerStateListener;
 
 		if (pPort < 0) {
-			this.mServerStateListener.onException(new IllegalArgumentException("Illegal port '< 0'."));
-			throw new IllegalArgumentException();
+			final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("Illegal port '< 0'.");
+			this.mServerStateListener.onException(illegalArgumentException);
+			throw illegalArgumentException;
 		}else{
 			this.mServerPort = pPort;
 		}
