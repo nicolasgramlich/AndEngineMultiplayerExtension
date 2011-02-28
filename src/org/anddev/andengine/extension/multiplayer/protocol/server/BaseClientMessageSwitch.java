@@ -31,7 +31,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// ===========================================================
 
 	public BaseClientMessageSwitch() {
-		
+
 	}
 
 	// ===========================================================
@@ -70,8 +70,9 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	// ===========================================================
 
 	/* (non-Javadoc)
-	 * @see org.anddev.andremote.protocol.IClientMessageSwitch#doSwitch(org.anddev.andremote.protocol.adt.cmd.AbstractClientMessage)
+	 * @see org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector, org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage)
 	 */
+	@Override
 	public void doSwitch(final ClientConnector pClientConnector, final BaseClientMessage pClientMessage) throws IOException {
 		/* Choose the correct handle method for pClientMessage. */
 		switch(pClientMessage.getFlag()){

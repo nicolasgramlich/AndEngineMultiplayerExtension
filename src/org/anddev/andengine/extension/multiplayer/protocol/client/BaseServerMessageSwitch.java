@@ -28,7 +28,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// Constructors
 	// ===========================================================
 	public BaseServerMessageSwitch() {
-		
+
 	}
 	// ===========================================================
 	// Getter & Setter
@@ -62,8 +62,9 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// ===========================================================
 
 	/* (non-Javadoc)
-	 * @see org.anddev.andremote.protocol.IServerMessageSwitch#doSwitch(org.anddev.andremote.protocol.adt.message.AbstractServerMessage)
+	 * @see org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.client.ServerConnector, org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage)
 	 */
+	@Override
 	public void doSwitch(final ServerConnector pServerConnector, final BaseServerMessage pServerMessage) throws IOException {
 		/* Choose the correct handle method for pServerMessage. */
 		switch(pServerMessage.getFlag()){

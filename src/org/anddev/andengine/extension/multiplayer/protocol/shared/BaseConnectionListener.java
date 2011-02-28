@@ -31,16 +31,16 @@ public abstract class BaseConnectionListener<M extends IMessage, C extends BaseC
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void onConnectInner(final C pConnector);
+	protected abstract void onConnected(final C pConnector);
 
-	protected abstract void onDisconnectInner(final C pConnector);
+	protected abstract void onDisconnected(final C pConnector);
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
 
 	public void onConnect(final C pConnector){
-		this.onConnectInner(pConnector);
+		this.onConnected(pConnector);
 	}
 
 	public void onDisconnect(final C pConnector){
@@ -50,7 +50,7 @@ public abstract class BaseConnectionListener<M extends IMessage, C extends BaseC
 
 		this.mDisconnectCalled = true;
 
-		this.onDisconnectInner(pConnector);
+		this.onDisconnected(pConnector);
 	}
 
 	// ===========================================================

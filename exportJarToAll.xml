@@ -14,7 +14,8 @@
 	<property name="binfile" value="bin/andenginemultiplayerextension.jar" />
 	
 	<property name="targetlist" value="../AndCards/lib/andenginemultiplayerextension.jar,
-	../AndEngineExamples/lib/andenginemultiplayerextension.jar" />
+		../AndEngineExamples/lib/andenginemultiplayerextension.jar,
+		../AndEngineGameTemplate/lib/andenginemultiplayerextension.jar" />
    
 	<target name="createjar" >
 		<echo>${targetfile}</echo>

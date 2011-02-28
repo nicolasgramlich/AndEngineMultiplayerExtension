@@ -20,12 +20,12 @@ public abstract class BaseServerConnectionListener extends BaseConnectionListene
 
 	public static class DefaultServerConnectionListener extends BaseServerConnectionListener {
 		@Override
-		protected void onConnectInner(final BaseConnector<BaseServerMessage> pConnector) {
+		protected void onConnected(final BaseConnector<BaseServerMessage> pConnector) {
 			Debug.d("Accepted Server-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
 		}
 
 		@Override
-		protected void onDisconnectInner(final BaseConnector<BaseServerMessage> pConnector) {
+		protected void onDisconnected(final BaseConnector<BaseServerMessage> pConnector) {
 			Debug.d("Closed Server-Connection from: '" + pConnector.getSocket().getRemoteSocketAddress() + "'");
 		}
 	}
