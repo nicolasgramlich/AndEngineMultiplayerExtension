@@ -27,6 +27,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
 	public BaseServerMessageSwitch() {
 
 	}
@@ -39,19 +40,19 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	// ===========================================================
 
 	/* Connection-Handlers */
-	protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnector pServerConnector, final ConnectionRefusedServerMessage pServerMessage);
+	protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnector pServerConnector, final ConnectionRefusedServerMessage pConnectionRefusedServerMessage);
 
-	protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnector pServerConnector, final ConnectionAcceptedServerMessage pServerMessage);
+	protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnector pServerConnector, final ConnectionAcceptedServerMessage pConnectionAcceptedServerMessage);
 
-	protected void onHandleConnectionPingServerMessage(final ServerConnector pServerConnector, final ConnectionPingServerMessage pServerMessage) throws IOException {
-		pServerConnector.sendClientMessage(new ConnectionPongClientMessage(pServerMessage));
+	protected void onHandleConnectionPingServerMessage(final ServerConnector pServerConnector, final ConnectionPingServerMessage pConnectionPingServerMessage) throws IOException {
+		pServerConnector.sendClientMessage(new ConnectionPongClientMessage(pConnectionPingServerMessage));
 	}
 
-	protected void onHandleConnectionPongServerMessage(final ServerConnector pServerConnector, final ConnectionPongServerMessage pServerMessage) {
+	protected void onHandleConnectionPongServerMessage(final ServerConnector pServerConnector, final ConnectionPongServerMessage pConnectionPongServerMessage) {
 
 	}
 
-	protected void onHandleConnectionCloseServerMessage(final ServerConnector pServerConnector, final ConnectionCloseServerMessage pServerMessage) {
+	protected void onHandleConnectionCloseServerMessage(final ServerConnector pServerConnector, final ConnectionCloseServerMessage pConnectionCloseServerMessage) {
 		if(pServerConnector.hasConnectionListener()){
 			pServerConnector.getConnectionListener().onDisconnect(pServerConnector);
 		}
