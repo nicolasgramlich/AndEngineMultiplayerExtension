@@ -66,7 +66,7 @@ public abstract class BaseServerMessageSwitch implements ServerMessageFlags, ISe
 	 * @see org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.client.ServerConnection, org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage)
 	 */
 	@Override
-	public void doSwitch(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException {
+	public void switchMessage(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException {
 		/* Choose the correct handle method for pServerMessage. */
 		switch(pServerMessage.getFlag()){
 			case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:

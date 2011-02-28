@@ -52,7 +52,7 @@ public class ServerConnection extends BaseConnection<BaseServerMessage> {
 
 	@Override
 	protected void handleMessage(final BaseServerMessage pMessage) throws IOException {
-		this.getMessageSwitch().doSwitch(this, pMessage);
+		this.getMessageSwitch().switchMessage(this, pMessage);
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public abstract class BaseClientMessageSwitch implements ClientMessageFlags, ICl
 	 * @see org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageSwitch#doSwitch(org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection, org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage)
 	 */
 	@Override
-	public void doSwitch(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException {
+	public void switchMessage(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException {
 		/* Choose the correct handle method for pClientMessage. */
 		switch(pClientMessage.getFlag()){
 			case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:

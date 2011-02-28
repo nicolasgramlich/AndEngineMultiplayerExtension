@@ -205,10 +205,10 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 
 		public static class DefaultServerStateListener implements IServerStateListener {
 			public void onStarted(final int pPort) {
-				Debug.d("AndRemote-Server is listening on Port: " + pPort);
+				Debug.d("Server listening on Port: " + pPort);
 			}
 			public void onTerminated(final int pPort) {
-				Debug.d("AndRemote-Server terminated on Port: " + pPort);
+				Debug.d("Server terminated on Port: " + pPort);
 			}
 			public void onException(final Throwable pThrowable) {
 				Debug.e(pThrowable);

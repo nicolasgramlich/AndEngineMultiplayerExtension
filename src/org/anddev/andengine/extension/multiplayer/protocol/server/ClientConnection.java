@@ -46,7 +46,7 @@ public class ClientConnection extends BaseConnection<BaseClientMessage> {
 
 	@Override
 	protected void handleMessage(final BaseClientMessage pMessage) throws IOException {
-		this.getMessageSwitch().doSwitch(this, pMessage);
+		this.getMessageSwitch().switchMessage(this, pMessage);
 	}
 
 	@Override
