@@ -28,8 +28,8 @@ public class ServerConnection extends BaseConnection<BaseServerMessage> {
 	// Constructors
 	// ===========================================================
 
-	public ServerConnection(final Socket pSocket, final BaseServerConnectionListener pServerConnectionListener, final ServerMessageExtractor pServerMessageExtractor, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
-		super(pSocket, pServerConnectionListener, pServerMessageExtractor, pServerMessageSwitch);
+	public ServerConnection(final Socket pSocket, final BaseServerConnectionListener pServerConnectionListener, final ServerMessageReader pServerMessageReader, final IServerMessageSwitch pServerMessageSwitch) throws IOException {
+		super(pSocket, pServerConnectionListener, pServerMessageReader, pServerMessageSwitch);
 
 		/* Initiate communication with the server,
 		 * by sending a ConnectionEstablishClientMessage

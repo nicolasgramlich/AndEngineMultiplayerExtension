@@ -27,8 +27,8 @@ public class ClientConnection extends BaseConnection<BaseClientMessage> {
 	// Constructors
 	// ===========================================================
 
-	public ClientConnection(final Socket pSocket, final BaseClientConnectionListener pClientConnectionListener, final ClientMessageExtractor pClientMessageExtractor, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
-		super(pSocket, pClientConnectionListener, pClientMessageExtractor, pClientMessageSwitch);
+	public ClientConnection(final Socket pSocket, final BaseClientConnectionListener pClientConnectionListener, final ClientMessageReader pClientMessageReader, final IClientMessageSwitch pClientMessageSwitch) throws IOException {
+		super(pSocket, pClientConnectionListener, pClientMessageReader, pClientMessageSwitch);
 	}
 
 	// ===========================================================

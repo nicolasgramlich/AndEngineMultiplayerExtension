@@ -9,14 +9,14 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.co
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPingServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPongServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionRefusedServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseMessageExtractor;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ServerMessageFlags;
 
 /**
  * @author Nicolas Gramlich
  * @since 18:15:50 - 18.09.2009
  */
-public class ServerMessageExtractor extends BaseMessageExtractor<BaseServerMessage> implements ServerMessageFlags {
+public class ServerMessageReader extends BaseMessageReader<BaseServerMessage> implements ServerMessageFlags {
 	// ===========================================================
 	// Constants
 	// ===========================================================

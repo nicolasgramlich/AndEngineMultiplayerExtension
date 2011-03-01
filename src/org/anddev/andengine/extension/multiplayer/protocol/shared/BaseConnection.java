@@ -30,16 +30,16 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 	private final IMessageSwitch<M> mMessageSwitch;
 	private final BaseConnectionListener<M, BaseConnection<M>> mConnectionListener;
 	private boolean mConnectionCloseSent = false;
-	private final BaseMessageExtractor<M> mMessageExtractor;
+	private final BaseMessageReader<M> mMessageReader;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public BaseConnection(final Socket pSocket, final BaseConnectionListener<M, BaseConnection<M>> pConnectionListener, final BaseMessageExtractor<M> pMessageExtractor, final IMessageSwitch<M> pMessageSwitch) throws IOException {
+	public BaseConnection(final Socket pSocket, final BaseConnectionListener<M, BaseConnection<M>> pConnectionListener, final BaseMessageReader<M> pMessageReader, final IMessageSwitch<M> pMessageSwitch) throws IOException {
 		this.mSocket = pSocket;
 		this.mConnectionListener = pConnectionListener;
-		this.mMessageExtractor = pMessageExtractor;
+		this.mMessageReader = pMessageReader;
 		this.mMessageSwitch = pMessageSwitch;
 
 		this.mDataInputStream = new DataInputStream(pSocket.getInputStream());
@@ -93,8 +93,8 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 			while (!this.isInterrupted()) {
 				try {
 
-					final short messageFlag = this.mMessageExtractor.readMessageFlag(this.mDataInputStream);
-					final M message = this.mMessageExtractor.readMessage(messageFlag, this.mDataInputStream);
+					final short messageFlag = this.mMessageReader.readMessageFlag(this.mDataInputStream);
+					final M message = this.mMessageReader.readMessage(messageFlag, this.mDataInputStream);
 					this.handleMessage(message);
 
 				} catch (final SocketException se){

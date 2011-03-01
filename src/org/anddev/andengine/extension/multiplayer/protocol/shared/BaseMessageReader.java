@@ -9,7 +9,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class BaseMessageExtractor<M extends IMessage> {
+public abstract class BaseMessageReader<M extends IMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
