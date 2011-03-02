@@ -19,7 +19,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class BaseServer<CC extends ClientConnection> extends Thread implements ProtocolConstants {
+public abstract class BaseServer<T extends ClientConnection> extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -31,7 +31,7 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 	private final int mServerPort;
 	private ServerSocket mServerSocket;
 
-	protected final ArrayList<CC> mClientConnections = new ArrayList<CC>();
+	protected final ArrayList<T> mClientConnections = new ArrayList<T>();
 	private final IClientConnectionListener mClientConnectionListener;
 	private final IServerStateListener mServerStateListener;
 	private boolean mRunning = false;
@@ -108,7 +108,7 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract CC newClientConnection(final Socket pClientSocket, final IClientConnectionListener pClientConnectionListener) throws Exception;
+	protected abstract T newClientConnection(final Socket pClientSocket, final IClientConnectionListener pClientConnectionListener) throws Exception;
 
 	@Override
 	public void run() {
@@ -127,7 +127,7 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 					final Socket clientSocket = this.mServerSocket.accept();
 
 					/* Spawn a new ClientConnection, which send and receive data to and from the client. */
-					final CC clientConnection = this.newClientConnection(clientSocket, this.mClientConnectionListener);
+					final T clientConnection = this.newClientConnection(clientSocket, this.mClientConnectionListener);
 					this.mClientConnections.add(clientConnection);
 
 					/* Start the ClientConnection(-Thread) so it starts receiving commands. */
@@ -166,11 +166,12 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 			super.interrupt();
 
 			/* First interrupt all Clients. */
-			for(final ClientConnection cc : this.mClientConnections){
-				cc.interrupt();
+			final ArrayList<T> clientConnections = this.mClientConnections;
+			for(int i = 0; i < clientConnections.size(); i++){
+				clientConnections.get(i).interrupt();
 			}
 
-			this.mClientConnections.clear();
+			clientConnections.clear();
 
 			Thread.sleep(1000);
 
@@ -187,10 +188,11 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 
 	public void sendBroadcastServerMessage(final BaseServerMessage pServerMessage) throws IOException {
 		if(this.mRunning == true && this.mTerminated == false) {
-			for(final ClientConnection cc : this.mClientConnections) {
-				try{
-					cc.sendServerMessage(pServerMessage);
-				}catch(IOException e) {
+			final ArrayList<T> clientConnections = this.mClientConnections;
+			for(int i = 0; i < clientConnections.size(); i++) {
+				try {
+					clientConnections.get(i).sendServerMessage(pServerMessage);
+				} catch (IOException e) {
 					this.mServerStateListener.onException(e);
 				}
 			}
