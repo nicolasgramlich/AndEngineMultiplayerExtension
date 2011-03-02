@@ -4,14 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.Message;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.ServerMessage;
 
 /**
  * @author Nicolas Gramlich
  * @since 19:04:33 - 19.09.2009
  */
-public class ConnectionAcceptedServerMessage extends Message implements IServerMessage {
+public class ConnectionAcceptedServerMessage extends ServerMessage {
 	// ===========================================================
 	// Constants
 	// ===========================================================

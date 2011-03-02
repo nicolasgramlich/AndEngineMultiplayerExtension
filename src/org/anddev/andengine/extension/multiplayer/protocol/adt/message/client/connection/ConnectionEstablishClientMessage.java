@@ -4,15 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.Message;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.ClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 
 /**
  * @author Nicolas Gramlich
  * @since 21:26:16 - 19.09.2009
  */
-public class ConnectionEstablishClientMessage extends Message implements IClientMessage {
+public class ConnectionEstablishClientMessage extends ClientMessage {
 	// ===========================================================
 	// Constants
 	// ===========================================================

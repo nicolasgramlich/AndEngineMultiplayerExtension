@@ -1,16 +1,13 @@
-package org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection;
+package org.anddev.andengine.extension.multiplayer.protocol.adt.message.server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.Message;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.ServerMessage;
 
 /**
  * @author Nicolas Gramlich
- * @since 12:19:01 - 02.10.2009
+ * @since 19:20:38 - 02.03.2011
  */
-public class ConnectionCloseServerMessage extends ServerMessage {
+public abstract class ServerMessage extends Message implements IServerMessage {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -23,10 +20,6 @@ public class ConnectionCloseServerMessage extends ServerMessage {
 	// Constructors
 	// ===========================================================
 
-	public ConnectionCloseServerMessage() {
-		/* Nothing to store. */
-	}
-
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
@@ -34,26 +27,6 @@ public class ConnectionCloseServerMessage extends ServerMessage {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-
-	@Override
-	public short getFlag() {
-		return FLAG_MESSAGE_SERVER_CONNECTION_CLOSE;
-	}
-
-	@Override
-	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
-		/* Nothing to read. */
-	}
-
-	@Override
-	protected void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-		/* Nothing to write. */
-	}
-
-	@Override
-	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
-		/* Nothing to append. */
-	}
 
 	// ===========================================================
 	// Methods

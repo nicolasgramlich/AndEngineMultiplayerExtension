@@ -1,16 +1,14 @@
-package org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection;
+package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.ClientMessage;
-
 /**
  * @author Nicolas Gramlich
- * @since 17:51:32 - 21.09.2009
+ * @since 13:38:26 - 19.09.2009
  */
-public class ConnectionPingClientMessage extends ClientMessage {
+public abstract class LongMessage extends Message {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -19,26 +17,26 @@ public class ConnectionPingClientMessage extends ClientMessage {
 	// Fields
 	// ===========================================================
 
-	private long mTimestamp;
+	protected long mLong;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public ConnectionPingClientMessage() {
-		this(System.currentTimeMillis());
+	public LongMessage(final long pLong) {
+		this.mLong = pLong;
 	}
 
-	public ConnectionPingClientMessage(final long pTimestamp) {
-		this.mTimestamp = pTimestamp;
+	public LongMessage(final DataInputStream pDataInputStream) throws IOException {
+		this.read(pDataInputStream);
 	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
 
-	public long getTimestamp() {
-		return this.mTimestamp;
+	public long getLong() {
+		return this.mLong;
 	}
 
 	// ===========================================================
@@ -46,43 +44,36 @@ public class ConnectionPingClientMessage extends ClientMessage {
 	// ===========================================================
 
 	@Override
-	public short getFlag() {
-		return FLAG_MESSAGE_CLIENT_CONNECTION_PING;
-	}
-
-	@Override
-	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
-		this.mTimestamp = pDataInputStream.readLong();
-	}
-
-	@Override
-	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-		pDataOutputStream.writeLong(this.mTimestamp);
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.mLong = pDataInputStream.readLong();
 	}
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
-		pStringBuilder.append(", getTimestamp()=").append(this.mTimestamp);
+		pStringBuilder.append(", getInt()=").append(this.getLong());
+	}
+
+	@Override
+	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
+		pDataOutputStream.writeLong(this.getLong());
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (this == obj) {
+		if(this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if(obj == null) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
+		if(this.getClass() != obj.getClass()) {
 			return false;
 		}
 
-		final ConnectionPingClientMessage other = (ConnectionPingClientMessage) obj;
+		final LongMessage other = (LongMessage) obj;
 
-		return this.getFlag() == other.getFlag()
-		&& this.getTimestamp() == other.getTimestamp();
+		return this.getFlag() == other.getFlag() && this.getLong() == other.getLong();
 	}
-
 
 	// ===========================================================
 	// Methods

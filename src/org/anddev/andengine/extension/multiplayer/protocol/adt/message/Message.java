@@ -34,10 +34,11 @@ public abstract class Message implements IMessage {
 
 	/**
 	 * For debugging purposes, append all data of this {@link Message} to the {@link StringBuilder}.
-	 * 
 	 * @param pStringBuilder
 	 */
-	protected abstract void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder);
+	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
+		/* Nothing by default. */
+	}
 
 	@Override
 	public String toString() {
