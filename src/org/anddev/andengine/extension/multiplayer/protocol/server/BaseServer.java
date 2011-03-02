@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import javax.net.ServerSocketFactory;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection.IClientConnectionListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection.IClientConnectionListener.DefaultClientConnectionListener;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
@@ -30,7 +32,7 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 	private ServerSocket mServerSocket;
 
 	protected final ArrayList<CC> mClientConnections = new ArrayList<CC>();
-	private final BaseClientConnectionListener mClientConnectionListener;
+	private final IClientConnectionListener mClientConnectionListener;
 	private final IServerStateListener mServerStateListener;
 	private boolean mRunning = false;
 	private boolean mTerminated = false;
@@ -47,10 +49,10 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 	}
 
 	public BaseServer(final int pPort) {
-		this(pPort, new BaseClientConnectionListener.DefaultClientConnectionListener());
+		this(pPort, new DefaultClientConnectionListener());
 	}
 
-	public BaseServer(final BaseClientConnectionListener pClientConnectionListener) {
+	public BaseServer(final IClientConnectionListener pClientConnectionListener) {
 		this(SERVER_DEFAULT_PORT, pClientConnectionListener);
 	}
 
@@ -58,19 +60,19 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 		this(SERVER_DEFAULT_PORT, pServerStateListener);
 	}
 
-	public BaseServer(final int pPort, final BaseClientConnectionListener pClientConnectionListener) {
+	public BaseServer(final int pPort, final IClientConnectionListener pClientConnectionListener) {
 		this(pPort, pClientConnectionListener, new IServerStateListener.DefaultServerStateListener());
 	}
 
 	public BaseServer(final int pPort, final IServerStateListener pServerStateListener) {
-		this(pPort, new BaseClientConnectionListener.DefaultClientConnectionListener(), pServerStateListener);
+		this(pPort, new DefaultClientConnectionListener(), pServerStateListener);
 	}
 
-	public BaseServer(final BaseClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
+	public BaseServer(final IClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
 		this(SERVER_DEFAULT_PORT, pClientConnectionListener, pServerStateListener);
 	}
 
-	public BaseServer(final int pPort, final BaseClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
+	public BaseServer(final int pPort, final IClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
 		this.mServerStateListener = pServerStateListener;
 
 		if (pPort < 0) {
@@ -106,7 +108,7 @@ public abstract class BaseServer<CC extends ClientConnection> extends Thread imp
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract CC newClientConnection(final Socket pClientSocket, final BaseClientConnectionListener pClientConnectionListener) throws Exception;
+	protected abstract CC newClientConnection(final Socket pClientSocket, final IClientConnectionListener pClientConnectionListener) throws Exception;
 
 	@Override
 	public void run() {

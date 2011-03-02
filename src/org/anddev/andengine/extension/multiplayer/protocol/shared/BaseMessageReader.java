@@ -4,12 +4,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.util.MessagePool;
 
 /**
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class BaseMessageReader<M extends IMessage> {
+public abstract class BaseMessageReader<T extends IMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -17,6 +18,8 @@ public abstract class BaseMessageReader<M extends IMessage> {
 	// ===========================================================
 	// Fields
 	// ===========================================================
+
+	final MessagePool<T> mMessagePool = new MessagePool<T>();
 
 	// ===========================================================
 	// Constructors
@@ -30,14 +33,21 @@ public abstract class BaseMessageReader<M extends IMessage> {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	public abstract M readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException;
-
 	// ===========================================================
 	// Methods
 	// ===========================================================
 
-	public short readMessageFlag(final DataInputStream pDataInputStream) throws IOException {
-		return pDataInputStream.readShort();
+	public void registerMessage(final short pFlag, final Class<? extends T> pMessageClass) {
+		this.mMessagePool.registerMessage(pFlag, pMessageClass);
+	}
+
+	public T readMessage(final DataInputStream pDataInputStream) throws IOException {
+		final short flag = pDataInputStream.readShort();
+		return this.mMessagePool.obtainMessage(flag, pDataInputStream);
+	}
+
+	public void recycleMessage(T pMessage) {
+		this.mMessagePool.recycleMessage(pMessage);
 	}
 
 	// ===========================================================

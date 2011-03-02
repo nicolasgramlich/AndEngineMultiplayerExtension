@@ -1,8 +1,5 @@
 package org.anddev.andengine.extension.multiplayer.protocol.server;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
@@ -15,7 +12,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.util.constants.Client
  * @author Nicolas Gramlich
  * @since 15:26:29 - 18.09.2009
  */
-public class ClientMessageReader extends BaseMessageReader<BaseClientMessage> implements ClientMessageFlags {
+public class ClientMessageReader extends BaseMessageReader<BaseClientMessage> implements ClientMessageFlags, IClientMessageReader {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -36,22 +33,6 @@ public class ClientMessageReader extends BaseMessageReader<BaseClientMessage> im
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	@Override
-	public BaseClientMessage readMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
-		switch(pFlag) {
-			case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
-				return new ConnectionEstablishClientMessage(pDataInputStream);
-			case FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE:
-				return new ConnectionCloseClientMessage(pDataInputStream);
-			case FLAG_MESSAGE_CLIENT_CONNECTION_PING:
-				return new ConnectionPingClientMessage(pDataInputStream);
-			case FLAG_MESSAGE_CLIENT_CONNECTION_PONG:
-				return new ConnectionPongClientMessage(pDataInputStream);
-			default:
-				throw new IllegalArgumentException("Unknown flag: " + pFlag);
-		}
-	}
-
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -59,4 +40,41 @@ public class ClientMessageReader extends BaseMessageReader<BaseClientMessage> im
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	public static class DefaultClientMessageReader extends ClientMessageReader {
+		// ===========================================================
+		// Constants
+		// ===========================================================
+
+		// ===========================================================
+		// Fields
+		// ===========================================================
+
+		// ===========================================================
+		// Constructors
+		// ===========================================================
+
+		public DefaultClientMessageReader() {
+			this.registerMessage(FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH, ConnectionEstablishClientMessage.class);
+			this.registerMessage(FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE, ConnectionCloseClientMessage.class);
+			this.registerMessage(FLAG_MESSAGE_CLIENT_CONNECTION_PING, ConnectionPingClientMessage.class);
+			this.registerMessage(FLAG_MESSAGE_CLIENT_CONNECTION_PONG, ConnectionPongClientMessage.class);
+		}
+
+		// ===========================================================
+		// Getter & Setter
+		// ===========================================================
+
+		// ===========================================================
+		// Methods for/from SuperClass/Interfaces
+		// ===========================================================
+
+		// ===========================================================
+		// Methods
+		// ===========================================================
+
+		// ===========================================================
+		// Inner and Anonymous Classes
+		// ===========================================================
+	}
 }

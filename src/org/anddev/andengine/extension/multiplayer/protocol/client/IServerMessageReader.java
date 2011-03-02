@@ -1,19 +1,15 @@
 package org.anddev.andengine.extension.multiplayer.protocol.client;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageSwitch;
 
 /**
  * @author Nicolas Gramlich
- * @since 21:01:19 - 19.09.2009
- *
- * You might consider using {@link BaseServerMessageSwitch}.
- *
- * @see BaseServerMessageSwitch
+ * @since 13:11:07 - 02.03.2011
  */
-public interface IServerMessageSwitch extends IMessageSwitch<BaseServerMessage> {
+public interface IServerMessageReader {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -22,5 +18,7 @@ public interface IServerMessageSwitch extends IMessageSwitch<BaseServerMessage> 
 	// Methods
 	// ===========================================================
 
-	public void switchMessage(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException;
+	public void registerMessage(final short pFlag, final Class<? extends BaseServerMessage> pServerMessageClass);
+	public BaseServerMessage readMessage(final DataInputStream pDataInputStream) throws IOException;
+	public void recycleMessage(final BaseServerMessage pBaseServerMessage) throws IOException;
 }

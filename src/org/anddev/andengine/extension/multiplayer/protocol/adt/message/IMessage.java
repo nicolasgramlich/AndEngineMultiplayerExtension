@@ -1,5 +1,6 @@
 package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -16,5 +17,8 @@ public interface IMessage {
 	// Methods
 	// ===========================================================
 
+	public short getFlag();
+
+	public void read(final DataInputStream pDataInputStream) throws IOException;
 	public void transmit(final DataOutputStream pDataOutputStream) throws IOException;
 }

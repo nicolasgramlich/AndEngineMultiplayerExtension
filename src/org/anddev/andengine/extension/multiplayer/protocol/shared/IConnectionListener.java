@@ -1,12 +1,11 @@
 package org.anddev.andengine.extension.multiplayer.protocol.shared;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
 
 /**
  * @author Nicolas Gramlich
- * @since 21:36:23 - 19.09.2009
+ * @since 12:43:13 - 02.03.2011
  */
-public interface IMessageSwitch<M extends IMessage> {
+public interface IConnectionListener {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -14,4 +13,7 @@ public interface IMessageSwitch<M extends IMessage> {
 	// ===========================================================
 	// Methods
 	// ===========================================================
+
+	public void onConnected(final Connection pConnection); 
+	public void onDisconnected(final Connection pConnection);
 }

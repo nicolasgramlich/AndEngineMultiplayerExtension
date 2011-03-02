@@ -1,5 +1,6 @@
 package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -30,6 +31,7 @@ public abstract class BaseMessage implements IMessage {
 
 	public abstract short getFlag();
 
+	protected abstract void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException;
 	protected abstract void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException;
 
 	/**
@@ -73,9 +75,15 @@ public abstract class BaseMessage implements IMessage {
 	// Methods
 	// ===========================================================
 
+	@Override
 	public void transmit(final DataOutputStream pDataOutputStream) throws IOException {
 		pDataOutputStream.writeShort(this.getFlag());
 		this.onWriteTransmissionData(pDataOutputStream);
+	}
+	
+	@Override
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.onReadTransmissionData(pDataInputStream);
 	}
 
 	// ===========================================================

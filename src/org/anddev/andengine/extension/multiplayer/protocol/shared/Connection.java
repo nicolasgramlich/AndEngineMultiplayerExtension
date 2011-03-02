@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
 
@@ -15,7 +14,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public abstract class BaseConnection<M extends IMessage> extends Thread {
+public abstract class Connection extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,20 +26,17 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 	private final Socket mSocket;
 	private final DataInputStream mDataInputStream;
 	private final DataOutputStream mDataOutputStream;
-	private final IMessageSwitch<M> mMessageSwitch;
-	private final BaseConnectionListener<M, BaseConnection<M>> mConnectionListener;
-	private boolean mConnectionCloseSent = false;
-	private final BaseMessageReader<M> mMessageReader;
+
+	private final IConnectionListener mConnectionListener;
+	private boolean mConnectionCloses = false;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public BaseConnection(final Socket pSocket, final BaseConnectionListener<M, BaseConnection<M>> pConnectionListener, final BaseMessageReader<M> pMessageReader, final IMessageSwitch<M> pMessageSwitch) throws IOException {
+	public Connection(final Socket pSocket, final IConnectionListener pConnectionListener) throws IOException {
 		this.mSocket = pSocket;
 		this.mConnectionListener = pConnectionListener;
-		this.mMessageReader = pMessageReader;
-		this.mMessageSwitch = pMessageSwitch;
 
 		this.mDataInputStream = new DataInputStream(pSocket.getInputStream());
 		this.mDataOutputStream = new DataOutputStream(pSocket.getOutputStream());
@@ -62,15 +58,11 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 		return this.mDataInputStream;
 	}
 
-	public IMessageSwitch<M> getMessageSwitch() {
-		return this.mMessageSwitch;
-	}
-
 	public boolean hasConnectionListener(){
 		return this.mConnectionListener != null;
 	}
 
-	public BaseConnectionListener<M, BaseConnection<M>> getConnectionListener() {
+	public IConnectionListener getConnectionListener() {
 		return this.mConnectionListener;
 	}
 
@@ -78,28 +70,23 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void handleMessage(final M pMessage) throws IOException;
-
-	protected abstract void onSendConnectionClose();
+	protected abstract void read(final DataInputStream pDataInputStream) throws IOException;
+	protected abstract void onConnectionClosed();
 
 	@Override
 	public void run() {
 		if(this.mConnectionListener != null) {
-			this.mConnectionListener.onConnect(this);
+			this.mConnectionListener.onConnected(this);
 		}
 
-		Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // TODO What ThreadPriority makes sense here?
+		//		Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // TODO What ThreadPriority makes sense here?
 		try {
-			while (!this.isInterrupted()) {
+			while(!this.isInterrupted()) {
 				try {
-
-					final short messageFlag = this.mMessageReader.readMessageFlag(this.mDataInputStream);
-					final M message = this.mMessageReader.readMessage(messageFlag, this.mDataInputStream);
-					this.handleMessage(message);
-
-				} catch (final SocketException se){
+					this.read(this.mDataInputStream);
+				} catch (final SocketException se) {
 					this.interrupt();
-				} catch (final EOFException eof){
+				} catch (final EOFException eof) {
 					this.interrupt();
 				} catch (final Throwable pThrowable) {
 					Debug.e(pThrowable);
@@ -107,7 +94,7 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 			}
 		} catch (final Throwable pThrowable) {
 			Debug.e(pThrowable);
-		}finally{
+		} finally {
 			this.closeConnection();
 		}
 	}
@@ -123,17 +110,17 @@ public abstract class BaseConnection<M extends IMessage> extends Thread {
 	// Methods
 	// ===========================================================
 
-	private void closeConnection() {
-		if(!this.mConnectionCloseSent && this.mSocket != null && !this.mSocket.isClosed()) {
-			this.mConnectionCloseSent = true;
-			this.onSendConnectionClose();
+	public void closeConnection() {
+		if(!this.mConnectionCloses && this.mSocket != null && !this.mSocket.isClosed()) {
+			this.mConnectionCloses = true;
+			this.onConnectionClosed();
 		}
 
 		/* Ensure Socket is really closed. */
 		SocketUtils.closeSocket(this.mSocket);
 
 		if(this.mConnectionListener != null) {
-			this.mConnectionListener.onDisconnect(this);
+			this.mConnectionListener.onDisconnected(this);
 		}
 	}
 

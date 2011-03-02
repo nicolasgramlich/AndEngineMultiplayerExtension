@@ -27,10 +27,6 @@ public class ConnectionCloseServerMessage extends BaseServerMessage {
 		/* Nothing to store. */
 	}
 
-	public ConnectionCloseServerMessage(final DataInputStream pInputStream) throws IOException {
-		/* Nothing to read. */
-	}
-
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
@@ -42,6 +38,11 @@ public class ConnectionCloseServerMessage extends BaseServerMessage {
 	@Override
 	public short getFlag() {
 		return FLAG_MESSAGE_SERVER_CONNECTION_CLOSE;
+	}
+
+	@Override
+	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
+		/* Nothing to read. */
 	}
 
 	@Override

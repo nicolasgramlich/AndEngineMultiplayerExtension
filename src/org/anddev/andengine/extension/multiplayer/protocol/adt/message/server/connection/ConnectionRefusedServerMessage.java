@@ -29,10 +29,6 @@ public class ConnectionRefusedServerMessage extends BaseServerMessage {
 		/* Nothing to store. */
 	}
 
-	public ConnectionRefusedServerMessage(final DataInputStream pInputStream) throws IOException {
-		/* Nothing to read. */
-	}
-
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
@@ -44,6 +40,11 @@ public class ConnectionRefusedServerMessage extends BaseServerMessage {
 	@Override
 	public short getFlag() {
 		return FLAG_MESSAGE_SERVER_CONNECTION_REFUSED;
+	}
+
+	@Override
+	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
+		/* Nothing to read. */
 	}
 
 	@Override

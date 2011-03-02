@@ -25,7 +25,7 @@ public abstract class EmptyServerMessage extends BaseServerMessage {
 		/* Nothing to store. */
 	}
 
-	public EmptyServerMessage(final DataInputStream pInputStream) throws IOException {
+	public EmptyServerMessage(final DataInputStream pDataInputStream) throws IOException {
 		/* Nothing to read. */
 	}
 

@@ -29,7 +29,7 @@ public abstract class BaseCharacterClientMessage extends BaseClientMessage {
 	}
 
 	public BaseCharacterClientMessage(final DataInputStream pDataInputStream) throws IOException {
-		this.mCharacter = pDataInputStream.readChar();
+		this.read(pDataInputStream);
 	}
 
 	// ===========================================================
@@ -43,6 +43,11 @@ public abstract class BaseCharacterClientMessage extends BaseClientMessage {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+
+	@Override
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.mCharacter = pDataInputStream.readChar();
+	}
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {

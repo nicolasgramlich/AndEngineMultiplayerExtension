@@ -20,7 +20,7 @@ public class ConnectionEstablishClientMessage extends BaseClientMessage {
 	// Fields
 	// ===========================================================
 
-	private final int mProtocolVersion;
+	private int mProtocolVersion;
 
 	// ===========================================================
 	// Constructors
@@ -32,10 +32,6 @@ public class ConnectionEstablishClientMessage extends BaseClientMessage {
 
 	public ConnectionEstablishClientMessage(final int pProtocolVersion) {
 		this.mProtocolVersion = pProtocolVersion;
-	}
-
-	public ConnectionEstablishClientMessage(final DataInputStream pInputStream) throws IOException {
-		this.mProtocolVersion = pInputStream.readInt();
 	}
 
 	// ===========================================================
@@ -53,6 +49,11 @@ public class ConnectionEstablishClientMessage extends BaseClientMessage {
 	@Override
 	public short getFlag() {
 		return FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH;
+	}
+
+	@Override
+	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
+		this.mProtocolVersion = pDataInputStream.readInt();
 	}
 
 	@Override

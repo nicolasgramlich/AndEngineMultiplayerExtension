@@ -19,7 +19,7 @@ public class ConnectionPingServerMessage extends BaseServerMessage {
 	// Fields
 	// ===========================================================
 
-	private final long mTimestamp;
+	private long mTimestamp;
 
 	// ===========================================================
 	// Constructors
@@ -31,10 +31,6 @@ public class ConnectionPingServerMessage extends BaseServerMessage {
 
 	public ConnectionPingServerMessage(final long pTimestamp) {
 		this.mTimestamp = pTimestamp;
-	}
-
-	public ConnectionPingServerMessage(final DataInputStream pInputStream) throws IOException {
-		this.mTimestamp = pInputStream.readLong();
 	}
 
 	// ===========================================================
@@ -52,6 +48,11 @@ public class ConnectionPingServerMessage extends BaseServerMessage {
 	@Override
 	public short getFlag() {
 		return FLAG_MESSAGE_SERVER_CONNECTION_PONG;
+	}
+
+	@Override
+	public void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
+		this.mTimestamp = pDataInputStream.readLong();
 	}
 
 	@Override

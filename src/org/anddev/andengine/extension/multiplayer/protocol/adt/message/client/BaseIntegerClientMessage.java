@@ -29,7 +29,7 @@ public abstract class BaseIntegerClientMessage extends BaseClientMessage {
 	}
 
 	public BaseIntegerClientMessage(final DataInputStream pDataInputStream) throws IOException {
-		this.mInteger = pDataInputStream.readInt();
+		this.read(pDataInputStream);
 	}
 
 	// ===========================================================
@@ -43,6 +43,11 @@ public abstract class BaseIntegerClientMessage extends BaseClientMessage {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+
+	@Override
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.mInteger = pDataInputStream.readInt();
+	}
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
