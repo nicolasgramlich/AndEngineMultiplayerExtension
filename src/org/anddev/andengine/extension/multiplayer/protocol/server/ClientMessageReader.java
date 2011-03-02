@@ -1,18 +1,18 @@
 package org.anddev.andengine.extension.multiplayer.protocol.server;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionPingClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionPongClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.BaseMessageReader;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.MessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ClientMessageFlags;
 
 /**
  * @author Nicolas Gramlich
  * @since 15:26:29 - 18.09.2009
  */
-public class ClientMessageReader extends BaseMessageReader<BaseClientMessage> implements ClientMessageFlags, IClientMessageReader {
+public class ClientMessageReader extends MessageReader<IClientMessage> implements ClientMessageFlags, IClientMessageReader {
 	// ===========================================================
 	// Constants
 	// ===========================================================

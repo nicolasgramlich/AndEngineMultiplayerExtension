@@ -1,13 +1,14 @@
-package org.anddev.andengine.extension.multiplayer.protocol.adt.message.client;
+package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.BaseMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ClientMessageFlags;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author Nicolas Gramlich
- * @since 18:30:28 - 19.09.2009
+ * @since 22:26:21 - 22.06.2010
  */
-public abstract class BaseClientMessage extends BaseMessage implements ClientMessageFlags {
+public abstract class EmptyMessage extends Message {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -20,6 +21,14 @@ public abstract class BaseClientMessage extends BaseMessage implements ClientMes
 	// Constructors
 	// ===========================================================
 
+	public EmptyMessage() {
+		/* Nothing to store. */
+	}
+
+	public EmptyMessage(final DataInputStream pDataInputStream) throws IOException {
+		/* Nothing to read. */
+	}
+
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
@@ -29,20 +38,13 @@ public abstract class BaseClientMessage extends BaseMessage implements ClientMes
 	// ===========================================================
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
+	protected void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
+		/* Nothing to write. */
+	}
 
-		final BaseClientMessage other = (BaseClientMessage) obj;
-
-		return this.getFlag() == other.getFlag();
+	@Override
+	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
+		/* Nothing to append. */
 	}
 
 	// ===========================================================

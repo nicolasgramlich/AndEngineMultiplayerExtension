@@ -10,7 +10,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.util.MessagePool;
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class BaseMessageReader<T extends IMessage> {
+public abstract class MessageReader<T extends IMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================

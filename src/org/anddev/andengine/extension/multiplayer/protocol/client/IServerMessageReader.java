@@ -3,7 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.client;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 
 /**
  * @author Nicolas Gramlich
@@ -18,7 +18,7 @@ public interface IServerMessageReader {
 	// Methods
 	// ===========================================================
 
-	public void registerMessage(final short pFlag, final Class<? extends BaseServerMessage> pServerMessageClass);
-	public BaseServerMessage readMessage(final DataInputStream pDataInputStream) throws IOException;
-	public void recycleMessage(final BaseServerMessage pBaseServerMessage) throws IOException;
+	public void registerMessage(final short pFlag, final Class<? extends IServerMessage> pServerMessageClass);
+	public IServerMessage readMessage(final DataInputStream pDataInputStream) throws IOException;
+	public void recycleMessage(final IServerMessage pIServerMessage) throws IOException;
 }

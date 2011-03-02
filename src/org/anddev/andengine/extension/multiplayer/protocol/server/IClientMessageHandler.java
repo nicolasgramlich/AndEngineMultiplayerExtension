@@ -2,7 +2,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.server;
 
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionPingClientMessage;
@@ -26,7 +26,7 @@ public interface IClientMessageHandler {
 	// Methods
 	// ===========================================================
 
-	public void onHandleMessage(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException;
+	public void onHandleMessage(final ClientConnection pClientConnection, final IClientMessage pClientMessage) throws IOException;
 
 	// ===========================================================
 	// Inner and Anonymous Classes
@@ -79,7 +79,7 @@ public interface IClientMessageHandler {
 		// ===========================================================
 
 		@Override
-		public void onHandleMessage(final ClientConnection pClientConnection, final BaseClientMessage pClientMessage) throws IOException {
+		public void onHandleMessage(final ClientConnection pClientConnection, final IClientMessage pClientMessage) throws IOException {
 			switch(pClientMessage.getFlag()){
 				case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
 					this.onHandleConnectionEstablishClientMessage(pClientConnection, (ConnectionEstablishClientMessage)pClientMessage);

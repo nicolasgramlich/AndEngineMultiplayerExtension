@@ -6,9 +6,9 @@ import java.io.IOException;
 
 /**
  * @author Nicolas Gramlich
- * @since 15:27:13 - 18.09.2009
+ * @since 13:49:25 - 21.09.2009
  */
-public abstract class BaseMessage implements IMessage {
+public abstract class StringMessage extends Message {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -17,74 +17,67 @@ public abstract class BaseMessage implements IMessage {
 	// Fields
 	// ===========================================================
 
+	protected String mString;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
+	public StringMessage(final String pString) {
+		this.mString = pString;
+	}
+
+	public StringMessage(final DataInputStream pDataInputStream) throws IOException {
+		this.read(pDataInputStream);
+	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
 
+	public String getString() {
+		return this.mString;
+	}
+
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	public abstract short getFlag();
-
-	protected abstract void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException;
-	protected abstract void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException;
-
-	/**
-	 * Append all data of this {@link BaseMessage} to the {@link StringBuilder}.
-	 * @param pStringBuilder
-	 */
-	protected abstract void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder);
+	@Override
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.mString = pDataInputStream.readUTF();
+	}
 
 	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
+	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
+		pStringBuilder.append(", getString()=").append('\"').append(this.getString()).append('\"');
+	}
 
-		sb.append(this.getClass().getSimpleName())
-		.append("[getFlag()=").append(this.getFlag());
-
-		this.onAppendTransmissionDataForToString(sb);
-
-		sb.append("]");
-
-		return sb.toString();
+	@Override
+	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
+		pDataOutputStream.writeUTF(this.getString());
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (this == obj) {
+		if(this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if(obj == null) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
+		if(this.getClass() != obj.getClass()) {
 			return false;
 		}
 
-		final BaseMessage other = (BaseMessage) obj;
+		final StringMessage other = (StringMessage) obj;
 
-		return this.getFlag() == other.getFlag();
+		return this.getFlag() == other.getFlag() && this.getString() == other.getString();
 	}
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
-
-	@Override
-	public void transmit(final DataOutputStream pDataOutputStream) throws IOException {
-		pDataOutputStream.writeShort(this.getFlag());
-		this.onWriteTransmissionData(pDataOutputStream);
-	}
-	
-	@Override
-	public void read(final DataInputStream pDataInputStream) throws IOException {
-		this.onReadTransmissionData(pDataInputStream);
-	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes

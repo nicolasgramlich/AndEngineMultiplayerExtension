@@ -5,8 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientMessageReader.DefaultClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
@@ -61,7 +61,7 @@ public class ClientConnection extends Connection {
 
 	@Override
 	protected void read(final DataInputStream pDataInputStream) throws IOException {
-		final BaseClientMessage clientMessage = this.mClientMessageReader.readMessage(pDataInputStream);
+		final IClientMessage clientMessage = this.mClientMessageReader.readMessage(pDataInputStream);
 		this.mClientMessageHandler.onHandleMessage(this, clientMessage);
 		this.mClientMessageReader.recycleMessage(clientMessage);
 	}
@@ -79,11 +79,11 @@ public class ClientConnection extends Connection {
 	// Methods
 	// ===========================================================
 
-	public void registerClientMessage(final short pFlag, final Class<? extends BaseClientMessage> pClientMessageClass) {
+	public void registerClientMessage(final short pFlag, final Class<? extends IClientMessage> pClientMessageClass) {
 		this.mClientMessageReader.registerMessage(pFlag, pClientMessageClass);
 	}
 
-	public void sendServerMessage(final BaseServerMessage pServerMessage) throws IOException {
+	public void sendServerMessage(final IServerMessage pServerMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.getDataOutputStream();
 		pServerMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();

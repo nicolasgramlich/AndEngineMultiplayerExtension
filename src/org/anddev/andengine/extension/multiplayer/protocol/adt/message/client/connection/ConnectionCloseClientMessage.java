@@ -4,13 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.Message;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 
 /**
  * @author Nicolas Gramlich
  * @since 12:11:38 - 02.10.2009
  */
-public class ConnectionCloseClientMessage extends BaseClientMessage {
+public class ConnectionCloseClientMessage extends Message implements IClientMessage {
 	// ===========================================================
 	// Constants
 	// ===========================================================

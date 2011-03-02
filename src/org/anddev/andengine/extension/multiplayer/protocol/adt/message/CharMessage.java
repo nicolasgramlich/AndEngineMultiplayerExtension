@@ -1,15 +1,14 @@
-package org.anddev.andengine.extension.multiplayer.protocol.adt.message.client;
+package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-
 /**
  * @author Nicolas Gramlich
- * @since 13:49:25 - 21.09.2009
+ * @since 13:38:26 - 19.09.2009
  */
-public abstract class BaseStringClientMessage extends BaseClientMessage {
+public abstract class CharMessage extends Message {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -18,17 +17,17 @@ public abstract class BaseStringClientMessage extends BaseClientMessage {
 	// Fields
 	// ===========================================================
 
-	protected String mString;
+	protected char mCharacter;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public BaseStringClientMessage(final String pString) {
-		this.mString = pString;
+	public CharMessage(final char pCharacter) {
+		this.mCharacter = pCharacter;
 	}
 
-	public BaseStringClientMessage(final DataInputStream pDataInputStream) throws IOException {
+	public CharMessage(final DataInputStream pDataInputStream) throws IOException {
 		this.read(pDataInputStream);
 	}
 
@@ -36,8 +35,8 @@ public abstract class BaseStringClientMessage extends BaseClientMessage {
 	// Getter & Setter
 	// ===========================================================
 
-	public String getString() {
-		return this.mString;
+	public char getCharacter() {
+		return this.mCharacter;
 	}
 
 	// ===========================================================
@@ -46,37 +45,35 @@ public abstract class BaseStringClientMessage extends BaseClientMessage {
 
 	@Override
 	public void read(final DataInputStream pDataInputStream) throws IOException {
-		this.mString = pDataInputStream.readUTF();
+		this.mCharacter = pDataInputStream.readChar();
 	}
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
-		pStringBuilder.append(", getString()=").append('\"').append(this.getString()).append('\"');
+		pStringBuilder.append(", getCharacter()=").append('\'').append(this.getCharacter()).append('\'');
 	}
 
 	@Override
 	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-		pDataOutputStream.writeUTF(this.getString());
+		pDataOutputStream.writeChar(this.getCharacter());
 	}
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (this == obj) {
+		if(this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if(obj == null) {
 			return false;
 		}
-		if (this.getClass() != obj.getClass()) {
+		if(this.getClass() != obj.getClass()) {
 			return false;
 		}
 
-		final BaseStringClientMessage other = (BaseStringClientMessage) obj;
+		final CharMessage other = (CharMessage) obj;
 
-		return this.getFlag() == other.getFlag()
-		&& this.getString() == other.getString();
+		return this.getFlag() == other.getFlag() && this.getCharacter() == other.getCharacter();
 	}
-
 
 	// ===========================================================
 	// Methods

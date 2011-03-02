@@ -3,7 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.client;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionPongClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionAcceptedServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPingServerMessage;
@@ -24,7 +24,7 @@ public interface IServerMessageHandler {
 	// Methods
 	// ===========================================================
 
-	public void onHandleMessage(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException;
+	public void onHandleMessage(final ServerConnection pServerConnection, final IServerMessage pServerMessage) throws IOException;
 
 	// ===========================================================
 	// Inner and Anonymous Classes
@@ -75,7 +75,7 @@ public interface IServerMessageHandler {
 		// ===========================================================
 
 		@Override
-		public void onHandleMessage(final ServerConnection pServerConnection, final BaseServerMessage pServerMessage) throws IOException {
+		public void onHandleMessage(final ServerConnection pServerConnection, final IServerMessage pServerMessage) throws IOException {
 			switch(pServerMessage.getFlag()){
 				case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:
 					this.onHandleConnectionAcceptedServerMessage(pServerConnection, (ConnectionAcceptedServerMessage)pServerMessage);

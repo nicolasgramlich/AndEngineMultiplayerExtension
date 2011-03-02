@@ -1,13 +1,14 @@
-package org.anddev.andengine.extension.multiplayer.protocol.adt.message.server;
+package org.anddev.andengine.extension.multiplayer.protocol.adt.message;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.BaseMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ServerMessageFlags;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author Nicolas Gramlich
- * @since 18:15:42 - 18.09.2009
+ * @since 13:38:26 - 19.09.2009
  */
-public abstract class BaseServerMessage extends BaseMessage implements ServerMessageFlags {
+public abstract class IntMessage extends Message {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -16,35 +17,63 @@ public abstract class BaseServerMessage extends BaseMessage implements ServerMes
 	// Fields
 	// ===========================================================
 
+	protected int mInt;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
+	public IntMessage(final int pInt) {
+		this.mInt = pInt;
+	}
+
+	public IntMessage(final DataInputStream pDataInputStream) throws IOException {
+		this.read(pDataInputStream);
+	}
+
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
+
+	public int getInt() {
+		return this.mInt;
+	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (this.getClass() != obj.getClass()) {
-			return false;
-		}
-
-		final BaseServerMessage other = (BaseServerMessage) obj;
-
-		return this.getFlag() == other.getFlag();
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		this.mInt = pDataInputStream.readInt();
 	}
 
+	@Override
+	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
+		pStringBuilder.append(", getInt()=").append(this.getInt());
+	}
+
+	@Override
+	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
+		pDataOutputStream.writeInt(this.getInt());
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if(this == obj) {
+			return true;
+		}
+		if(obj == null) {
+			return false;
+		}
+		if(this.getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final IntMessage other = (IntMessage) obj;
+
+		return this.getFlag() == other.getFlag() && this.getInt() == other.getInt();
+	}
 
 	// ===========================================================
 	// Methods

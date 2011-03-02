@@ -5,10 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.BaseClientMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageHandler.DefaultServerMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.client.ServerMessageReader.DefaultServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
@@ -67,7 +67,7 @@ public class ServerConnection extends Connection {
 
 	@Override
 	protected void read(final DataInputStream pDataInputStream) throws IOException {
-		final BaseServerMessage serverMessage = this.mServerMessageReader.readMessage(pDataInputStream);
+		final IServerMessage serverMessage = this.mServerMessageReader.readMessage(pDataInputStream);
 		this.mServerMessageHandler.onHandleMessage(this, serverMessage);
 		this.mServerMessageReader.recycleMessage(serverMessage);
 	}
@@ -85,11 +85,11 @@ public class ServerConnection extends Connection {
 	// Methods
 	// ===========================================================
 
-	public void registerServerMessage(final short pFlag, final Class<? extends BaseServerMessage> pServerMessageClass) {
+	public void registerServerMessage(final short pFlag, final Class<? extends IServerMessage> pServerMessageClass) {
 		this.mServerMessageReader.registerMessage(pFlag, pServerMessageClass);
 	}
 
-	public void sendClientMessage(final BaseClientMessage pClientMessage) throws IOException {
+	public void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.getDataOutputStream();
 		pClientMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();

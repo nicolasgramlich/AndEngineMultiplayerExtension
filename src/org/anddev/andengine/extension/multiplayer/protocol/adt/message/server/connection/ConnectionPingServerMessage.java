@@ -4,13 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.BaseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.Message;
+import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 
 /**
  * @author Nicolas Gramlich
  * @since 17:56:49 - 21.09.2009
  */
-public class ConnectionPingServerMessage extends BaseServerMessage {
+public class ConnectionPingServerMessage extends Message implements IServerMessage {
 	// ===========================================================
 	// Constants
 	// ===========================================================
