@@ -3,7 +3,6 @@ package org.anddev.andengine.extension.multiplayer.protocol.client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
@@ -12,13 +11,15 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IS
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageHandler.DefaultServerMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.client.ServerMessageReader.DefaultServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.IConnectionListener;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class ServerConnection extends Connection {
+public class ServerConnector<T extends Connection> extends Connector<T> implements IConnectionListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -28,18 +29,18 @@ public class ServerConnection extends Connection {
 	// ===========================================================
 
 	private final IServerMessageReader mServerMessageReader;
-	private final IServerMessageHandler mServerMessageHandler;
+	private final IServerMessageHandler<T> mServerMessageHandler;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public ServerConnection(final Socket pSocket, final IServerConnectionListener pServerConnectionListener, final DefaultServerMessageHandler pServerMessageHandler) throws IOException {
-		this(pSocket, pServerConnectionListener, new DefaultServerMessageReader(), pServerMessageHandler);
+	public ServerConnector(final T pConnection, final DefaultServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<Connector<T>> pServerConnectorListener) throws IOException {
+		this(pConnection, new DefaultServerMessageReader(), pServerMessageHandler, pServerConnectorListener);
 	}
 
-	public ServerConnection(final Socket pSocket, final IServerConnectionListener pServerConnectionListener, final IServerMessageReader pServerMessageReader, final IServerMessageHandler pServerMessageHandler) throws IOException {
-		super(pSocket, pServerConnectionListener);
+	public ServerConnector(final T pConnection, final IServerMessageReader pServerMessageReader, final IServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<Connector<T>> pServerConnectorListener) throws IOException {
+		super(pConnection, pServerConnectorListener);
 		this.mServerMessageReader = pServerMessageReader;
 		this.mServerMessageHandler = pServerMessageHandler;
 
@@ -57,7 +58,7 @@ public class ServerConnection extends Connection {
 		return this.mServerMessageReader;
 	}
 
-	public IServerMessageHandler getServerMessageHandler() {
+	public IServerMessageHandler<T> getServerMessageHandler() {
 		return this.mServerMessageHandler;
 	}
 
@@ -65,20 +66,26 @@ public class ServerConnection extends Connection {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
+
 	@Override
-	protected void read(final DataInputStream pDataInputStream) throws IOException {
-		final IServerMessage serverMessage = this.mServerMessageReader.readMessage(pDataInputStream);
-		this.mServerMessageHandler.onHandleMessage(this, serverMessage);
-		this.mServerMessageReader.recycleMessage(serverMessage);
+	public void onConnected(final Connection pConnection) {
+
 	}
 
 	@Override
-	protected void onConnectionClosed() {
+	public void onDisconnected(final Connection pConnection) {
 		try {
 			this.sendClientMessage(new ConnectionCloseClientMessage());
 		} catch (final Throwable pThrowable) {
 			Debug.e(pThrowable);
 		}
+	}
+
+	@Override
+	public void read(final DataInputStream pDataInputStream) throws IOException {
+		final IServerMessage serverMessage = this.mServerMessageReader.readMessage(pDataInputStream);
+		this.mServerMessageHandler.onHandleMessage(this, serverMessage);
+		this.mServerMessageReader.recycleMessage(serverMessage);
 	}
 
 	// ===========================================================
@@ -90,7 +97,7 @@ public class ServerConnection extends Connection {
 	}
 
 	public void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
-		final DataOutputStream dataOutputStream = this.getDataOutputStream();
+		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
 		pClientMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();
 	}
@@ -98,4 +105,30 @@ public class ServerConnection extends Connection {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	public static interface IServerConnectorListener<T extends Connector<? extends Connection>> extends IConnectorListener<T> {
+		// ===========================================================
+		// Final Fields
+		// ===========================================================
+
+		// ===========================================================
+		// Methods
+		// ===========================================================
+
+		// ===========================================================
+		// Inner and Anonymous Classes
+		// ===========================================================
+
+		public static class DefaultServerConnectionListener<T extends Connector<? extends Connection>> implements IServerConnectorListener<T> {
+			@Override
+			public void onConnected(final T pConnector) {
+				Debug.d("Accepted Server-Connection from: '" + pConnector.toString() + "'");
+			}
+
+			@Override
+			public void onDisconnected(final T pConnector) {
+				Debug.d("Closed Server-Connection from: '" + pConnector.toString() + "'");
+			}
+		}
+	}
 }

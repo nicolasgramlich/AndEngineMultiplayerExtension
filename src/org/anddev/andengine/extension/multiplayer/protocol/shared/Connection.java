@@ -4,11 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketException;
 
 import org.anddev.andengine.util.Debug;
-import org.anddev.andengine.util.SocketUtils;
 
 /**
  * @author Nicolas Gramlich
@@ -23,38 +21,32 @@ public abstract class Connection extends Thread {
 	// Fields
 	// ===========================================================
 
-	private final Socket mSocket;
-	private final DataInputStream mDataInputStream;
-	private final DataOutputStream mDataOutputStream;
+	protected final DataInputStream mDataInputStream;
+	protected final DataOutputStream mDataOutputStream;
 
-	private final IConnectionListener mConnectionListener;
-	private boolean mConnectionCloses = false;
+	protected final IConnectionListener mConnectionListener;
+	protected boolean mClosed = false;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Connection(final Socket pSocket, final IConnectionListener pConnectionListener) throws IOException {
-		this.mSocket = pSocket;
+	public Connection(final DataInputStream pDataInputStream, final DataOutputStream pDataOutputStream, final IConnectionListener pConnectionListener) throws IOException {
+		this.mDataInputStream = pDataInputStream;
+		this.mDataOutputStream = pDataOutputStream;
+		
 		this.mConnectionListener = pConnectionListener;
-
-		this.mDataInputStream = new DataInputStream(pSocket.getInputStream());
-		this.mDataOutputStream = new DataOutputStream(pSocket.getOutputStream());
 	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
 
-	public Socket getSocket() {
-		return this.mSocket;
-	}
-
-	protected DataOutputStream getDataOutputStream() {
+	public DataOutputStream getDataOutputStream() {
 		return this.mDataOutputStream;
 	}
 
-	protected DataInputStream getDataInputStream() {
+	public DataInputStream getDataInputStream() {
 		return this.mDataInputStream;
 	}
 
@@ -70,9 +62,6 @@ public abstract class Connection extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void read(final DataInputStream pDataInputStream) throws IOException;
-	protected abstract void onConnectionClosed();
-
 	@Override
 	public void run() {
 		if(this.mConnectionListener != null) {
@@ -83,7 +72,7 @@ public abstract class Connection extends Thread {
 		try {
 			while(!this.isInterrupted()) {
 				try {
-					this.read(this.mDataInputStream);
+					this.mConnectionListener.read(this.mDataInputStream);
 				} catch (final SocketException se) {
 					this.interrupt();
 				} catch (final EOFException eof) {
@@ -95,36 +84,46 @@ public abstract class Connection extends Thread {
 		} catch (final Throwable pThrowable) {
 			Debug.e(pThrowable);
 		} finally {
-			this.closeConnection();
+			this.close();
 		}
-	}
-
-	@Override
-	public void interrupt() {
-		this.closeConnection();
-
-		super.interrupt();
 	}
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	
+	public boolean close() {
+		this.interrupt();
+		
+		if(!this.mClosed) {
+			this.mClosed = true;
 
-	public void closeConnection() {
-		if(!this.mConnectionCloses && this.mSocket != null && !this.mSocket.isClosed()) {
-			this.mConnectionCloses = true;
-			this.onConnectionClosed();
-		}
-
-		/* Ensure Socket is really closed. */
-		SocketUtils.closeSocket(this.mSocket);
-
-		if(this.mConnectionListener != null) {
-			this.mConnectionListener.onDisconnected(this);
+			if(this.mConnectionListener != null) {
+				this.mConnectionListener.onDisconnected(this);
+			}
+			
+			return true;
+		} else {
+			return false;
 		}
 	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	public static interface IConnectionListener {
+		// ===========================================================
+		// Final Fields
+		// ===========================================================
+
+		// ===========================================================
+		// Methods
+		// ===========================================================
+		
+		public void onConnected(final Connection pConnection); 
+		public void onDisconnected(final Connection pConnection);
+		
+		public void read(final DataInputStream pDataInputStream) throws IOException;
+	}
 }

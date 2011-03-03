@@ -9,13 +9,14 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.co
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPingServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPongServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionRefusedServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ServerMessageFlags;
 
 /**
  * @author Nicolas Gramlich
  * @since 21:01:19 - 19.09.2009
  */
-public interface IServerMessageHandler {
+public interface IServerMessageHandler<T extends Connection> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -24,13 +25,13 @@ public interface IServerMessageHandler {
 	// Methods
 	// ===========================================================
 
-	public void onHandleMessage(final ServerConnection pServerConnection, final IServerMessage pServerMessage) throws IOException;
+	public void onHandleMessage(final ServerConnector<T> pServerConnector, final IServerMessage pServerMessage) throws IOException;
 
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static abstract class DefaultServerMessageHandler implements ServerMessageFlags, IServerMessageHandler {
+	public static abstract class DefaultServerMessageHandler<T extends Connection> implements ServerMessageFlags, IServerMessageHandler<T> {
 		// ===========================================================
 		// Constants
 		// ===========================================================
@@ -52,21 +53,21 @@ public interface IServerMessageHandler {
 		// ===========================================================
 
 		/* Connection-Handlers */
-		protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnection pServerConnection, final ConnectionRefusedServerMessage pConnectionRefusedServerMessage);
+		protected abstract void onHandleConnectionRefusedServerMessage(final ServerConnector<T> pServerConnector, final ConnectionRefusedServerMessage pConnectionRefusedServerMessage);
 
-		protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnection pServerConnection, final ConnectionAcceptedServerMessage pConnectionAcceptedServerMessage);
+		protected abstract void onHandleConnectionAcceptedServerMessage(final ServerConnector<T> pServerConnector, final ConnectionAcceptedServerMessage pConnectionAcceptedServerMessage);
 
-		protected void onHandleConnectionPingServerMessage(final ServerConnection pServerConnection, final ConnectionPingServerMessage pConnectionPingServerMessage) throws IOException {
-			pServerConnection.sendClientMessage(new ConnectionPongClientMessage(pConnectionPingServerMessage));
+		protected void onHandleConnectionPingServerMessage(final ServerConnector<T> pServerConnector, final ConnectionPingServerMessage pConnectionPingServerMessage) throws IOException {
+			pServerConnector.sendClientMessage(new ConnectionPongClientMessage(pConnectionPingServerMessage));
 		}
 
-		protected void onHandleConnectionPongServerMessage(final ServerConnection pServerConnection, final ConnectionPongServerMessage pConnectionPongServerMessage) {
+		protected void onHandleConnectionPongServerMessage(final ServerConnector<T> pServerConnector, final ConnectionPongServerMessage pConnectionPongServerMessage) {
 
 		}
 
-		protected void onHandleConnectionCloseServerMessage(final ServerConnection pServerConnection, final ConnectionCloseServerMessage pConnectionCloseServerMessage) {
-			if(pServerConnection.hasConnectionListener()){
-				pServerConnection.getConnectionListener().onDisconnected(pServerConnection);
+		protected void onHandleConnectionCloseServerMessage(final ServerConnector<T> pServerConnector, final ConnectionCloseServerMessage pConnectionCloseServerMessage) {
+			if(pServerConnector.hasConnectorListener()){
+				pServerConnector.getConnectorListener().onDisconnected(pServerConnector);
 			}
 		}
 
@@ -75,22 +76,22 @@ public interface IServerMessageHandler {
 		// ===========================================================
 
 		@Override
-		public void onHandleMessage(final ServerConnection pServerConnection, final IServerMessage pServerMessage) throws IOException {
+		public void onHandleMessage(final ServerConnector<T> pServerConnector, final IServerMessage pServerMessage) throws IOException {
 			switch(pServerMessage.getFlag()){
 				case FLAG_MESSAGE_SERVER_CONNECTION_ACCEPTED:
-					this.onHandleConnectionAcceptedServerMessage(pServerConnection, (ConnectionAcceptedServerMessage)pServerMessage);
+					this.onHandleConnectionAcceptedServerMessage(pServerConnector, (ConnectionAcceptedServerMessage)pServerMessage);
 					break;
 				case FLAG_MESSAGE_SERVER_CONNECTION_REFUSED:
-					this.onHandleConnectionRefusedServerMessage(pServerConnection, (ConnectionRefusedServerMessage)pServerMessage);
+					this.onHandleConnectionRefusedServerMessage(pServerConnector, (ConnectionRefusedServerMessage)pServerMessage);
 					break;
 				case FLAG_MESSAGE_SERVER_CONNECTION_CLOSE:
-					this.onHandleConnectionCloseServerMessage(pServerConnection, (ConnectionCloseServerMessage)pServerMessage);
+					this.onHandleConnectionCloseServerMessage(pServerConnector, (ConnectionCloseServerMessage)pServerMessage);
 					break;
 				case FLAG_MESSAGE_SERVER_CONNECTION_PING:
-					this.onHandleConnectionPingServerMessage(pServerConnection, (ConnectionPingServerMessage)pServerMessage);
+					this.onHandleConnectionPingServerMessage(pServerConnector, (ConnectionPingServerMessage)pServerMessage);
 					break;
 				case FLAG_MESSAGE_SERVER_CONNECTION_PONG:
-					this.onHandleConnectionPongServerMessage(pServerConnection, (ConnectionPongServerMessage)pServerMessage);
+					this.onHandleConnectionPongServerMessage(pServerConnector, (ConnectionPongServerMessage)pServerMessage);
 					break;
 			}
 		}

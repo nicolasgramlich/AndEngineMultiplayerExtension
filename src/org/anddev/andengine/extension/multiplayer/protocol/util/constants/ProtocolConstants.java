@@ -9,8 +9,6 @@ public interface ProtocolConstants {
 	// Final Fields
 	// ===========================================================
 
-	public static final int SERVER_DEFAULT_PORT = 4444;
-
 	public static final int PROTOCOL_VERSION = 1;
 
 	// ===========================================================

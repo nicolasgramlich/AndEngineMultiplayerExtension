@@ -10,6 +10,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.co
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionAcceptedServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionPongServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionRefusedServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ClientMessageFlags;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 
@@ -17,7 +18,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.util.constants.Protoc
  * @author Nicolas Gramlich
  * @since 21:02:16 - 19.09.2009
  */
-public interface IClientMessageHandler {
+public interface IClientMessageHandler<T extends Connection> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -26,13 +27,13 @@ public interface IClientMessageHandler {
 	// Methods
 	// ===========================================================
 
-	public void onHandleMessage(final ClientConnection pClientConnection, final IClientMessage pClientMessage) throws IOException;
+	public void onHandleMessage(final ClientConnector<T> pClientConnector, final IClientMessage pClientMessage) throws IOException;
 
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 	
-	public static class DefaultClientMessageHandler implements ClientMessageFlags, IClientMessageHandler {
+	public static class DefaultClientMessageHandler<T extends Connection> implements ClientMessageFlags, IClientMessageHandler<T> {
 		// ===========================================================
 		// Constants
 		// ===========================================================
@@ -54,24 +55,24 @@ public interface IClientMessageHandler {
 		// ===========================================================
 
 		/* Connection-Handlers */
-		protected void onHandleConnectionEstablishClientMessage(final ClientConnection pClientConnection, final ConnectionEstablishClientMessage pClientMessage) throws IOException {
+		protected void onHandleConnectionEstablishClientMessage(final ClientConnector<T> pClientConnector, final ConnectionEstablishClientMessage pClientMessage) throws IOException {
 			if(pClientMessage.getProtocolVersion() == ProtocolConstants.PROTOCOL_VERSION){
-				pClientConnection.sendServerMessage(new ConnectionAcceptedServerMessage());
+				pClientConnector.sendServerMessage(new ConnectionAcceptedServerMessage());
 			}else{
-				pClientConnection.sendServerMessage(new ConnectionRefusedServerMessage());
+				pClientConnector.sendServerMessage(new ConnectionRefusedServerMessage());
 			}
 		}
 
-		protected void onHandleConnectionPingClientMessage(final ClientConnection pClientConnection, final ConnectionPingClientMessage pClientMessage) throws IOException {
-			pClientConnection.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
+		protected void onHandleConnectionPingClientMessage(final ClientConnector<T> pClientConnector, final ConnectionPingClientMessage pClientMessage) throws IOException {
+			pClientConnector.sendServerMessage(new ConnectionPongServerMessage(pClientMessage));
 		}
 
-		protected void onHandleConnectionPongClientMessage(final ClientConnection pClientConnection, final ConnectionPongClientMessage pClientMessage) {
+		protected void onHandleConnectionPongClientMessage(final ClientConnector<T> pClientConnector, final ConnectionPongClientMessage pClientMessage) {
 
 		}
 
-		protected void onHandleConnectionCloseClientMessage(final ClientConnection pClientConnection, final ConnectionCloseClientMessage pClientMessage) throws IOException {
-			pClientConnection.closeConnection();
+		protected void onHandleConnectionCloseClientMessage(final ClientConnector<T> pClientConnector, final ConnectionCloseClientMessage pClientMessage) throws IOException {
+			pClientConnector.getConnection().close();
 		}
 
 		// ===========================================================
@@ -79,19 +80,19 @@ public interface IClientMessageHandler {
 		// ===========================================================
 
 		@Override
-		public void onHandleMessage(final ClientConnection pClientConnection, final IClientMessage pClientMessage) throws IOException {
+		public void onHandleMessage(final ClientConnector<T> pClientConnector, final IClientMessage pClientMessage) throws IOException {
 			switch(pClientMessage.getFlag()){
 				case FLAG_MESSAGE_CLIENT_CONNECTION_ESTABLISH:
-					this.onHandleConnectionEstablishClientMessage(pClientConnection, (ConnectionEstablishClientMessage)pClientMessage);
+					this.onHandleConnectionEstablishClientMessage(pClientConnector, (ConnectionEstablishClientMessage)pClientMessage);
 					break;
 				case FLAG_MESSAGE_CLIENT_CONNECTION_CLOSE:
-					this.onHandleConnectionCloseClientMessage(pClientConnection, (ConnectionCloseClientMessage)pClientMessage);
+					this.onHandleConnectionCloseClientMessage(pClientConnector, (ConnectionCloseClientMessage)pClientMessage);
 					break;
 				case FLAG_MESSAGE_CLIENT_CONNECTION_PING:
-					this.onHandleConnectionPingClientMessage(pClientConnection, (ConnectionPingClientMessage)pClientMessage);
+					this.onHandleConnectionPingClientMessage(pClientConnector, (ConnectionPingClientMessage)pClientMessage);
 					break;
 				case FLAG_MESSAGE_CLIENT_CONNECTION_PONG:
-					this.onHandleConnectionPongClientMessage(pClientConnection, (ConnectionPongClientMessage)pClientMessage);
+					this.onHandleConnectionPongClientMessage(pClientConnector, (ConnectionPongClientMessage)pClientMessage);
 					break;
 			}
 		}

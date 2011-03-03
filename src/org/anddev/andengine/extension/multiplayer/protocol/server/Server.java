@@ -1,16 +1,12 @@
 package org.anddev.andengine.extension.multiplayer.protocol.server;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-import javax.net.ServerSocketFactory;
-
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection.IClientConnectionListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnection.IClientConnectionListener.DefaultClientConnectionListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
@@ -19,7 +15,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<T extends ClientConnection> extends Thread implements ProtocolConstants {
+public abstract class Server<T extends ClientConnector<? extends Connection>> extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -28,62 +24,21 @@ public abstract class Server<T extends ClientConnection> extends Thread implemen
 	// Fields
 	// ===========================================================
 
-	private final int mServerPort;
-	private ServerSocket mServerSocket;
+	protected final IServerStateListener mServerStateListener;
 
-	protected final ArrayList<T> mClientConnections = new ArrayList<T>();
-	private final IClientConnectionListener mClientConnectionListener;
-	private final IServerStateListener mServerStateListener;
 	private boolean mRunning = false;
 	private boolean mTerminated = false;
+
+	protected final ArrayList<T> mClientConnectors = new ArrayList<T>();
+	protected final IClientConnectorListener<T> mClientConnectorListener;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	/**
-	 * Uses {@link ProtocolConstants#SERVER_DEFAULT_PORT}
-	 */
-	public Server() {
-		this(SERVER_DEFAULT_PORT);
-	}
-
-	public Server(final int pPort) {
-		this(pPort, new DefaultClientConnectionListener());
-	}
-
-	public Server(final IClientConnectionListener pClientConnectionListener) {
-		this(SERVER_DEFAULT_PORT, pClientConnectionListener);
-	}
-
-	public Server(final IServerStateListener pServerStateListener) {
-		this(SERVER_DEFAULT_PORT, pServerStateListener);
-	}
-
-	public Server(final int pPort, final IClientConnectionListener pClientConnectionListener) {
-		this(pPort, pClientConnectionListener, new IServerStateListener.DefaultServerStateListener());
-	}
-
-	public Server(final int pPort, final IServerStateListener pServerStateListener) {
-		this(pPort, new DefaultClientConnectionListener(), pServerStateListener);
-	}
-
-	public Server(final IClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
-		this(SERVER_DEFAULT_PORT, pClientConnectionListener, pServerStateListener);
-	}
-
-	public Server(final int pPort, final IClientConnectionListener pClientConnectionListener, final IServerStateListener pServerStateListener) {
+	public Server(final IClientConnectorListener<T> pClientConnectorListener, final IServerStateListener pServerStateListener) {
 		this.mServerStateListener = pServerStateListener;
-
-		if (pPort < 0) {
-			final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("Illegal port '< 0'.");
-			this.mServerStateListener.onException(illegalArgumentException);
-			throw illegalArgumentException;
-		}else{
-			this.mServerPort = pPort;
-		}
-
-		this.mClientConnectionListener = pClientConnectionListener;
+		this.mClientConnectorListener = pClientConnectorListener;
 
 		this.initName();
 	}
@@ -108,31 +63,27 @@ public abstract class Server<T extends ClientConnection> extends Thread implemen
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract T newClientConnection(final Socket pClientSocket, final IClientConnectionListener pClientConnectionListener) throws Exception;
+	protected abstract void prepare() throws IOException;
+	protected abstract T acceptClientConnector() throws IOException;
 
 	@Override
 	public void run() {
 		this.mRunning = true;
 		this.mTerminated = false;
-		this.mServerStateListener.onStarted(this.mServerPort);
+		this.mServerStateListener.onStarted();
 		try {
-			/* The Thread accepting the Sockets may run at minor Priority. */
-			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-			this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mServerPort);
+//			Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // TODO What ThreadPriority makes sense here?
+			this.prepare();
 
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted()) {
 				try {
-					/* Wait for an incoming connection. */
-					final Socket clientSocket = this.mServerSocket.accept();
+					final T clientConnector = this.acceptClientConnector();
+					this.mClientConnectors.add(clientConnector);
 
-					/* Spawn a new ClientConnection, which send and receive data to and from the client. */
-					final T clientConnection = this.newClientConnection(clientSocket, this.mClientConnectionListener);
-					this.mClientConnections.add(clientConnection);
-
-					/* Start the ClientConnection(-Thread) so it starts receiving commands. */
-					clientConnection.start();
-				}catch (final SocketException se){
+					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
+					clientConnector.start();
+				} catch (final SocketException se) {
 					if(!se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_CLOSED) && !se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_IS_CLOSED)) {
 						this.mServerStateListener.onException(se);
 					}
@@ -142,57 +93,52 @@ public abstract class Server<T extends ClientConnection> extends Thread implemen
 					this.mServerStateListener.onException(pThrowable);
 				}
 			}
+			
+			this.close();
 		} catch (final Throwable pThrowable) {
 			this.mServerStateListener.onException(pThrowable);
-		} finally {
-			this.mRunning = false;
-			this.mTerminated = true;
-			SocketUtils.closeSocket(this.mServerSocket);
-			this.mServerStateListener.onTerminated(this.mServerPort);
 		}
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		this.interrupt();
+		this.close();
 		super.finalize();
-	}
-
-	@Override
-	public void interrupt() {
-		try {
-			this.mTerminated = true;
-
-			super.interrupt();
-
-			/* First interrupt all Clients. */
-			final ArrayList<T> clientConnections = this.mClientConnections;
-			for(int i = 0; i < clientConnections.size(); i++){
-				clientConnections.get(i).interrupt();
-			}
-
-			clientConnections.clear();
-
-			Thread.sleep(1000);
-
-			SocketUtils.closeSocket(this.mServerSocket);
-			this.mRunning = false;
-		} catch (final Exception e) {
-			this.mServerStateListener.onException(e);
-		}
 	}
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
 
+	public void close() {
+		if(!this.mTerminated) {
+			super.interrupt();
+
+			this.mRunning = false;
+			this.mTerminated = true;
+
+			try {
+				/* First interrupt all Clients. */
+				final ArrayList<T> clientConnectors = this.mClientConnectors;
+				for(int i = 0; i < clientConnectors.size(); i++) {
+					clientConnectors.get(i).interrupt();
+				}
+				clientConnectors.clear();
+
+				this.mServerStateListener.onTerminated();
+			} catch (final Exception e) {
+				this.mServerStateListener.onException(e);
+			}
+		}
+	}
+
 	public void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
 		if(this.mRunning == true && this.mTerminated == false) {
-			final ArrayList<T> clientConnections = this.mClientConnections;
-			for(int i = 0; i < clientConnections.size(); i++) {
+			final ArrayList<T> clientConnectors = this.mClientConnectors;
+			for(int i = 0; i < clientConnectors.size(); i++) {
 				try {
-					clientConnections.get(i).sendServerMessage(pServerMessage);
-				} catch (IOException e) {
+					clientConnectors.get(i).sendServerMessage(pServerMessage);
+				} catch (final IOException e) {
 					this.mServerStateListener.onException(e);
 				}
 			}
@@ -204,17 +150,20 @@ public abstract class Server<T extends ClientConnection> extends Thread implemen
 	// ===========================================================
 
 	public static interface IServerStateListener {
-		public void onStarted(final int pPort);
-		public void onTerminated(final int pPort);
+		public void onStarted();
+		public void onTerminated();
 		public void onException(final Throwable pThrowable);
 
 		public static class DefaultServerStateListener implements IServerStateListener {
-			public void onStarted(final int pPort) {
-				Debug.d("Server listening on Port: " + pPort);
+			@Override
+			public void onStarted() {
+				Debug.d("Server started.");
 			}
-			public void onTerminated(final int pPort) {
-				Debug.d("Server terminated on Port: " + pPort);
+			@Override
+			public void onTerminated() {
+				Debug.d("Server terminated.");
 			}
+			@Override
 			public void onException(final Throwable pThrowable) {
 				Debug.e(pThrowable);
 			}
