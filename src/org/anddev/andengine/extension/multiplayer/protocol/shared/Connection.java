@@ -64,6 +64,8 @@ public abstract class Connection extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
+	protected abstract void onClosed();
+
 	@Override
 	public void run() {
 		if(this.mConnectionListener != null) {
@@ -90,24 +92,27 @@ public abstract class Connection extends Thread {
 			this.close();
 		}
 	}
+	
+    @Override
+    public void interrupt() {
+        this.close();
+
+        super.interrupt();
+    }
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
 
-	public boolean close() {
-		this.interrupt();
-
+	public void close() {
 		if(!this.mClosed) {
 			this.mClosed = true;
 
 			if(this.mConnectionListener != null) {
 				this.mConnectionListener.onDisconnected(this);
 			}
-
-			return true;
-		} else {
-			return false;
+			
+			this.onClosed();
 		}
 	}
 

@@ -1,7 +1,6 @@
 package org.anddev.andengine.extension.multiplayer.protocol.server;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -9,7 +8,6 @@ import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnecto
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
-import org.anddev.andengine.util.SocketUtils;
 
 /**
  * @author Nicolas Gramlich
@@ -27,7 +25,7 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 	protected final IServerStateListener mServerStateListener;
 
 	private boolean mRunning = false;
-	private boolean mTerminated = false;
+	private boolean mClosed = true;
 
 	protected final ArrayList<T> mClientConnectors = new ArrayList<T>();
 	protected final IClientConnectorListener<K> mClientConnectorListener;
@@ -56,24 +54,25 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 	}
 
 	public boolean isTerminated() {
-		return this.mTerminated ;
+		return this.mClosed ;
 	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void init() throws IOException;
+	protected abstract void onInit() throws IOException;
+	protected abstract void onClosed();
 	protected abstract T acceptClientConnector() throws IOException;
 
 	@Override
 	public void run() {
 		this.mRunning = true;
-		this.mTerminated = false;
+		this.mClosed = false;
 		this.mServerStateListener.onStarted();
 		try {
 			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
-			this.init();
+			this.onInit();
 
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted()) {
@@ -84,26 +83,27 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
 					clientConnector.getConnection().start();
-				} catch (final SocketException se) {
-					if(!se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_CLOSED) && !se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_IS_CLOSED)) {
-						this.mServerStateListener.onException(se);
-					}
-
-					break;
 				} catch (final Throwable pThrowable) {
 					this.mServerStateListener.onException(pThrowable);
 				}
 			}
-
-			this.close();
 		} catch (final Throwable pThrowable) {
 			this.mServerStateListener.onException(pThrowable);
+		} finally {
+			this.close();
 		}
 	}
+	
+    @Override
+    public void interrupt() {
+        this.close();
+
+        super.interrupt();
+    }
 
 	@Override
 	protected void finalize() throws Throwable {
-		this.close();
+		this.interrupt();
 		super.finalize();
 	}
 
@@ -112,12 +112,10 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 	// ===========================================================
 
 	public void close() {
-		if(!this.mTerminated) {
-			super.interrupt();
-
+		if(!this.mClosed) {
+			this.mClosed = true;
 			this.mRunning = false;
-			this.mTerminated = true;
-
+			
 			try {
 				/* First interrupt all Clients. */
 				final ArrayList<T> clientConnectors = this.mClientConnectors;
@@ -125,16 +123,20 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 					clientConnectors.get(i).getConnection().interrupt();
 				}
 				clientConnectors.clear();
+				
+                Thread.sleep(1000);
 
 				this.mServerStateListener.onTerminated();
 			} catch (final Exception e) {
 				this.mServerStateListener.onException(e);
 			}
+			
+			this.onClosed();
 		}
 	}
 
 	public void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
-		if(this.mRunning == true && this.mTerminated == false) {
+		if(this.mRunning && !this.mClosed) {
 			final ArrayList<T> clientConnectors = this.mClientConnectors;
 			for(int i = 0; i < clientConnectors.size(); i++) {
 				try {

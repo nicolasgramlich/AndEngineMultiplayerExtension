@@ -61,7 +61,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	protected abstract ClientConnector<BluetoothSocketConnection> newClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException;
 
 	@Override
-	protected void init() throws IOException {
+	protected void onInit() throws IOException {
 		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(mUUID));
 	}
 
@@ -75,9 +75,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	}
 
 	@Override
-	public void close() {
-		super.close();
-		
+	public void onClosed() {
 		try {
 			this.mBluetoothServerSocket.close(); // TODO Put to SocketUtils
 		} catch (IOException e) {

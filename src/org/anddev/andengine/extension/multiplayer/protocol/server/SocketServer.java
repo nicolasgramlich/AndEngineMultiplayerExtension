@@ -66,7 +66,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	protected abstract ClientConnector<SocketConnection> newClientConnector(final SocketConnection pSocketConnection) throws IOException;
 
 	@Override
-	protected void init() throws IOException {
+	protected void onInit() throws IOException {
 		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mServerPort);
 	}
 
@@ -80,9 +80,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	}
 	
 	@Override
-	public void close() {
-		super.close();
-
+	public void onClosed() {
 		SocketUtils.closeSocket(this.mServerSocket);
 	}
 

@@ -43,15 +43,11 @@ public class SocketConnection extends Connection {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-
+	
 	@Override
-	public boolean close() {
-		final boolean closed = super.close();
-		
+	protected void onClosed() {
 		/* Ensure Socket is really closed. */
 		SocketUtils.closeSocket(this.mSocket);
-		
-		return closed;
 	}
 
 	// ===========================================================

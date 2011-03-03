@@ -35,13 +35,14 @@ public class ServerConnector<T extends Connection> extends Connector<T> {
 	// ===========================================================
 
 	public ServerConnector(final T pConnection, final DefaultServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<T> pServerConnectorListener) throws IOException {
-		this(pConnection, new DefaultServerMessageReader(), pServerMessageHandler);
+		this(pConnection, new DefaultServerMessageReader(), pServerMessageHandler, pServerConnectorListener);
 	}
 
-	public ServerConnector(final T pConnection, final IServerMessageReader pServerMessageReader, final IServerMessageHandler<T> pServerMessageHandler) throws IOException {
+	public ServerConnector(final T pConnection, final IServerMessageReader pServerMessageReader, final IServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<T> pServerConnectorListener) throws IOException {
 		super(pConnection);
 		this.mServerMessageReader = pServerMessageReader;
 		this.mServerMessageHandler = pServerMessageHandler;
+		this.setServerConnectorListener(pServerConnectorListener);
 
 		/* Initiate communication with the server,
 		 * by sending a ConnectionEstablishClientMessage
@@ -75,14 +76,18 @@ public class ServerConnector<T extends Connection> extends Connector<T> {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-
 	@Override
 	public void onConnected(final Connection pConnection) {
-
+		if(this.hasConnectorListener()) {
+			this.getConnectorListener().onConnected(this);
+		}
 	}
 
 	@Override
 	public void onDisconnected(final Connection pConnection) {
+		if(this.hasConnectorListener()) {
+			this.getConnectorListener().onDisconnected(this);
+		}
 		try {
 			this.sendClientMessage(new ConnectionCloseClientMessage());
 		} catch (final Throwable pThrowable) {

@@ -72,11 +72,12 @@ public class ClientConnector<T extends Connection> extends Connector<T> {
 
 	@Override
 	public void onConnected(final Connection pConnection) {
-
+		this.getConnectorListener().onConnected(this);
 	}
 
 	@Override
 	public void onDisconnected(final Connection pConnection) {
+		this.getConnectorListener().onDisconnected(this);
 		try {
 			this.sendServerMessage(new ConnectionCloseServerMessage());
 		} catch (final Throwable pThrowable) {
