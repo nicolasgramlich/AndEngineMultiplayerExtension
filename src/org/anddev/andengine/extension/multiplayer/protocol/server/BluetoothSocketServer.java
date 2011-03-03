@@ -16,7 +16,7 @@ import android.bluetooth.BluetoothSocket;
  * @author Nicolas Gramlich
  * @since 15:41:31 - 03.03.2011
  */
-public abstract class BluetoothSocketServer extends Server<ClientConnector<BluetoothSocketConnection>> {
+public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -33,18 +33,18 @@ public abstract class BluetoothSocketServer extends Server<ClientConnector<Bluet
 	// ===========================================================
 
 	public BluetoothSocketServer(final String pUUID) {
-		this(pUUID, new DefaultClientConnectorListener<ClientConnector<BluetoothSocketConnection>>());
+		this(pUUID, new DefaultClientConnectorListener<BluetoothSocketConnection>());
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<ClientConnector<BluetoothSocketConnection>> pClientConnectorListener) {
+	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener) {
 		this(pUUID, pClientConnectorListener, new IServerStateListener.DefaultServerStateListener());
 	}
 
 	public BluetoothSocketServer(final String pUUID, final IServerStateListener pServerStateListener) {
-		this(pUUID, new DefaultClientConnectorListener<ClientConnector<BluetoothSocketConnection>>(), pServerStateListener);
+		this(pUUID, new DefaultClientConnectorListener<BluetoothSocketConnection>(), pServerStateListener);
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<ClientConnector<BluetoothSocketConnection>> pClientConnectorListener, final IServerStateListener pServerStateListener) {
+	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IServerStateListener pServerStateListener) {
 		super(pClientConnectorListener, pServerStateListener);
 
 		this.mUUID = pUUID;
@@ -58,10 +58,10 @@ public abstract class BluetoothSocketServer extends Server<ClientConnector<Bluet
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract ClientConnector<BluetoothSocketConnection> newClientConnector(final BluetoothSocket pBluetoothSocket, final IClientConnectorListener<ClientConnector<BluetoothSocketConnection>> pClientConnectorListener) throws IOException;
+	protected abstract ClientConnector<BluetoothSocketConnection> newClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException;
 
 	@Override
-	protected void prepare() throws IOException {
+	protected void init() throws IOException {
 		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(mUUID));
 	}
 
@@ -71,7 +71,7 @@ public abstract class BluetoothSocketServer extends Server<ClientConnector<Bluet
 		final BluetoothSocket clientBluetoothSocket = this.mBluetoothServerSocket.accept();
 
 		/* Spawn a new ClientConnector, which send and receive data to and from the client. */
-		return this.newClientConnector(clientBluetoothSocket, this.mClientConnectorListener);
+		return this.newClientConnector(new BluetoothSocketConnection(clientBluetoothSocket));
 	}
 
 	@Override

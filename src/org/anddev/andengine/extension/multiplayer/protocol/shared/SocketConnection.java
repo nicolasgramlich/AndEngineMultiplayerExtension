@@ -26,8 +26,8 @@ public class SocketConnection extends Connection {
 	// Constructors
 	// ===========================================================
 
-	public SocketConnection(final Socket pSocket, final IConnectionListener pConnectionListener) throws IOException {
-		super(new DataInputStream(pSocket.getInputStream()), new DataOutputStream(pSocket.getOutputStream()), pConnectionListener);
+	public SocketConnection(final Socket pSocket) throws IOException {
+		super(new DataInputStream(pSocket.getInputStream()), new DataOutputStream(pSocket.getOutputStream()));
 
 		this.mSocket = pSocket;
 	}

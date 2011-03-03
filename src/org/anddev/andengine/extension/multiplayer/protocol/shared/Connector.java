@@ -1,10 +1,12 @@
 package org.anddev.andengine.extension.multiplayer.protocol.shared;
 
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.IConnectionListener;
+
 /**
  * @author Nicolas Gramlich
  * @since 13:51:22 - 03.03.2011
  */
-public class Connector<T extends Connection> {
+public abstract class Connector<T extends Connection> implements IConnectionListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -14,15 +16,15 @@ public class Connector<T extends Connection> {
 	// ===========================================================
 
 	protected final T mConnection;
-	protected final IConnectorListener<Connector<T>> mConnectorListener;
+	protected IConnectorListener<? extends Connector<T>> mConnectorListener;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Connector(final T pConnection, final IConnectorListener<Connector<T>> pConnectorListener) {
+	public Connector(final T pConnection) {
 		this.mConnection = pConnection;
-		this.mConnectorListener = pConnectorListener;
+		this.mConnection.setConnectionListener(this);
 	}
 
 	// ===========================================================
@@ -37,8 +39,12 @@ public class Connector<T extends Connection> {
 		return this.mConnectorListener != null;
 	}
 
-	public IConnectorListener<Connector<T>> getConnectorListener() {
+	public IConnectorListener<? extends Connector<T>> getConnectorListener() {
 		return this.mConnectorListener;
+	}
+
+	protected void setConnectorListener(final IConnectorListener<? extends Connector<T>> pConnectorListener) {
+		this.mConnectorListener = pConnectorListener;
 	}
 
 	// ===========================================================
@@ -48,20 +54,12 @@ public class Connector<T extends Connection> {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
-	public void start() {
-		this.mConnection.start();
-	}
-	
-	public void interrupt() {
-		this.mConnection.interrupt();
-	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IConnectorListener<T extends Connector<? extends Connection>> {
+	public static interface IConnectorListener<T extends Connector<?>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================

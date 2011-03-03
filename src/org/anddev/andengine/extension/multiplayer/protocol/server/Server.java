@@ -15,7 +15,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<T extends ClientConnector<? extends Connection>> extends Thread implements ProtocolConstants {
+public abstract class Server<K extends Connection, T extends ClientConnector<K>> extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -30,13 +30,13 @@ public abstract class Server<T extends ClientConnector<? extends Connection>> ex
 	private boolean mTerminated = false;
 
 	protected final ArrayList<T> mClientConnectors = new ArrayList<T>();
-	protected final IClientConnectorListener<T> mClientConnectorListener;
+	protected final IClientConnectorListener<K> mClientConnectorListener;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Server(final IClientConnectorListener<T> pClientConnectorListener, final IServerStateListener pServerStateListener) {
+	public Server(final IClientConnectorListener<K> pClientConnectorListener, final IServerStateListener pServerStateListener) {
 		this.mServerStateListener = pServerStateListener;
 		this.mClientConnectorListener = pClientConnectorListener;
 
@@ -63,7 +63,7 @@ public abstract class Server<T extends ClientConnector<? extends Connection>> ex
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void prepare() throws IOException;
+	protected abstract void init() throws IOException;
 	protected abstract T acceptClientConnector() throws IOException;
 
 	@Override
@@ -72,17 +72,18 @@ public abstract class Server<T extends ClientConnector<? extends Connection>> ex
 		this.mTerminated = false;
 		this.mServerStateListener.onStarted();
 		try {
-//			Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // TODO What ThreadPriority makes sense here?
-			this.prepare();
+			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
+			this.init();
 
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted()) {
 				try {
 					final T clientConnector = this.acceptClientConnector();
+					clientConnector.setClientConnectorListener(this.mClientConnectorListener);
 					this.mClientConnectors.add(clientConnector);
 
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
-					clientConnector.start();
+					clientConnector.getConnection().start();
 				} catch (final SocketException se) {
 					if(!se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_CLOSED) && !se.getMessage().equals(SocketUtils.SOCKETEXCEPTION_MESSAGE_SOCKET_IS_CLOSED)) {
 						this.mServerStateListener.onException(se);
@@ -93,7 +94,7 @@ public abstract class Server<T extends ClientConnector<? extends Connection>> ex
 					this.mServerStateListener.onException(pThrowable);
 				}
 			}
-			
+
 			this.close();
 		} catch (final Throwable pThrowable) {
 			this.mServerStateListener.onException(pThrowable);
@@ -121,7 +122,7 @@ public abstract class Server<T extends ClientConnector<? extends Connection>> ex
 				/* First interrupt all Clients. */
 				final ArrayList<T> clientConnectors = this.mClientConnectors;
 				for(int i = 0; i < clientConnectors.size(); i++) {
-					clientConnectors.get(i).interrupt();
+					clientConnectors.get(i).getConnection().interrupt();
 				}
 				clientConnectors.clear();
 

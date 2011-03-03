@@ -24,18 +24,16 @@ public abstract class Connection extends Thread {
 	protected final DataInputStream mDataInputStream;
 	protected final DataOutputStream mDataOutputStream;
 
-	protected final IConnectionListener mConnectionListener;
+	protected IConnectionListener mConnectionListener;
 	protected boolean mClosed = false;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Connection(final DataInputStream pDataInputStream, final DataOutputStream pDataOutputStream, final IConnectionListener pConnectionListener) throws IOException {
+	public Connection(final DataInputStream pDataInputStream, final DataOutputStream pDataOutputStream) throws IOException {
 		this.mDataInputStream = pDataInputStream;
 		this.mDataOutputStream = pDataOutputStream;
-		
-		this.mConnectionListener = pConnectionListener;
 	}
 
 	// ===========================================================
@@ -58,6 +56,10 @@ public abstract class Connection extends Thread {
 		return this.mConnectionListener;
 	}
 
+	public void setConnectionListener(final IConnectionListener pConnectionListener) {
+		this.mConnectionListener = pConnectionListener;
+	}
+
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
@@ -68,7 +70,8 @@ public abstract class Connection extends Thread {
 			this.mConnectionListener.onConnected(this);
 		}
 
-		//		Thread.currentThread().setPriority(Thread.MIN_PRIORITY); // TODO What ThreadPriority makes sense here?
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY); // TODO What ThreadPriority makes sense here?
+		
 		try {
 			while(!this.isInterrupted()) {
 				try {
@@ -91,17 +94,17 @@ public abstract class Connection extends Thread {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+
 	public boolean close() {
 		this.interrupt();
-		
+
 		if(!this.mClosed) {
 			this.mClosed = true;
 
 			if(this.mConnectionListener != null) {
 				this.mConnectionListener.onDisconnected(this);
 			}
-			
+
 			return true;
 		} else {
 			return false;
@@ -120,10 +123,10 @@ public abstract class Connection extends Thread {
 		// ===========================================================
 		// Methods
 		// ===========================================================
-		
-		public void onConnected(final Connection pConnection); 
+
+		public void onConnected(final Connection pConnection);
 		public void onDisconnected(final Connection pConnection);
-		
+
 		public void read(final DataInputStream pDataInputStream) throws IOException;
 	}
 }

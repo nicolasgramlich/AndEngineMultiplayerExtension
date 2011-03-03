@@ -10,7 +10,6 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.co
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientMessageReader.DefaultClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageHandler.DefaultClientMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.IConnectionListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.anddev.andengine.util.Debug;
 
@@ -18,7 +17,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class ClientConnector<T extends Connection> extends Connector<T> implements IConnectionListener {
+public class ClientConnector<T extends Connection> extends Connector<T> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -34,12 +33,12 @@ public class ClientConnector<T extends Connection> extends Connector<T> implemen
 	// Constructors
 	// ===========================================================
 
-	public ClientConnector(final T pConnection, final DefaultClientMessageHandler<T> pClientMessageHandler, final IClientConnectorListener<Connector<T>> pClientConnectorListener) throws IOException {
-		this(pConnection, new DefaultClientMessageReader(), pClientMessageHandler, pClientConnectorListener);
+	public ClientConnector(final T pConnection, final DefaultClientMessageHandler<T> pClientMessageHandler) throws IOException {
+		this(pConnection, new DefaultClientMessageReader(), pClientMessageHandler);
 	}
 
-	public ClientConnector(final T pConnection, final IClientMessageReader pClientMessageReader, final IClientMessageHandler<T> pClientMessageHandler, final IClientConnectorListener<Connector<T>> pClientConnectorListener) throws IOException {
-		super(pConnection, pClientConnectorListener);
+	public ClientConnector(final T pConnection, final IClientMessageReader pClientMessageReader, final IClientMessageHandler<T> pClientMessageHandler) throws IOException {
+		super(pConnection);
 
 		this.mClientMessageReader = pClientMessageReader;
 		this.mClientMessageHandler = pClientMessageHandler;
@@ -55,6 +54,16 @@ public class ClientConnector<T extends Connection> extends Connector<T> implemen
 
 	public IClientMessageReader getClientMessageReader() {
 		return this.mClientMessageReader;
+	}
+
+	public void setClientConnectorListener(final IClientConnectorListener<T> pClientConnectorListener) {
+		super.setConnectorListener(pClientConnectorListener);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public IClientConnectorListener<T> getConnectorListener() {
+		return (IClientConnectorListener<T>) super.getConnectorListener();
 	}
 
 	// ===========================================================
@@ -100,7 +109,7 @@ public class ClientConnector<T extends Connection> extends Connector<T> implemen
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IClientConnectorListener<T extends Connector<? extends Connection>> extends IConnectorListener<T> {
+	public static interface IClientConnectorListener<T extends Connection> extends IConnectorListener<ClientConnector<T>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -113,14 +122,14 @@ public class ClientConnector<T extends Connection> extends Connector<T> implemen
 		// Inner and Anonymous Classes
 		// ===========================================================
 
-		public static class DefaultClientConnectorListener<T extends Connector<? extends Connection>> implements IClientConnectorListener<T> {
+		public static class DefaultClientConnectorListener<T extends Connection> implements IClientConnectorListener<T> {
 			@Override
-			public void onConnected(final T pConnector) {
+			public void onConnected(final ClientConnector<T> pConnector) {
 				Debug.d("Accepted Client-Connection from: '" + pConnector.toString() + "'");
 			}
 
 			@Override
-			public void onDisconnected(final T pConnector) {
+			public void onDisconnected(final ClientConnector<T> pConnector) {
 				Debug.d("Closed Client-Connection from: '" + pConnector.toString() + "'");
 			}
 		}

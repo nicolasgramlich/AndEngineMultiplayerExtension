@@ -15,7 +15,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:55:09 - 03.03.2011
  */
-public abstract class SocketServer extends Server<ClientConnector<SocketConnection>> {
+public abstract class SocketServer extends Server<SocketConnection, ClientConnector<SocketConnection>> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -32,18 +32,18 @@ public abstract class SocketServer extends Server<ClientConnector<SocketConnecti
 	// ===========================================================
 
 	public SocketServer(final int pPort) {
-		this(pPort, new DefaultClientConnectorListener<ClientConnector<SocketConnection>>());
+		this(pPort, new DefaultClientConnectorListener<SocketConnection>());
 	}
 
-	public SocketServer(final int pPort, final IClientConnectorListener<ClientConnector<SocketConnection>> pClientConnectorListener) {
+	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener) {
 		this(pPort, pClientConnectorListener, new IServerStateListener.DefaultServerStateListener());
 	}
 
 	public SocketServer(final int pPort, final IServerStateListener pServerStateListener) {
-		this(pPort, new DefaultClientConnectorListener<ClientConnector<SocketConnection>>(), pServerStateListener);
+		this(pPort, new DefaultClientConnectorListener<SocketConnection>(), pServerStateListener);
 	}
 
-	public SocketServer(final int pPort, final IClientConnectorListener<ClientConnector<SocketConnection>> pClientConnectorListener, final IServerStateListener pServerStateListener) {
+	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final IServerStateListener pServerStateListener) {
 		super(pClientConnectorListener, pServerStateListener);
 
 		if (pPort < 0) {
@@ -63,10 +63,10 @@ public abstract class SocketServer extends Server<ClientConnector<SocketConnecti
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract ClientConnector<SocketConnection> newClientConnector(final Socket pSocket, final IClientConnectorListener<ClientConnector<SocketConnection>> pClientConnectorListener) throws IOException;
+	protected abstract ClientConnector<SocketConnection> newClientConnector(final SocketConnection pSocketConnection) throws IOException;
 
 	@Override
-	protected void prepare() throws IOException {
+	protected void init() throws IOException {
 		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mServerPort);
 	}
 
@@ -76,7 +76,7 @@ public abstract class SocketServer extends Server<ClientConnector<SocketConnecti
 		final Socket clientSocket = this.mServerSocket.accept();
 
 		/* Spawn a new ClientConnector, which send and receive data to and from the client. */
-		return this.newClientConnector(clientSocket, this.mClientConnectorListener);
+		return this.newClientConnector(new SocketConnection(clientSocket));
 	}
 	
 	@Override

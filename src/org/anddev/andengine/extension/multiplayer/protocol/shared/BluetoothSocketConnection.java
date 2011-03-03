@@ -12,7 +12,7 @@ import android.bluetooth.BluetoothSocket;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public abstract class BluetoothSocketConnection extends Connection {
+public class BluetoothSocketConnection extends Connection {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,8 +27,8 @@ public abstract class BluetoothSocketConnection extends Connection {
 	// Constructors
 	// ===========================================================
 
-	public BluetoothSocketConnection(final BluetoothSocket pBluetoothSocket, final IConnectionListener pConnectionListener) throws IOException {
-		super(new DataInputStream(pBluetoothSocket.getInputStream()), new DataOutputStream(pBluetoothSocket.getOutputStream()), pConnectionListener);
+	public BluetoothSocketConnection(final BluetoothSocket pBluetoothSocket) throws IOException {
+		super(new DataInputStream(pBluetoothSocket.getInputStream()), new DataOutputStream(pBluetoothSocket.getOutputStream()));
 
 		this.mBluetoothSocket = pBluetoothSocket;
 	}
