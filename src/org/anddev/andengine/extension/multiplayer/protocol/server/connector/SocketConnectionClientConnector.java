@@ -3,14 +3,14 @@ package org.anddev.andengine.extension.multiplayer.protocol.server.connector;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
-import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
  * @since 15:44:42 - 04.03.2011
  */
-public class BluetoothSocketClientConnector extends ClientConnector<BluetoothSocketConnection> {
+public class SocketConnectionClientConnector extends ClientConnector<SocketConnection> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -23,12 +23,12 @@ public class BluetoothSocketClientConnector extends ClientConnector<BluetoothSoc
 	// Constructors
 	// ===========================================================
 
-	private BluetoothSocketClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException {
-		super(pBluetoothSocketConnection);
+	private SocketConnectionClientConnector(final SocketConnection pSocketConnection) throws IOException {
+		super(pSocketConnection);
 	}
 
-	private BluetoothSocketClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException {
-		super(pBluetoothSocketConnection, pClientMessageReader);
+	private SocketConnectionClientConnector(final SocketConnection pSocketConnection, final IClientMessageReader<SocketConnection> pClientMessageReader) throws IOException {
+		super(pSocketConnection, pClientMessageReader);
 	}
 
 	// ===========================================================
@@ -47,19 +47,19 @@ public class BluetoothSocketClientConnector extends ClientConnector<BluetoothSoc
 	// Inner and Anonymous Classes
 	// ===========================================================
 	
-	public static interface IBluetoothSocketConnectionClientConnectorListener extends IClientConnectorListener<BluetoothSocketConnection> {
+	public static interface ISocketConnectionClientConnectorListener extends IClientConnectorListener<SocketConnection> {
 		
 	}
 
-	public static class DefaultBluetoothSocketClientConnectorListener implements IBluetoothSocketConnectionClientConnectorListener {
+	public static class DefaultSocketConnectionClientConnectorListener implements ISocketConnectionClientConnectorListener {
 		@Override
-		public void onConnected(ClientConnector<BluetoothSocketConnection> pClientConnector) {
-			Debug.d("Accepted Client-Connection from: '" + pClientConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
+		public void onConnected(ClientConnector<SocketConnection> pClientConnector) {
+			Debug.d("Accepted Client-Connection from: '" + pClientConnector.getConnection().getSocket().getInetAddress().getHostAddress());
 		}
 
 		@Override
-		public void onDisconnected(ClientConnector<BluetoothSocketConnection> pClientConnector) {
-			Debug.d("Closed Client-Connection from: '" + pClientConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
+		public void onDisconnected(ClientConnector<SocketConnection> pClientConnector) {
+			Debug.d("Closed Client-Connection from: '" + pClientConnector.getConnection().getSocket().getInetAddress().getHostAddress());
 		}
 	}
 }

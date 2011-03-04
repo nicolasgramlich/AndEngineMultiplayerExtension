@@ -10,7 +10,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 15:45:57 - 04.03.2011
  */
-public class BluetoothSocketServerConnector extends ServerConnector<BluetoothSocketConnection> {
+public class BluetoothSocketConnectionServerConnector extends ServerConnector<BluetoothSocketConnection> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -23,11 +23,11 @@ public class BluetoothSocketServerConnector extends ServerConnector<BluetoothSoc
 	// Constructors
 	// ===========================================================
 
-	private BluetoothSocketServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
+	private BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
 		super(pBluetoothSocketConnection, pBlutetoothSocketConnectionServerConnectorListener);
 	}
 
-	private BluetoothSocketServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
+	private BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
 		super(pBluetoothSocketConnection, pServerMessageReader, pBlutetoothSocketConnectionServerConnectorListener);
 	}
 

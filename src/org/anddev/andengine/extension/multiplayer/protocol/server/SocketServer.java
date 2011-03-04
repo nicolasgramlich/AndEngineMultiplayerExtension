@@ -9,7 +9,7 @@ import javax.net.ServerSocketFactory;
 import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.connector.SocketClientConnector.DefaultSocketConnectionClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector.DefaultSocketConnectionClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.anddev.andengine.extension.multiplayer.protocol.server.BluetoothSocketServer.IBluetoothSocketServerListener.DefaultBluetoothSocketServerListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketClientConnector.DefaultBluetoothSocketClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketConnectionClientConnector.DefaultBluetoothSocketClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;

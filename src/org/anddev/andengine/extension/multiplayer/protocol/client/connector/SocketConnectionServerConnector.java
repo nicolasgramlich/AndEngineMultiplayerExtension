@@ -10,7 +10,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 15:45:57 - 04.03.2011
  */
-public class SocketServerConnector extends ServerConnector<SocketConnection> {
+public class SocketConnectionServerConnector extends ServerConnector<SocketConnection> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -23,11 +23,11 @@ public class SocketServerConnector extends ServerConnector<SocketConnection> {
 	// Constructors
 	// ===========================================================
 
-	private SocketServerConnector(final SocketConnection pConnection, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+	private SocketConnectionServerConnector(final SocketConnection pConnection, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
 		super(pConnection, pSocketConnectionServerConnectorListener);
 	}
 
-	private SocketServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+	private SocketConnectionServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
 		super(pConnection, pServerMessageReader, pSocketConnectionServerConnectorListener);
 	}
 
