@@ -20,8 +20,8 @@ public class MessagePool<M extends IMessage> {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	
-	private MultiPool<M> mMessageMultiPool = new MultiPool<M>(); 
+
+	private final MultiPool<M> mMessageMultiPool = new MultiPool<M>();
 
 	// ===========================================================
 	// Constructors
@@ -34,27 +34,27 @@ public class MessagePool<M extends IMessage> {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-	
+
 	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
-		this.mMessageMultiPool.registerPool(pFlag, 
-			new GenericPool<M>() {
-				@Override
-				protected M onAllocatePoolItem() {
-					try {
-						return pMessageClass.newInstance();
-					} catch (Throwable t) {
-						Debug.e(t);
-						return null;
-					}
+		this.mMessageMultiPool.registerPool(pFlag,
+				new GenericPool<M>() {
+			@Override
+			protected M onAllocatePoolItem() {
+				try {
+					return pMessageClass.newInstance();
+				} catch (final Throwable t) {
+					Debug.e(t);
+					return null;
 				}
 			}
+		}
 		);
 	}
 
 	public M obtainMessage(final short pFlag) {
 		return this.mMessageMultiPool.obtainPoolItem(pFlag);
 	}
-	
+
 	public M obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		final M message = this.mMessageMultiPool.obtainPoolItem(pFlag);
 		message.read(pDataInputStream);

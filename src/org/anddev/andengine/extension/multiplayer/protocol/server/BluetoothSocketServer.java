@@ -25,7 +25,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	// Fields
 	// ===========================================================
 
-	private String mUUID;
+	private final String mUUID;
 	private BluetoothServerSocket mBluetoothServerSocket;
 
 	// ===========================================================
@@ -62,7 +62,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 
 	@Override
 	protected void onInit() throws IOException {
-		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(mUUID));
+		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(this.mUUID));
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	public void onClosed() {
 		try {
 			this.mBluetoothServerSocket.close(); // TODO Put to SocketUtils
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Debug.e(e);
 		}
 	}

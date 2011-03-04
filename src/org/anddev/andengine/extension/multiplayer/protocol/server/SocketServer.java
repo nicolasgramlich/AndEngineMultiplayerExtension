@@ -78,7 +78,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 		/* Spawn a new ClientConnector, which send and receive data to and from the client. */
 		return this.newClientConnector(new SocketConnection(clientSocket));
 	}
-	
+
 	@Override
 	public void onClosed() {
 		SocketUtils.closeSocket(this.mServerSocket);

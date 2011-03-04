@@ -73,7 +73,7 @@ public abstract class Connection extends Thread {
 		}
 
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY); // TODO What ThreadPriority makes sense here?
-		
+
 		try {
 			while(!this.isInterrupted()) {
 				try {
@@ -92,13 +92,13 @@ public abstract class Connection extends Thread {
 			this.close();
 		}
 	}
-	
-    @Override
-    public void interrupt() {
-        this.close();
 
-        super.interrupt();
-    }
+	@Override
+	public void interrupt() {
+		this.close();
+
+		super.interrupt();
+	}
 
 	// ===========================================================
 	// Methods
@@ -111,7 +111,7 @@ public abstract class Connection extends Thread {
 			if(this.mConnectionListener != null) {
 				this.mConnectionListener.onDisconnected(this);
 			}
-			
+
 			this.onClosed();
 		}
 	}

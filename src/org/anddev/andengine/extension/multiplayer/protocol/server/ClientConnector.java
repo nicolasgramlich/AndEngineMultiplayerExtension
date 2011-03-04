@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientMessageReader.DefaultClientMessageReader;
+import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader.DefaultClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.anddev.andengine.util.Debug;
@@ -91,6 +91,14 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	public void registerClientMessage(final short pFlag, final Class<? extends IClientMessage> pClientMessageClass) {
 		this.mClientMessageReader.registerMessage(pFlag, pClientMessageClass);
+	}
+
+	public void registerClientMessage(final short pFlag, final Class<? extends IClientMessage> pClientMessageClass, final IClientMessageHandler<C> pClientMessageHandler) {
+		this.mClientMessageReader.registerMessage(pFlag, pClientMessageClass, pClientMessageHandler);
+	}
+
+	public void registerClientMessageHandler(final short pFlag, final IClientMessageHandler<C> pClientMessageHandler) {
+		this.mClientMessageReader.registerMessageHandler(pFlag, pClientMessageHandler);
 	}
 
 	public void sendServerMessage(final IServerMessage pServerMessage) throws IOException {

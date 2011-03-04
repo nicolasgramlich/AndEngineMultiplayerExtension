@@ -43,7 +43,7 @@ public class SocketConnection extends Connection {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-	
+
 	@Override
 	protected void onClosed() {
 		/* Ensure Socket is really closed. */

@@ -12,7 +12,7 @@ import android.util.SparseArray;
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class MessageReader<C extends Connection, M extends IMessage> implements IMessageReader<C, M> {
+public abstract class MessageReader<C extends Connection, CC extends Connector<C>, M extends IMessage> implements IMessageReader<C, CC, M> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -22,7 +22,7 @@ public abstract class MessageReader<C extends Connection, M extends IMessage> im
 	// ===========================================================
 
 	private final MessagePool<M> mMessagePool = new MessagePool<M>();
-	private final SparseArray<IMessageHandler<C, M>> mMessageHandlers = new SparseArray<IMessageHandler<C, M>>();
+	private final SparseArray<IMessageHandler<C, CC, M>> mMessageHandlers = new SparseArray<IMessageHandler<C, CC, M>>();
 
 	// ===========================================================
 	// Constructors
@@ -44,14 +44,13 @@ public abstract class MessageReader<C extends Connection, M extends IMessage> im
 	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
 		this.mMessagePool.registerMessage(pFlag, pMessageClass);
 	}
-
 	@Override
-	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, M> pMessageHandler) {
-		this.mMessageHandlers.put(pFlag, pMessageHandler);
+	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, CC, M> pMessageHandler) {
+		this.registerMessageHandler(pFlag, pMessageHandler);
 	}
 
 	@Override
-	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass, final IMessageHandler<C, M> pMessageHandler) {
+	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass, final IMessageHandler<C, CC, M> pMessageHandler) {
 		this.registerMessage(pFlag, pMessageClass);
 		this.registerMessageHandler(pFlag, pMessageHandler);
 	}
@@ -63,8 +62,8 @@ public abstract class MessageReader<C extends Connection, M extends IMessage> im
 	}
 
 	@Override
-	public void handleMessage(final Connector<C> pConnector, final M pMessage) {
-		final IMessageHandler<C, M> messageHandler = this.mMessageHandlers.get(pMessage.getFlag());
+	public void handleMessage(final CC pConnector, final M pMessage) throws IOException {
+		final IMessageHandler<C, CC, M> messageHandler = this.mMessageHandlers.get(pMessage.getFlag());
 		if(messageHandler != null) {
 			messageHandler.onHandleMessage(pConnector, pMessage);
 		}

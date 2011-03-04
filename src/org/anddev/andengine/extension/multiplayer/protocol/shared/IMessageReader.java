@@ -9,7 +9,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
  * @author Nicolas Gramlich
  * @since 11:50:53 - 04.03.2011
  */
-public interface IMessageReader<C extends Connection, M extends IMessage> {
+public interface IMessageReader<C extends Connection, CC extends Connector<C>, M extends IMessage> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -19,12 +19,12 @@ public interface IMessageReader<C extends Connection, M extends IMessage> {
 	// ===========================================================
 
 	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass);
-	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, M> pMessageHandler);
-	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass, final IMessageHandler<C, M> pMessageHandler);
-	
+	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, CC, M> pMessageHandler);
+	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass, final IMessageHandler<C, CC, M> pMessageHandler);
+
 	public M readMessage(final DataInputStream pDataInputStream) throws IOException;
-	
-	public void handleMessage(final Connector<C> pConnector, final M pMessage);
-	
+
+	public void handleMessage(final CC pConnector, final M pMessage) throws IOException;
+
 	public void recycleMessage(final M pMessage);
 }

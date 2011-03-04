@@ -10,7 +10,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageHandle
  * @author Nicolas Gramlich
  * @since 21:01:19 - 19.09.2009
  */
-public interface IServerMessageHandler<C extends Connection> extends IMessageHandler<C, IServerMessage> {
+public interface IServerMessageHandler<C extends Connection> extends IMessageHandler<C, ServerConnector<C>, IServerMessage> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -19,5 +19,6 @@ public interface IServerMessageHandler<C extends Connection> extends IMessageHan
 	// Methods
 	// ===========================================================
 
+	@Override
 	public void onHandleMessage(final ServerConnector<C> pServerConnector, final IServerMessage pServerMessage) throws IOException;
 }

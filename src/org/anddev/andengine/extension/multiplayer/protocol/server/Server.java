@@ -93,13 +93,13 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 			this.close();
 		}
 	}
-	
-    @Override
-    public void interrupt() {
-        this.close();
 
-        super.interrupt();
-    }
+	@Override
+	public void interrupt() {
+		this.close();
+
+		super.interrupt();
+	}
 
 	@Override
 	protected void finalize() throws Throwable {
@@ -115,7 +115,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		if(!this.mClosed) {
 			this.mClosed = true;
 			this.mRunning = false;
-			
+
 			try {
 				/* First interrupt all Clients. */
 				final ArrayList<CC> clientConnectors = this.mClientConnectors;
@@ -123,14 +123,14 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 					clientConnectors.get(i).getConnection().interrupt();
 				}
 				clientConnectors.clear();
-				
-                Thread.sleep(1000);
+
+				Thread.sleep(1000);
 
 				this.mServerStateListener.onTerminated();
 			} catch (final Exception e) {
 				this.mServerStateListener.onException(e);
 			}
-			
+
 			this.onClosed();
 		}
 	}

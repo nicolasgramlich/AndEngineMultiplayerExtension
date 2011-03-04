@@ -50,7 +50,7 @@ public class BluetoothSocketConnection extends Connection {
 		/* Ensure Socket is really closed. */
 		try {
 			this.mBluetoothSocket.close(); // TODO Put to SocketUtils
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Debug.e(e);
 		}
 	}
