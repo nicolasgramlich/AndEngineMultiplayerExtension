@@ -23,11 +23,11 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 	// Constructors
 	// ===========================================================
 
-	private BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException {
+	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException {
 		super(pBluetoothSocketConnection);
 	}
 
-	private BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException {
+	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException {
 		super(pBluetoothSocketConnection, pClientMessageReader);
 	}
 

@@ -23,11 +23,11 @@ public class SocketConnectionClientConnector extends ClientConnector<SocketConne
 	// Constructors
 	// ===========================================================
 
-	private SocketConnectionClientConnector(final SocketConnection pSocketConnection) throws IOException {
+	public SocketConnectionClientConnector(final SocketConnection pSocketConnection) throws IOException {
 		super(pSocketConnection);
 	}
 
-	private SocketConnectionClientConnector(final SocketConnection pSocketConnection, final IClientMessageReader<SocketConnection> pClientMessageReader) throws IOException {
+	public SocketConnectionClientConnector(final SocketConnection pSocketConnection, final IClientMessageReader<SocketConnection> pClientMessageReader) throws IOException {
 		super(pSocketConnection, pClientMessageReader);
 	}
 
