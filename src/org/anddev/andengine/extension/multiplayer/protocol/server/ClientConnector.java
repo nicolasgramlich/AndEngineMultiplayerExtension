@@ -8,7 +8,6 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IC
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientMessageReader.DefaultClientMessageReader;
-import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageHandler.DefaultClientMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.anddev.andengine.util.Debug;
@@ -17,7 +16,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class ClientConnector<T extends Connection> extends Connector<T> {
+public class ClientConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -26,44 +25,38 @@ public class ClientConnector<T extends Connection> extends Connector<T> {
 	// Fields
 	// ===========================================================
 
-	private final IClientMessageReader mClientMessageReader;
-	private final IClientMessageHandler<T> mClientMessageHandler;
+	private final IClientMessageReader<C> mClientMessageReader;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public ClientConnector(final T pConnection, final DefaultClientMessageHandler<T> pClientMessageHandler) throws IOException {
-		this(pConnection, new DefaultClientMessageReader(), pClientMessageHandler);
+	public ClientConnector(final C pConnection) throws IOException {
+		this(pConnection, new DefaultClientMessageReader<C>());
 	}
 
-	public ClientConnector(final T pConnection, final IClientMessageReader pClientMessageReader, final IClientMessageHandler<T> pClientMessageHandler) throws IOException {
+	public ClientConnector(final C pConnection, final IClientMessageReader<C> pClientMessageReader) throws IOException {
 		super(pConnection);
 
 		this.mClientMessageReader = pClientMessageReader;
-		this.mClientMessageHandler = pClientMessageHandler;
 	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
 
-	public IClientMessageHandler<T> getClientMessageHandler() {
-		return this.mClientMessageHandler;
-	}
-
-	public IClientMessageReader getClientMessageReader() {
+	public IClientMessageReader<C> getClientMessageReader() {
 		return this.mClientMessageReader;
 	}
 
-	public void setClientConnectorListener(final IClientConnectorListener<T> pClientConnectorListener) {
+	public void setClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
 		super.setConnectorListener(pClientConnectorListener);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IClientConnectorListener<T> getConnectorListener() {
-		return (IClientConnectorListener<T>) super.getConnectorListener();
+	public IClientConnectorListener<C> getConnectorListener() {
+		return (IClientConnectorListener<C>) super.getConnectorListener();
 	}
 
 	// ===========================================================
@@ -88,7 +81,7 @@ public class ClientConnector<T extends Connection> extends Connector<T> {
 	@Override
 	public void read(final DataInputStream pDataInputStream) throws IOException {
 		final IClientMessage clientMessage = this.mClientMessageReader.readMessage(pDataInputStream);
-		this.mClientMessageHandler.onHandleMessage(this, clientMessage);
+		this.mClientMessageReader.handleMessage(this, clientMessage);
 		this.mClientMessageReader.recycleMessage(clientMessage);
 	}
 

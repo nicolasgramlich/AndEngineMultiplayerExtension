@@ -6,11 +6,13 @@ import java.io.IOException;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.util.MessagePool;
 
+import android.util.SparseArray;
+
 /**
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */
-public abstract class MessageReader<T extends IMessage> {
+public abstract class MessageReader<C extends Connection, M extends IMessage> implements IMessageReader<C, M> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -19,7 +21,8 @@ public abstract class MessageReader<T extends IMessage> {
 	// Fields
 	// ===========================================================
 
-	final MessagePool<T> mMessagePool = new MessagePool<T>();
+	private final MessagePool<M> mMessagePool = new MessagePool<M>();
+	private final SparseArray<IMessageHandler<C, M>> mMessageHandlers = new SparseArray<IMessageHandler<C, M>>();
 
 	// ===========================================================
 	// Constructors
@@ -37,16 +40,38 @@ public abstract class MessageReader<T extends IMessage> {
 	// Methods
 	// ===========================================================
 
-	public void registerMessage(final short pFlag, final Class<? extends T> pMessageClass) {
+	@Override
+	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
 		this.mMessagePool.registerMessage(pFlag, pMessageClass);
 	}
 
-	public T readMessage(final DataInputStream pDataInputStream) throws IOException {
+	@Override
+	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, M> pMessageHandler) {
+		this.mMessageHandlers.put(pFlag, pMessageHandler);
+	}
+
+	@Override
+	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass, final IMessageHandler<C, M> pMessageHandler) {
+		this.registerMessage(pFlag, pMessageClass);
+		this.registerMessageHandler(pFlag, pMessageHandler);
+	}
+
+	@Override
+	public M readMessage(final DataInputStream pDataInputStream) throws IOException {
 		final short flag = pDataInputStream.readShort();
 		return this.mMessagePool.obtainMessage(flag, pDataInputStream);
 	}
 
-	public void recycleMessage(T pMessage) {
+	@Override
+	public void handleMessage(final Connector<C> pConnector, final M pMessage) {
+		final IMessageHandler<C, M> messageHandler = this.mMessageHandlers.get(pMessage.getFlag());
+		if(messageHandler != null) {
+			messageHandler.onHandleMessage(pConnector, pMessage);
+		}
+	}
+
+	@Override
+	public void recycleMessage(final M pMessage) {
 		this.mMessagePool.recycleMessage(pMessage);
 	}
 

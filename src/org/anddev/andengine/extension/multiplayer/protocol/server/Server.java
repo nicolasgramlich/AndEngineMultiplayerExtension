@@ -13,7 +13,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<K extends Connection, T extends ClientConnector<K>> extends Thread implements ProtocolConstants {
+public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread implements ProtocolConstants {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,14 +27,14 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 	private boolean mRunning = false;
 	private boolean mClosed = true;
 
-	protected final ArrayList<T> mClientConnectors = new ArrayList<T>();
-	protected final IClientConnectorListener<K> mClientConnectorListener;
+	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
+	protected final IClientConnectorListener<C> mClientConnectorListener;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Server(final IClientConnectorListener<K> pClientConnectorListener, final IServerStateListener pServerStateListener) {
+	public Server(final IClientConnectorListener<C> pClientConnectorListener, final IServerStateListener pServerStateListener) {
 		this.mServerStateListener = pServerStateListener;
 		this.mClientConnectorListener = pClientConnectorListener;
 
@@ -63,7 +63,7 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 
 	protected abstract void onInit() throws IOException;
 	protected abstract void onClosed();
-	protected abstract T acceptClientConnector() throws IOException;
+	protected abstract CC acceptClientConnector() throws IOException;
 
 	@Override
 	public void run() {
@@ -77,7 +77,7 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted()) {
 				try {
-					final T clientConnector = this.acceptClientConnector();
+					final CC clientConnector = this.acceptClientConnector();
 					clientConnector.setClientConnectorListener(this.mClientConnectorListener);
 					this.mClientConnectors.add(clientConnector);
 
@@ -118,7 +118,7 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 			
 			try {
 				/* First interrupt all Clients. */
-				final ArrayList<T> clientConnectors = this.mClientConnectors;
+				final ArrayList<CC> clientConnectors = this.mClientConnectors;
 				for(int i = 0; i < clientConnectors.size(); i++) {
 					clientConnectors.get(i).getConnection().interrupt();
 				}
@@ -137,7 +137,7 @@ public abstract class Server<K extends Connection, T extends ClientConnector<K>>
 
 	public void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
 		if(this.mRunning && !this.mClosed) {
-			final ArrayList<T> clientConnectors = this.mClientConnectors;
+			final ArrayList<CC> clientConnectors = this.mClientConnectors;
 			for(int i = 0; i < clientConnectors.size(); i++) {
 				try {
 					clientConnectors.get(i).sendServerMessage(pServerMessage);

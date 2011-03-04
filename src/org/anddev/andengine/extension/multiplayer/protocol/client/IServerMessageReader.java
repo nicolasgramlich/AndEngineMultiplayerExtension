@@ -1,15 +1,14 @@
 package org.anddev.andengine.extension.multiplayer.protocol.client;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageReader;
 
 /**
  * @author Nicolas Gramlich
  * @since 13:11:07 - 02.03.2011
  */
-public interface IServerMessageReader {
+public interface IServerMessageReader<C extends Connection> extends IMessageReader<C, IServerMessage> {
 	// ===========================================================
 	// Final Fields
 	// ===========================================================
@@ -17,8 +16,4 @@ public interface IServerMessageReader {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-
-	public void registerMessage(final short pFlag, final Class<? extends IServerMessage> pServerMessageClass);
-	public IServerMessage readMessage(final DataInputStream pDataInputStream) throws IOException;
-	public void recycleMessage(final IServerMessage pIServerMessage) throws IOException;
 }

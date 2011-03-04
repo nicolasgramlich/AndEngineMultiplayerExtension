@@ -6,7 +6,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.ICo
  * @author Nicolas Gramlich
  * @since 13:51:22 - 03.03.2011
  */
-public abstract class Connector<T extends Connection> implements IConnectionListener {
+public abstract class Connector<C extends Connection> implements IConnectionListener {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -15,14 +15,14 @@ public abstract class Connector<T extends Connection> implements IConnectionList
 	// Fields
 	// ===========================================================
 
-	protected final T mConnection;
-	protected IConnectorListener<? extends Connector<T>> mConnectorListener;
+	protected final C mConnection;
+	protected IConnectorListener<? extends Connector<C>> mConnectorListener;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public Connector(final T pConnection) {
+	public Connector(final C pConnection) {
 		this.mConnection = pConnection;
 		this.mConnection.setConnectionListener(this);
 	}
@@ -31,7 +31,7 @@ public abstract class Connector<T extends Connection> implements IConnectionList
 	// Getter & Setter
 	// ===========================================================
 
-	public T getConnection() {
+	public C getConnection() {
 		return this.mConnection;
 	}
 
@@ -39,11 +39,11 @@ public abstract class Connector<T extends Connection> implements IConnectionList
 		return this.mConnectorListener != null;
 	}
 
-	public IConnectorListener<? extends Connector<T>> getConnectorListener() {
+	public IConnectorListener<? extends Connector<C>> getConnectorListener() {
 		return this.mConnectorListener;
 	}
 
-	protected void setConnectorListener(final IConnectorListener<? extends Connector<T>> pConnectorListener) {
+	protected void setConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
 		this.mConnectorListener = pConnectorListener;
 	}
 

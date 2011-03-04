@@ -12,7 +12,7 @@ import org.anddev.andengine.util.pool.MultiPool;
  * @author Nicolas Gramlich
  * @since 11:33:23 - 02.03.2011
  */
-public class MessagePool<T extends IMessage> {
+public class MessagePool<M extends IMessage> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -21,7 +21,7 @@ public class MessagePool<T extends IMessage> {
 	// Fields
 	// ===========================================================
 	
-	private MultiPool<T> mMessageMultiPool = new MultiPool<T>(); 
+	private MultiPool<M> mMessageMultiPool = new MultiPool<M>(); 
 
 	// ===========================================================
 	// Constructors
@@ -35,11 +35,11 @@ public class MessagePool<T extends IMessage> {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 	
-	public void registerMessage(final short pFlag, final Class<? extends T> pMessageClass) {
+	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
 		this.mMessageMultiPool.registerPool(pFlag, 
-			new GenericPool<T>() {
+			new GenericPool<M>() {
 				@Override
-				protected T onAllocatePoolItem() {
+				protected M onAllocatePoolItem() {
 					try {
 						return pMessageClass.newInstance();
 					} catch (Throwable t) {
@@ -51,17 +51,17 @@ public class MessagePool<T extends IMessage> {
 		);
 	}
 
-	public T obtainMessage(final short pFlag) {
+	public M obtainMessage(final short pFlag) {
 		return this.mMessageMultiPool.obtainPoolItem(pFlag);
 	}
 	
-	public T obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
-		final T message = this.mMessageMultiPool.obtainPoolItem(pFlag);
+	public M obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
+		final M message = this.mMessageMultiPool.obtainPoolItem(pFlag);
 		message.read(pDataInputStream);
 		return message;
 	}
 
-	public void recycleMessage(final T pMessage) {
+	public void recycleMessage(final M pMessage) {
 		this.mMessageMultiPool.recyclePoolItem(pMessage.getFlag(), pMessage);
 	}
 

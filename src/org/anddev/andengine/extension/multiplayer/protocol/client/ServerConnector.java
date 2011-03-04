@@ -8,7 +8,6 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IC
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageHandler.DefaultServerMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.client.ServerMessageReader.DefaultServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
@@ -18,7 +17,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public class ServerConnector<T extends Connection> extends Connector<T> {
+public class ServerConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -27,21 +26,19 @@ public class ServerConnector<T extends Connection> extends Connector<T> {
 	// Fields
 	// ===========================================================
 
-	private final IServerMessageReader mServerMessageReader;
-	private final IServerMessageHandler<T> mServerMessageHandler;
+	private final IServerMessageReader<C> mServerMessageReader;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public ServerConnector(final T pConnection, final DefaultServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<T> pServerConnectorListener) throws IOException {
-		this(pConnection, new DefaultServerMessageReader(), pServerMessageHandler, pServerConnectorListener);
+	public ServerConnector(final C pConnection, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
+		this(pConnection, new DefaultServerMessageReader<C>(), pServerConnectorListener);
 	}
 
-	public ServerConnector(final T pConnection, final IServerMessageReader pServerMessageReader, final IServerMessageHandler<T> pServerMessageHandler, final IServerConnectorListener<T> pServerConnectorListener) throws IOException {
+	public ServerConnector(final C pConnection, final IServerMessageReader<C> pServerMessageReader, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
 		super(pConnection);
 		this.mServerMessageReader = pServerMessageReader;
-		this.mServerMessageHandler = pServerMessageHandler;
 		this.setServerConnectorListener(pServerConnectorListener);
 
 		/* Initiate communication with the server,
@@ -54,22 +51,18 @@ public class ServerConnector<T extends Connection> extends Connector<T> {
 	// Getter & Setter
 	// ===========================================================
 
-	public IServerMessageReader getServerMessageReader() {
+	public IServerMessageReader<C> getServerMessageReader() {
 		return this.mServerMessageReader;
 	}
 
-	public IServerMessageHandler<T> getServerMessageHandler() {
-		return this.mServerMessageHandler;
-	}
-
-	public void setServerConnectorListener(final IServerConnectorListener<T> pServerConnectorListener) {
+	public void setServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
 		super.setConnectorListener(pServerConnectorListener);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IServerConnectorListener<T> getConnectorListener() {
-		return (IServerConnectorListener<T>) super.getConnectorListener();
+	public IServerConnectorListener<C> getConnectorListener() {
+		return (IServerConnectorListener<C>) super.getConnectorListener();
 	}
 
 	// ===========================================================
@@ -98,7 +91,7 @@ public class ServerConnector<T extends Connection> extends Connector<T> {
 	@Override
 	public void read(final DataInputStream pDataInputStream) throws IOException {
 		final IServerMessage serverMessage = this.mServerMessageReader.readMessage(pDataInputStream);
-		this.mServerMessageHandler.onHandleMessage(this, serverMessage);
+		this.mServerMessageReader.handleMessage(this, serverMessage);
 		this.mServerMessageReader.recycleMessage(serverMessage);
 	}
 
