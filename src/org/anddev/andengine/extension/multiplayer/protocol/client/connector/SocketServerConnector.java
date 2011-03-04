@@ -23,11 +23,11 @@ public class SocketServerConnector extends ServerConnector<SocketConnection> {
 	// Constructors
 	// ===========================================================
 
-	private SocketServerConnector(final SocketConnection pConnection, final ISocketServerConnectionConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+	private SocketServerConnector(final SocketConnection pConnection, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
 		super(pConnection, pSocketConnectionServerConnectorListener);
 	}
 
-	private SocketServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final ISocketServerConnectionConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+	private SocketServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
 		super(pConnection, pServerMessageReader, pSocketConnectionServerConnectorListener);
 	}
 
@@ -47,11 +47,11 @@ public class SocketServerConnector extends ServerConnector<SocketConnection> {
 	// Inner and Anonymous Classes
 	// ===========================================================
 	
-	public static interface ISocketServerConnectionConnectorListener extends IServerConnectorListener<SocketConnection> {
+	public static interface ISocketConnectionServerConnectorListener extends IServerConnectorListener<SocketConnection> {
 		
 	}
 	
-	public static class DefaultSocketConnectionServerConnectorListener implements ISocketServerConnectionConnectorListener {
+	public static class DefaultSocketConnectionServerConnectorListener implements ISocketConnectionServerConnectorListener {
 		@Override
 		public void onConnected(final ServerConnector<SocketConnection> pServerConnector) {
 			Debug.d("Accepted Server-Connection from: '" + pServerConnector.getConnection().getSocket().getInetAddress().getHostAddress());
