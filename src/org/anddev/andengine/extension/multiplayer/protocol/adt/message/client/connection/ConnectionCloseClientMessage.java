@@ -24,7 +24,7 @@ public class ConnectionCloseClientMessage extends ClientMessage {
 	// ===========================================================
 
 	public ConnectionCloseClientMessage() {
-		/* Nothing to store. */
+
 	}
 
 	// ===========================================================

@@ -26,6 +26,10 @@ public class ConnectionPongServerMessage extends ServerMessage {
 	// Constructors
 	// ===========================================================
 
+	public ConnectionPongServerMessage() {
+
+	}
+
 	public ConnectionPongServerMessage(final ConnectionPingClientMessage pClientMessage) {
 		this(pClientMessage.getTimestamp());
 	}

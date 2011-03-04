@@ -26,7 +26,7 @@ public class ConnectionPingServerMessage extends ServerMessage {
 	// ===========================================================
 
 	public ConnectionPingServerMessage() {
-		this(System.currentTimeMillis());
+
 	}
 
 	public ConnectionPingServerMessage(final long pTimestamp) {

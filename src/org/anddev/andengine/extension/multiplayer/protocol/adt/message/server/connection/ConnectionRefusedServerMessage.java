@@ -26,7 +26,7 @@ public class ConnectionRefusedServerMessage extends ServerMessage {
 	// ===========================================================
 
 	public ConnectionRefusedServerMessage() {
-		/* Nothing to store. */
+
 	}
 
 	// ===========================================================

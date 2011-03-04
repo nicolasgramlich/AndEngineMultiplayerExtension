@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.ClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 
 /**
  * @author Nicolas Gramlich
@@ -27,7 +26,7 @@ public class ConnectionEstablishClientMessage extends ClientMessage {
 	// ===========================================================
 
 	public ConnectionEstablishClientMessage() {
-		this(ProtocolConstants.PROTOCOL_VERSION);
+
 	}
 
 	public ConnectionEstablishClientMessage(final int pProtocolVersion) {

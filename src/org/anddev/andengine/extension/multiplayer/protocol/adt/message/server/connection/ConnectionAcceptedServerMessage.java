@@ -24,7 +24,7 @@ public class ConnectionAcceptedServerMessage extends ServerMessage {
 	// ===========================================================
 
 	public ConnectionAcceptedServerMessage() {
-		/* Nothing to store. */
+
 	}
 
 	// ===========================================================
