@@ -55,14 +55,14 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		return this.mServerMessageReader;
 	}
 
-	public void setServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
-		super.setConnectorListener(pServerConnectorListener);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public IServerConnectorListener<C> getConnectorListener() {
 		return (IServerConnectorListener<C>) super.getConnectorListener();
+	}
+
+	public void setServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
+		super.setConnectorListener(pServerConnectorListener);
 	}
 
 	// ===========================================================

@@ -17,7 +17,7 @@ import android.bluetooth.BluetoothSocket;
  * @author Nicolas Gramlich
  * @since 15:41:31 - 03.03.2011
  */
-public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> {
+public abstract class BluetoothSocketServer<CC extends ClientConnector<BluetoothSocketConnection>> extends Server<BluetoothSocketConnection, CC> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -38,14 +38,14 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	}
 
 	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener) {
-		this(pUUID, pClientConnectorListener, new DefaultBluetoothSocketServerListener());
+		this(pUUID, pClientConnectorListener, new DefaultBluetoothSocketServerListener<CC>());
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IBluetoothSocketServerListener pBluetoothSocketServerListener) {
+	public BluetoothSocketServer(final String pUUID, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {
 		this(pUUID, new DefaultClientConnectorListener<BluetoothSocketConnection>(), pBluetoothSocketServerListener);
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IBluetoothSocketServerListener pBluetoothSocketServerListener) {
+	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {
 		super(pClientConnectorListener, pBluetoothSocketServerListener);
 
 		this.mUUID = pUUID;
@@ -59,24 +59,25 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 		return this.mUUID;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IBluetoothSocketServerListener getServerListener() {
-		return (IBluetoothSocketServerListener)super.getServerListener();
+	public IBluetoothSocketServerListener<CC> getServerListener() {
+		return (IBluetoothSocketServerListener<CC>)super.getServerListener();
 	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract ClientConnector<BluetoothSocketConnection> newClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException;
+	protected abstract CC newClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException;
 
 	@Override
-	protected void onInit() throws IOException {
+	protected void onStart() throws IOException {
 		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(this.mUUID));
 	}
 
 	@Override
-	protected ClientConnector<BluetoothSocketConnection> acceptClientConnector() throws IOException {
+	protected CC acceptClientConnector() throws IOException {
 		/* Wait for an incoming connection. */
 		final BluetoothSocket clientBluetoothSocket = this.mBluetoothServerSocket.accept();
 
@@ -85,12 +86,18 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	}
 
 	@Override
-	public void onClosed() {
+	public void onTerminate() {
 		try {
 			this.mBluetoothServerSocket.close(); // TODO Put to SocketUtils
 		} catch (final IOException e) {
 			Debug.e(e);
 		}
+		this.getServerListener().onTerminated(this);
+	}
+
+	@Override
+	protected void onException(final Throwable pThrowable) {
+		this.getServerListener().onException(this, pThrowable);
 	}
 
 	// ===========================================================
@@ -101,7 +108,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IBluetoothSocketServerListener extends IServerListener<Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>>> {
+	public static interface IBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> extends IServerListener<BluetoothSocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -110,7 +117,20 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 		// Methods
 		// ===========================================================
 
-		public static class DefaultBluetoothSocketServerListener implements IBluetoothSocketServerListener {
+		@Override
+		public void onStarted(final BluetoothSocketServer<CC> pBluetoothSocketServer);
+
+		@Override
+		public void onTerminated(final BluetoothSocketServer<CC> pBluetoothSocketServer);
+
+		@Override
+		public void onException(final BluetoothSocketServer<CC> pBluetoothSocketServer, final Throwable pThrowable);
+
+		// ===========================================================
+		// Inner and Anonymous Classes
+		// ===========================================================
+
+		public static class DefaultBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> implements IBluetoothSocketServerListener<CC> {
 			// ===========================================================
 			// Constants
 			// ===========================================================
@@ -132,17 +152,17 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 			// ===========================================================
 
 			@Override
-			public void onStarted(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer) {
-				Debug.d("Server started on port: " + ((BluetoothSocketServer)pBluetoothSocketServer).getUUID());
+			public void onStarted(final BluetoothSocketServer<CC> pBluetoothSocketServer) {
+				Debug.d("Server started on port: " + pBluetoothSocketServer.getUUID());
 			}
 
 			@Override
-			public void onTerminated(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer) {
-				Debug.d("Server terminated on port: " + ((BluetoothSocketServer)pBluetoothSocketServer).getUUID());
+			public void onTerminated(final BluetoothSocketServer<CC> pBluetoothSocketServer) {
+				Debug.d("Server terminated on port: " + pBluetoothSocketServer.getUUID());
 			}
 
 			@Override
-			public void onException(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer, final Throwable pThrowable) {
+			public void onException(final BluetoothSocketServer<CC> pBluetoothSocketServer, final Throwable pThrowable) {
 				Debug.e(pThrowable);
 			}
 

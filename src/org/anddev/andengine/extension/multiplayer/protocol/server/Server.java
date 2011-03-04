@@ -7,6 +7,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IS
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
+import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
@@ -21,7 +22,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Fields
 	// ===========================================================
 
-	protected final IServerListener<Server<C, CC>> mServerListener;
+	protected IServerListener<? extends Server<C, CC>> mServerListener;
 
 	private boolean mRunning = false;
 	private boolean mClosed = true;
@@ -33,7 +34,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Constructors
 	// ===========================================================
 
-	public Server(final IClientConnectorListener<C> pClientConnectorListener, final IServerListener<Server<C, CC>> pServerListener) {
+	public Server(final IClientConnectorListener<C> pClientConnectorListener, final IServerListener<? extends Server<C, CC>> pServerListener) {
 		this.mServerListener = pServerListener;
 		this.mClientConnectorListener = pClientConnectorListener;
 
@@ -56,26 +57,30 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		return this.mClosed ;
 	}
 	
-	public IServerListener<Server<C, CC>> getServerListener() {
+	public IServerListener<? extends Server<C, CC>> getServerListener() {
 		return this.mServerListener;
+	}
+	
+	protected void setServerListener(final IServerListener<? extends Server<C, CC>> pServerListener) {
+		this.mServerListener = pServerListener;
 	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void onInit() throws IOException;
-	protected abstract void onClosed();
+	protected abstract void onStart() throws IOException;
 	protected abstract CC acceptClientConnector() throws IOException;
+	protected abstract void onTerminate();
+	protected abstract void onException(Throwable pPThrowable);
 
 	@Override
 	public void run() {
 		this.mRunning = true;
 		this.mClosed = false;
-		this.mServerListener.onStarted(this);
 		try {
 			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
-			this.onInit();
+			this.onStart();
 
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted()) {
@@ -87,11 +92,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
 					clientConnector.getConnection().start();
 				} catch (final Throwable pThrowable) {
-					this.mServerListener.onException(this, pThrowable);
+					this.onException(pThrowable);
 				}
 			}
 		} catch (final Throwable pThrowable) {
-			this.mServerListener.onException(this, pThrowable);
+			this.onException(pThrowable);
 		} finally {
 			this.close();
 		}
@@ -126,15 +131,16 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 					clientConnectors.get(i).getConnection().interrupt();
 				}
 				clientConnectors.clear();
-
-				Thread.sleep(1000);
-
-				this.mServerListener.onTerminated(this);
 			} catch (final Exception e) {
-				this.mServerListener.onException(this, e);
+				this.onException(e);
 			}
 
-			this.onClosed();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Debug.e(e);
+			}
+			this.onTerminate();
 		}
 	}
 
@@ -145,7 +151,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 				try {
 					clientConnectors.get(i).sendServerMessage(pServerMessage);
 				} catch (final IOException e) {
-					this.mServerListener.onException(this, e);
+					this.onException(e);
 				}
 			}
 		}
@@ -156,6 +162,14 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// ===========================================================
 
 	public static interface IServerListener<S extends Server<?, ?>> {
+		// ===========================================================
+		// Final Fields
+		// ===========================================================
+
+		// ===========================================================
+		// Methods
+		// ===========================================================
+		
 		public void onStarted(final S pServer);
 		public void onTerminated(final S pServer);
 		public void onException(final S pServer, final Throwable pThrowable);

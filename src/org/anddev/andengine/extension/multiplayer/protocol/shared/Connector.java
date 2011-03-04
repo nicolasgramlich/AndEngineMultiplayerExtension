@@ -59,7 +59,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IConnectorListener<T extends Connector<?>> {
+	public static interface IConnectorListener<C extends Connector<?>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -68,7 +68,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 		// Methods
 		// ===========================================================
 
-		public void onConnected(final T pConnector);
-		public void onDisconnected(final T pConnector);
+		public void onConnected(final C pConnector);
+		public void onDisconnected(final C pConnector);
 	}
 }

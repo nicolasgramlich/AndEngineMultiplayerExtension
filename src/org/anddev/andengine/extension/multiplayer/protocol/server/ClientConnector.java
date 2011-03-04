@@ -49,14 +49,14 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		return this.mClientMessageReader;
 	}
 
-	public void setClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
-		super.setConnectorListener(pClientConnectorListener);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public IClientConnectorListener<C> getConnectorListener() {
 		return (IClientConnectorListener<C>) super.getConnectorListener();
+	}
+
+	public void setClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
+		super.setConnectorListener(pClientConnectorListener);
 	}
 
 	// ===========================================================

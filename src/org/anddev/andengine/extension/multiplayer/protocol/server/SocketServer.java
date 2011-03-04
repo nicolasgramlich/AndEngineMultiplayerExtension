@@ -17,7 +17,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:55:09 - 03.03.2011
  */
-public abstract class SocketServer extends Server<SocketConnection, ClientConnector<SocketConnection>> {
+public abstract class SocketServer<CC extends ClientConnector<SocketConnection>> extends Server<SocketConnection, CC> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -38,19 +38,19 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	}
 
 	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener) {
-		this(pPort, pClientConnectorListener, new DefaultSocketServerListener());
+		this(pPort, pClientConnectorListener, new DefaultSocketServerListener<CC>());
 	}
 
-	public SocketServer(final int pPort, final ISocketServerListener pSocketServerListener) {
+	public SocketServer(final int pPort, final ISocketServerListener<CC> pSocketServerListener) {
 		this(pPort, new DefaultClientConnectorListener<SocketConnection>(), pSocketServerListener);
 	}
 
-	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final ISocketServerListener pSocketServerListener) {
+	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final ISocketServerListener<CC> pSocketServerListener) {
 		super(pClientConnectorListener, pSocketServerListener);
 
 		if (pPort < 0) {
 			final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("Illegal port '< 0'.");
-			this.mServerListener.onException(this, illegalArgumentException);
+			this.onException(illegalArgumentException);
 			throw illegalArgumentException;
 		}else{
 			this.mPort = pPort;
@@ -65,24 +65,30 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 		return this.mPort;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public ISocketServerListener getServerListener() {
-		return (ISocketServerListener)super.getServerListener();
+	public ISocketServerListener<CC> getServerListener() {
+		return (ISocketServerListener<CC>)super.getServerListener();
+	}
+
+	public void setSocketServerListener(final ISocketServerListener<CC> pSocketServerListener) {
+		super.setServerListener(pSocketServerListener);
 	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract ClientConnector<SocketConnection> newClientConnector(final SocketConnection pSocketConnection) throws IOException;
+	protected abstract CC newClientConnector(final SocketConnection pSocketConnection) throws IOException;
 
 	@Override
-	protected void onInit() throws IOException {
+	protected void onStart() throws IOException {
 		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mPort);
+		this.getServerListener().onStarted(this);
 	}
 
 	@Override
-	protected ClientConnector<SocketConnection> acceptClientConnector() throws IOException {
+	protected CC acceptClientConnector() throws IOException {
 		/* Wait for an incoming connection. */
 		final Socket clientSocket = this.mServerSocket.accept();
 
@@ -91,8 +97,14 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	}
 
 	@Override
-	public void onClosed() {
+	protected void onTerminate() {
 		SocketUtils.closeSocket(this.mServerSocket);
+		this.getServerListener().onTerminated(this);
+	}
+
+	@Override
+	protected void onException(final Throwable pThrowable) {
+		this.getServerListener().onException(this, pThrowable);
 	}
 
 	// ===========================================================
@@ -103,7 +115,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface ISocketServerListener extends IServerListener<Server<SocketConnection, ClientConnector<SocketConnection>>> {
+	public static interface ISocketServerListener<CC extends ClientConnector<SocketConnection>> extends IServerListener<SocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -112,7 +124,21 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 		// Methods
 		// ===========================================================
 
-		public static class DefaultSocketServerListener implements ISocketServerListener {
+		@Override
+		public void onStarted(final SocketServer<CC> pSocketServer);
+
+		@Override
+		public void onTerminated(final SocketServer<CC> pSocketServer);
+
+		@Override
+		public void onException(final SocketServer<CC> pSocketServer, final Throwable pThrowable);
+
+		// ===========================================================
+		// Inner and Anonymous Classes
+		// ===========================================================
+
+		public static class DefaultSocketServerListener<CC extends ClientConnector<SocketConnection>> implements ISocketServerListener<CC> {
+
 			// ===========================================================
 			// Constants
 			// ===========================================================
@@ -134,17 +160,17 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 			// ===========================================================
 
 			@Override
-			public void onStarted(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
-				Debug.d("Server started on port: " + ((SocketServer)pSocketServer).getPort());
+			public void onStarted(final SocketServer<CC> pSocketServer) {
+				Debug.d("Server started on port: " + pSocketServer.getPort());
 			}
 
 			@Override
-			public void onTerminated(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
-				Debug.d("Server terminated on port: " + ((SocketServer)pSocketServer).getPort());
+			public void onTerminated(final SocketServer<CC> pSocketServer) {
+				Debug.d("Server terminated on port: " + pSocketServer.getPort());
 			}
 
 			@Override
-			public void onException(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer, final Throwable pThrowable) {
+			public void onException(final SocketServer<CC> pServer, final Throwable pThrowable) {
 				Debug.e(pThrowable);
 			}
 
