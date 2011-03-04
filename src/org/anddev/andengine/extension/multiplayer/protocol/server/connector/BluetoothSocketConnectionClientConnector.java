@@ -2,8 +2,10 @@ package org.anddev.andengine.extension.multiplayer.protocol.server.connector;
 
 import java.io.IOException;
 
+import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
+import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.anddev.andengine.util.Debug;
 
 /**
@@ -23,12 +25,20 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 	// Constructors
 	// ===========================================================
 
-	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException {
+	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection);
+		
+		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+			throw new BluetoothException();
+		}
 	}
 
-	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException {
+	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection, pClientMessageReader);
+		
+		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+			throw new BluetoothException();
+		}
 	}
 
 	// ===========================================================

@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothException;
+import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.anddev.andengine.util.Debug;
 
 import android.bluetooth.BluetoothSocket;
@@ -27,10 +29,14 @@ public class BluetoothSocketConnection extends Connection {
 	// Constructors
 	// ===========================================================
 
-	public BluetoothSocketConnection(final BluetoothSocket pBluetoothSocket) throws IOException {
+	public BluetoothSocketConnection(final BluetoothSocket pBluetoothSocket) throws IOException, BluetoothException {
 		super(new DataInputStream(pBluetoothSocket.getInputStream()), new DataOutputStream(pBluetoothSocket.getOutputStream()));
 
 		this.mBluetoothSocket = pBluetoothSocket;
+		
+		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+			throw new BluetoothException();
+		}
 	}
 
 	// ===========================================================

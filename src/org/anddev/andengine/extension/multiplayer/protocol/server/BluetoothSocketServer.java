@@ -3,11 +3,13 @@ package org.anddev.andengine.extension.multiplayer.protocol.server;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.anddev.andengine.extension.multiplayer.protocol.server.BluetoothSocketServer.IBluetoothSocketServerListener.DefaultBluetoothSocketServerListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketConnectionClientConnector.DefaultBluetoothSocketClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
+import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.anddev.andengine.util.Debug;
 
 import android.bluetooth.BluetoothAdapter;
@@ -34,22 +36,26 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	// Constructors
 	// ===========================================================
 
-	public BluetoothSocketServer(final String pUUID) {
+	public BluetoothSocketServer(final String pUUID) throws BluetoothException {
 		this(pUUID, new DefaultBluetoothSocketClientConnectorListener());
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener) {
+	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener) throws BluetoothException {
 		this(pUUID, pClientConnectorListener, new DefaultBluetoothSocketServerListener<CC>());
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {
+	public BluetoothSocketServer(final String pUUID, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) throws BluetoothException {
 		this(pUUID, new DefaultBluetoothSocketClientConnectorListener(), pBluetoothSocketServerListener);
 	}
 
-	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {
+	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) throws BluetoothException {
 		super(pClientConnectorListener, pBluetoothSocketServerListener);
 
 		this.mUUID = pUUID;
+		
+		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+			throw new BluetoothException();
+		}
 	}
 
 	// ===========================================================
@@ -83,7 +89,12 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 		final BluetoothSocket clientBluetoothSocket = this.mBluetoothServerSocket.accept();
 
 		/* Spawn a new ClientConnector, which send and receive data to and from the client. */
-		return this.newClientConnector(new BluetoothSocketConnection(clientBluetoothSocket));
+		try {
+			return this.newClientConnector(new BluetoothSocketConnection(clientBluetoothSocket));
+		} catch (BluetoothException e) {
+			/* Can not happen, as the same check is also performed in the consutuctor. */
+			return null;
+		}
 	}
 
 	@Override
