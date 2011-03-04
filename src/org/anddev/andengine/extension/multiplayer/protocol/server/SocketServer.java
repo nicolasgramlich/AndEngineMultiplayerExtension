@@ -8,7 +8,9 @@ import javax.net.ServerSocketFactory;
 
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener.DefaultClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
 
 /**
@@ -24,7 +26,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	// Fields
 	// ===========================================================
 
-	private final int mServerPort;
+	private final int mPort;
 	private ServerSocket mServerSocket;
 
 	// ===========================================================
@@ -36,28 +38,32 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	}
 
 	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener) {
-		this(pPort, pClientConnectorListener, new IServerStateListener.DefaultServerStateListener());
+		this(pPort, pClientConnectorListener, new DefaultSocketServerListener());
 	}
 
-	public SocketServer(final int pPort, final IServerStateListener pServerStateListener) {
-		this(pPort, new DefaultClientConnectorListener<SocketConnection>(), pServerStateListener);
+	public SocketServer(final int pPort, final ISocketServerListener pSocketServerListener) {
+		this(pPort, new DefaultClientConnectorListener<SocketConnection>(), pSocketServerListener);
 	}
 
-	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final IServerStateListener pServerStateListener) {
-		super(pClientConnectorListener, pServerStateListener);
+	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final ISocketServerListener pSocketServerListener) {
+		super(pClientConnectorListener, pSocketServerListener);
 
 		if (pPort < 0) {
 			final IllegalArgumentException illegalArgumentException = new IllegalArgumentException("Illegal port '< 0'.");
-			this.mServerStateListener.onException(illegalArgumentException);
+			this.mServerListener.onException(this, illegalArgumentException);
 			throw illegalArgumentException;
 		}else{
-			this.mServerPort = pPort;
+			this.mPort = pPort;
 		}
 	}
 
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
+
+	public int getPort() {
+		return this.mPort;
+	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
@@ -67,7 +73,7 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 
 	@Override
 	protected void onInit() throws IOException {
-		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mServerPort);
+		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mPort);
 	}
 
 	@Override
@@ -91,4 +97,57 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
+
+	public static interface ISocketServerListener extends IServerListener<Server<SocketConnection, ClientConnector<SocketConnection>>> {
+		// ===========================================================
+		// Final Fields
+		// ===========================================================
+
+		// ===========================================================
+		// Methods
+		// ===========================================================
+
+		public static class DefaultSocketServerListener implements ISocketServerListener {
+			// ===========================================================
+			// Constants
+			// ===========================================================
+
+			// ===========================================================
+			// Fields
+			// ===========================================================
+
+			// ===========================================================
+			// Constructors
+			// ===========================================================
+
+			// ===========================================================
+			// Getter & Setter
+			// ===========================================================
+
+			// ===========================================================
+			// Methods for/from SuperClass/Interfaces
+			// ===========================================================
+
+			@Override
+			public void onStarted(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
+				Debug.d("Server started on port: " + ((SocketServer)pSocketServer).getPort());
+			}
+			@Override
+			public void onTerminated(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
+				Debug.d("Server terminated on port: " + ((SocketServer)pSocketServer).getPort());
+			}
+			@Override
+			public void onException(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer, final Throwable pThrowable) {
+				Debug.e(pThrowable);
+			}
+
+			// ===========================================================
+			// Methods
+			// ===========================================================
+
+			// ===========================================================
+			// Inner and Anonymous Classes
+			// ===========================================================
+		}
+	}
 }

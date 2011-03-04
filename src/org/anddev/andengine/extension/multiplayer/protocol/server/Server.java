@@ -7,7 +7,6 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IS
 import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
-import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
@@ -22,7 +21,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Fields
 	// ===========================================================
 
-	protected final IServerStateListener mServerStateListener;
+	protected final IServerListener<Server<C, CC>> mServerListener;
 
 	private boolean mRunning = false;
 	private boolean mClosed = true;
@@ -34,8 +33,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Constructors
 	// ===========================================================
 
-	public Server(final IClientConnectorListener<C> pClientConnectorListener, final IServerStateListener pServerStateListener) {
-		this.mServerStateListener = pServerStateListener;
+	public Server(final IClientConnectorListener<C> pClientConnectorListener, final IServerListener<Server<C, CC>> pServerListener) {
+		this.mServerListener = pServerListener;
 		this.mClientConnectorListener = pClientConnectorListener;
 
 		this.initName();
@@ -56,6 +55,10 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	public boolean isTerminated() {
 		return this.mClosed ;
 	}
+	
+	public IServerListener<Server<C, CC>> getServerListener() {
+		return this.mServerListener;
+	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
@@ -69,7 +72,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	public void run() {
 		this.mRunning = true;
 		this.mClosed = false;
-		this.mServerStateListener.onStarted();
+		this.mServerListener.onStarted(this);
 		try {
 			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
 			this.onInit();
@@ -84,11 +87,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
 					clientConnector.getConnection().start();
 				} catch (final Throwable pThrowable) {
-					this.mServerStateListener.onException(pThrowable);
+					this.mServerListener.onException(this, pThrowable);
 				}
 			}
 		} catch (final Throwable pThrowable) {
-			this.mServerStateListener.onException(pThrowable);
+			this.mServerListener.onException(this, pThrowable);
 		} finally {
 			this.close();
 		}
@@ -126,9 +129,9 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 				Thread.sleep(1000);
 
-				this.mServerStateListener.onTerminated();
+				this.mServerListener.onTerminated(this);
 			} catch (final Exception e) {
-				this.mServerStateListener.onException(e);
+				this.mServerListener.onException(this, e);
 			}
 
 			this.onClosed();
@@ -142,7 +145,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 				try {
 					clientConnectors.get(i).sendServerMessage(pServerMessage);
 				} catch (final IOException e) {
-					this.mServerStateListener.onException(e);
+					this.mServerListener.onException(this, e);
 				}
 			}
 		}
@@ -152,24 +155,9 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IServerStateListener {
-		public void onStarted();
-		public void onTerminated();
-		public void onException(final Throwable pThrowable);
-
-		public static class DefaultServerStateListener implements IServerStateListener {
-			@Override
-			public void onStarted() {
-				Debug.d("Server started.");
-			}
-			@Override
-			public void onTerminated() {
-				Debug.d("Server terminated.");
-			}
-			@Override
-			public void onException(final Throwable pThrowable) {
-				Debug.e(pThrowable);
-			}
-		}
+	public static interface IServerListener<S extends Server<?, ?>> {
+		public void onStarted(final S pServer);
+		public void onTerminated(final S pServer);
+		public void onException(final S pServer, final Throwable pThrowable);
 	}
 }

@@ -44,6 +44,7 @@ public abstract class MessageReader<C extends Connection, CC extends Connector<C
 	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
 		this.mMessagePool.registerMessage(pFlag, pMessageClass);
 	}
+
 	@Override
 	public void registerMessageHandler(final short pFlag, final IMessageHandler<C, CC, M> pMessageHandler) {
 		this.mMessageHandlers.put(pFlag, pMessageHandler);
