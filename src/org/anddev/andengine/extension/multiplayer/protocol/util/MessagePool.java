@@ -2,6 +2,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.util;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
 import org.anddev.andengine.util.Debug;
@@ -37,17 +38,17 @@ public class MessagePool<M extends IMessage> {
 
 	public void registerMessage(final short pFlag, final Class<? extends M> pMessageClass) {
 		this.mMessageMultiPool.registerPool(pFlag,
-				new GenericPool<M>() {
-			@Override
-			protected M onAllocatePoolItem() {
-				try {
-					return pMessageClass.newInstance();
-				} catch (final Throwable t) {
-					Debug.e(t);
-					return null;
+			new GenericPool<M>() {
+				@Override
+				protected M onAllocatePoolItem() {
+					try {
+						return pMessageClass.newInstance();
+					} catch (final Throwable t) {
+						Debug.e(t);
+						return null;
+					}
 				}
 			}
-		}
 		);
 	}
 
@@ -63,6 +64,14 @@ public class MessagePool<M extends IMessage> {
 
 	public void recycleMessage(final M pMessage) {
 		this.mMessageMultiPool.recyclePoolItem(pMessage.getFlag(), pMessage);
+	}
+
+	public void recycleMessages(final List<M> pMessages) {
+		final MultiPool<M> messageMultiPool = this.mMessageMultiPool;
+		for(int i = pMessages.size() - 1; i >= 0; i--) {
+			final M message = pMessages.get(i);
+			messageMultiPool.recyclePoolItem(message.getFlag(), message);
+		}
 	}
 
 	// ===========================================================
