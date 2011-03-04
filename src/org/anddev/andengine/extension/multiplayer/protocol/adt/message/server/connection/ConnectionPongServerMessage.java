@@ -26,6 +26,7 @@ public class ConnectionPongServerMessage extends ServerMessage {
 	// Constructors
 	// ===========================================================
 
+	@Deprecated
 	public ConnectionPongServerMessage() {
 
 	}

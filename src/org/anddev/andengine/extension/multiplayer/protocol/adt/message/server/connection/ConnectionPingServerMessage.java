@@ -25,6 +25,7 @@ public class ConnectionPingServerMessage extends ServerMessage {
 	// Constructors
 	// ===========================================================
 
+	@Deprecated
 	public ConnectionPingServerMessage() {
 
 	}

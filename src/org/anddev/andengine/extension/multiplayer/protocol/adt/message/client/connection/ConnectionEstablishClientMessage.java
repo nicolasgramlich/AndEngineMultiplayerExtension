@@ -25,6 +25,7 @@ public class ConnectionEstablishClientMessage extends ClientMessage {
 	// Constructors
 	// ===========================================================
 
+	@Deprecated
 	public ConnectionEstablishClientMessage() {
 
 	}
