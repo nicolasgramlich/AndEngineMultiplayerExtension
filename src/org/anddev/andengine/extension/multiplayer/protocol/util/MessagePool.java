@@ -66,7 +66,7 @@ public class MessagePool<M extends IMessage> {
 		this.mMessageMultiPool.recyclePoolItem(pMessage.getFlag(), pMessage);
 	}
 
-	public void recycleMessages(final List<M> pMessages) {
+	public void recycleMessages(final List<? extends M> pMessages) {
 		final MultiPool<M> messageMultiPool = this.mMessageMultiPool;
 		for(int i = pMessages.size() - 1; i >= 0; i--) {
 			final M message = pMessages.get(i);
