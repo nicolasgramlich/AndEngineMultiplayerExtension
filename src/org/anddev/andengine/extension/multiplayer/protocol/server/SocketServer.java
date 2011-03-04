@@ -65,6 +65,11 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 		return this.mPort;
 	}
 
+	@Override
+	public ISocketServerListener getServerListener() {
+		return (ISocketServerListener)super.getServerListener();
+	}
+
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
@@ -132,10 +137,12 @@ public abstract class SocketServer extends Server<SocketConnection, ClientConnec
 			public void onStarted(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
 				Debug.d("Server started on port: " + ((SocketServer)pSocketServer).getPort());
 			}
+
 			@Override
 			public void onTerminated(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer) {
 				Debug.d("Server terminated on port: " + ((SocketServer)pSocketServer).getPort());
 			}
+
 			@Override
 			public void onException(final Server<SocketConnection, ClientConnector<SocketConnection>> pSocketServer, final Throwable pThrowable) {
 				Debug.e(pThrowable);

@@ -54,9 +54,14 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-	
+
 	public String getUUID() {
 		return this.mUUID;
+	}
+
+	@Override
+	public IBluetoothSocketServerListener getServerListener() {
+		return (IBluetoothSocketServerListener)super.getServerListener();
 	}
 
 	// ===========================================================
@@ -95,7 +100,7 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	public static interface IBluetoothSocketServerListener extends IServerListener<Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>>> {
 		// ===========================================================
 		// Final Fields
@@ -125,15 +130,17 @@ public abstract class BluetoothSocketServer extends Server<BluetoothSocketConnec
 			// ===========================================================
 			// Methods for/from SuperClass/Interfaces
 			// ===========================================================
-			
+
 			@Override
 			public void onStarted(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer) {
 				Debug.d("Server started on port: " + ((BluetoothSocketServer)pBluetoothSocketServer).getUUID());
 			}
+
 			@Override
 			public void onTerminated(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer) {
 				Debug.d("Server terminated on port: " + ((BluetoothSocketServer)pBluetoothSocketServer).getUUID());
 			}
+
 			@Override
 			public void onException(final Server<BluetoothSocketConnection, ClientConnector<BluetoothSocketConnection>> pBluetoothSocketServer, final Throwable pThrowable) {
 				Debug.e(pThrowable);
