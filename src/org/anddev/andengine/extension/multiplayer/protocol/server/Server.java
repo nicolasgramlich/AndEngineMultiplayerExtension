@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;

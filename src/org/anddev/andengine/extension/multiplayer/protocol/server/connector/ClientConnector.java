@@ -1,4 +1,4 @@
-package org.anddev.andengine.extension.multiplayer.protocol.server;
+package org.anddev.andengine.extension.multiplayer.protocol.server.connector;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,6 +7,8 @@ import java.io.IOException;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageHandler;
+import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader.DefaultClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
@@ -119,21 +121,11 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		// ===========================================================
 		// Methods
 		// ===========================================================
-
-		// ===========================================================
-		// Inner and Anonymous Classes
-		// ===========================================================
-
-		public static class DefaultClientConnectorListener<T extends Connection> implements IClientConnectorListener<T> {
-			@Override
-			public void onConnected(final ClientConnector<T> pConnector) {
-				Debug.d("Accepted Client-Connection from: '" + pConnector.toString() + "'");
-			}
-
-			@Override
-			public void onDisconnected(final ClientConnector<T> pConnector) {
-				Debug.d("Closed Client-Connection from: '" + pConnector.toString() + "'");
-			}
-		}
+		
+		@Override
+		public void onConnected(final ClientConnector<T> pClientConnector);
+		
+		@Override
+		public void onDisconnected(final ClientConnector<T> pClientConnector);
 	}
 }

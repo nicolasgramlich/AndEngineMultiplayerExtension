@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.anddev.andengine.extension.multiplayer.protocol.server.BluetoothSocketServer.IBluetoothSocketServerListener.DefaultBluetoothSocketServerListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener.DefaultClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketClientConnector.DefaultBluetoothSocketClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.anddev.andengine.util.Debug;
 
@@ -34,7 +35,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	// ===========================================================
 
 	public BluetoothSocketServer(final String pUUID) {
-		this(pUUID, new DefaultClientConnectorListener<BluetoothSocketConnection>());
+		this(pUUID, new DefaultBluetoothSocketClientConnectorListener());
 	}
 
 	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener) {
@@ -42,7 +43,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	}
 
 	public BluetoothSocketServer(final String pUUID, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {
-		this(pUUID, new DefaultClientConnectorListener<BluetoothSocketConnection>(), pBluetoothSocketServerListener);
+		this(pUUID, new DefaultBluetoothSocketClientConnectorListener(), pBluetoothSocketServerListener);
 	}
 
 	public BluetoothSocketServer(final String pUUID, final IClientConnectorListener<BluetoothSocketConnection> pClientConnectorListener, final IBluetoothSocketServerListener<CC> pBluetoothSocketServerListener) {

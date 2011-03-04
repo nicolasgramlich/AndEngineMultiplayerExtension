@@ -6,9 +6,10 @@ import java.net.Socket;
 
 import javax.net.ServerSocketFactory;
 
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener;
-import org.anddev.andengine.extension.multiplayer.protocol.server.ClientConnector.IClientConnectorListener.DefaultClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
+import org.anddev.andengine.extension.multiplayer.protocol.server.connector.SocketClientConnector.DefaultSocketConnectionClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
@@ -34,7 +35,7 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	// ===========================================================
 
 	public SocketServer(final int pPort) {
-		this(pPort, new DefaultClientConnectorListener<SocketConnection>());
+		this(pPort, new DefaultSocketConnectionClientConnectorListener());
 	}
 
 	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener) {
@@ -42,7 +43,7 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	}
 
 	public SocketServer(final int pPort, final ISocketServerListener<CC> pSocketServerListener) {
-		this(pPort, new DefaultClientConnectorListener<SocketConnection>(), pSocketServerListener);
+		this(pPort, new DefaultSocketConnectionClientConnectorListener(), pSocketServerListener);
 	}
 
 	public SocketServer(final int pPort, final IClientConnectorListener<SocketConnection> pClientConnectorListener, final ISocketServerListener<CC> pSocketServerListener) {

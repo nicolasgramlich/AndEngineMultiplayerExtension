@@ -1,4 +1,4 @@
-package org.anddev.andengine.extension.multiplayer.protocol.client;
+package org.anddev.andengine.extension.multiplayer.protocol.client.connector;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,6 +8,8 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IC
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
+import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageHandler;
+import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader.DefaultServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
@@ -129,21 +131,11 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		// ===========================================================
 		// Methods
 		// ===========================================================
-
-		// ===========================================================
-		// Inner and Anonymous Classes
-		// ===========================================================
-
-		public static class DefaultServerConnectionListener<T extends Connection> implements IServerConnectorListener<T> {
-			@Override
-			public void onConnected(final ServerConnector<T> pConnector) {
-				Debug.d("Accepted Server-Connection from: '" + pConnector.toString() + "'");
-			}
-
-			@Override
-			public void onDisconnected(final ServerConnector<T> pConnector) {
-				Debug.d("Closed Server-Connection from: '" + pConnector.toString() + "'");
-			}
-		}
+		
+		@Override
+		public void onConnected(final ServerConnector<T> pServerConnector);
+		
+		@Override
+		public void onDisconnected(final ServerConnector<T> pServerConnector);
 	}
 }
