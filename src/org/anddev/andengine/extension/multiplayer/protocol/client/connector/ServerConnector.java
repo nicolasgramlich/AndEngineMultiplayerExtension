@@ -13,6 +13,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessage
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader.DefaultServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
+import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
 
 /**
@@ -46,7 +47,7 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		/* Initiate communication with the server,
 		 * by sending a ConnectionEstablishClientMessage
 		 * which contains the Protocol version. */
-		this.sendClientMessage(new ConnectionEstablishClientMessage());
+		this.sendClientMessage(new ConnectionEstablishClientMessage(ProtocolConstants.PROTOCOL_VERSION));
 	}
 
 	// ===========================================================

@@ -163,5 +163,4 @@ public interface IClientMessageReader<C extends Connection> extends IMessageRead
 			// ===========================================================
 		}
 	}
-
 }
