@@ -17,6 +17,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 
 /**
+ * TODO allow to pass {@link BluetoothAdapter} to the constructor. 
  * @author Nicolas Gramlich
  * @since 15:41:31 - 03.03.2011
  */
@@ -81,6 +82,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	@Override
 	protected void onStart() throws IOException {
 		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(this.mUUID));
+//		this.mBluetoothServerSocket = BluetoothAdapter.getDefaultAdapter().listenUsingInsecureRfcommWithServiceRecord(this.getClass().getName(), UUID.fromString(this.mUUID)); // TODO Allow insecure!
 	}
 
 	@Override

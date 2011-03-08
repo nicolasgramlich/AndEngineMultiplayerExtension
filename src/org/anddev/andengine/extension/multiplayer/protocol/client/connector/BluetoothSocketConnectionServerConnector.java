@@ -3,9 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.client.connector;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
-import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
-import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.anddev.andengine.util.Debug;
 
 /**
@@ -25,20 +23,12 @@ public class BluetoothSocketConnectionServerConnector extends ServerConnector<Bl
 	// Constructors
 	// ===========================================================
 
-	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException, BluetoothException {
+	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
 		super(pBluetoothSocketConnection, pBlutetoothSocketConnectionServerConnectorListener);
-
-		if(Bluetooth.isSupportedByAndroidVersion() == false) {
-			throw new BluetoothException();
-		}
 	}
 
-	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException, BluetoothException {
+	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
 		super(pBluetoothSocketConnection, pServerMessageReader, pBlutetoothSocketConnectionServerConnectorListener);
-
-		if(Bluetooth.isSupportedByAndroidVersion() == false) {
-			throw new BluetoothException();
-		}
 	}
 
 	// ===========================================================
