@@ -6,13 +6,11 @@ import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.connection.ConnectionCloseServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
-import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader.DefaultClientMessageReader;
+import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
-import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
@@ -34,7 +32,7 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	public ClientConnector(final C pConnection) throws IOException {
-		this(pConnection, new DefaultClientMessageReader<C>());
+		this(pConnection, new ClientMessageReader<C>());
 	}
 
 	public ClientConnector(final C pConnection, final IClientMessageReader<C> pClientMessageReader) throws IOException {
@@ -73,11 +71,6 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	@Override
 	public void onDisconnected(final Connection pConnection) {
 		this.getConnectorListener().onDisconnected(this);
-		try {
-			this.sendServerMessage(new ConnectionCloseServerMessage());
-		} catch (final Throwable pThrowable) {
-			Debug.e(pThrowable);
-		}
 	}
 
 	@Override

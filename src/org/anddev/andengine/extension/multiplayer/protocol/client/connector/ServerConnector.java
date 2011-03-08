@@ -5,16 +5,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionCloseClientMessage;
-import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.connection.ConnectionEstablishClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageHandler;
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
-import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader.DefaultServerMessageReader;
+import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
-import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
-import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
@@ -36,18 +32,13 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	public ServerConnector(final C pConnection, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
-		this(pConnection, new DefaultServerMessageReader<C>(), pServerConnectorListener);
+		this(pConnection, new ServerMessageReader<C>(), pServerConnectorListener);
 	}
 
 	public ServerConnector(final C pConnection, final IServerMessageReader<C> pServerMessageReader, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
 		super(pConnection);
 		this.mServerMessageReader = pServerMessageReader;
 		this.setServerConnectorListener(pServerConnectorListener);
-
-		/* Initiate communication with the server,
-		 * by sending a ConnectionEstablishClientMessage
-		 * which contains the Protocol version. */
-		this.sendClientMessage(new ConnectionEstablishClientMessage(ProtocolConstants.PROTOCOL_VERSION));
 	}
 
 	// ===========================================================
@@ -83,11 +74,6 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	public void onDisconnected(final Connection pConnection) {
 		if(this.hasConnectorListener()) {
 			this.getConnectorListener().onDisconnected(this);
-		}
-		try {
-			this.sendClientMessage(new ConnectionCloseClientMessage());
-		} catch (final Throwable pThrowable) {
-			Debug.e(pThrowable);
 		}
 	}
 

@@ -7,14 +7,13 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IS
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
-import org.anddev.andengine.extension.multiplayer.protocol.util.constants.ProtocolConstants;
 import org.anddev.andengine.util.Debug;
 
 /**
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread implements ProtocolConstants {
+public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
