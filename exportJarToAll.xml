@@ -16,7 +16,9 @@
 	<property name="targetlist" value="../AndCards/lib/andenginemultiplayerextension.jar,
 		../AndEngineExamples/lib/andenginemultiplayerextension.jar,
 		../AndEngineGameTemplate/lib/andenginemultiplayerextension.jar,
-		../MinigameCollection/lib/andenginemultiplayerextension.jar" />
+		../APlay/lib/andenginemultiplayerextension.jar,
+		../APlayShared/lib/andenginemultiplayerextension.jar,
+		../APlayController/lib/andenginemultiplayerextension.jar" />
    
 	<target name="createjar" >
 		<echo>${targetfile}</echo>

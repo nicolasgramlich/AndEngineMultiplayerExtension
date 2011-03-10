@@ -28,7 +28,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	private boolean mClosed = true;
 
 	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
-	protected final IClientConnectorListener<C> mClientConnectorListener;
+	protected IClientConnectorListener<C> mClientConnectorListener;
 
 	// ===========================================================
 	// Constructors
@@ -56,11 +56,19 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	public boolean isTerminated() {
 		return this.mClosed ;
 	}
-	
+
+	public IClientConnectorListener<C> getClientConnectorListener() {
+		return this.mClientConnectorListener;
+	}
+
+	public void setClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
+		this.mClientConnectorListener = pClientConnectorListener;
+	}
+
 	public IServerListener<? extends Server<C, CC>> getServerListener() {
 		return this.mServerListener;
 	}
-	
+
 	protected void setServerListener(final IServerListener<? extends Server<C, CC>> pServerListener) {
 		this.mServerListener = pServerListener;
 	}
@@ -137,7 +145,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				Debug.e(e);
 			}
 			this.onTerminate();
@@ -169,7 +177,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		// ===========================================================
 		// Methods
 		// ===========================================================
-		
+
 		public void onStarted(final S pServer);
 		public void onTerminated(final S pServer);
 		public void onException(final S pServer, final Throwable pThrowable);

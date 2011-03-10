@@ -17,14 +17,14 @@ public abstract class CharMessage extends Message {
 	// Fields
 	// ===========================================================
 
-	protected char mCharacter;
+	protected char mChar;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public CharMessage(final char pCharacter) {
-		this.mCharacter = pCharacter;
+	public CharMessage(final char pChar) {
+		this.mChar = pChar;
 	}
 
 	public CharMessage(final DataInputStream pDataInputStream) throws IOException {
@@ -35,8 +35,8 @@ public abstract class CharMessage extends Message {
 	// Getter & Setter
 	// ===========================================================
 
-	public char getCharacter() {
-		return this.mCharacter;
+	public char getChar() {
+		return this.mChar;
 	}
 
 	// ===========================================================
@@ -45,17 +45,17 @@ public abstract class CharMessage extends Message {
 
 	@Override
 	public void read(final DataInputStream pDataInputStream) throws IOException {
-		this.mCharacter = pDataInputStream.readChar();
+		this.mChar = pDataInputStream.readChar();
 	}
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
-		pStringBuilder.append(", getCharacter()=").append('\'').append(this.getCharacter()).append('\'');
+		pStringBuilder.append(", getChar()=").append('\'').append(this.getChar()).append('\'');
 	}
 
 	@Override
 	public void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-		pDataOutputStream.writeChar(this.getCharacter());
+		pDataOutputStream.writeChar(this.getChar());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class CharMessage extends Message {
 
 		final CharMessage other = (CharMessage) obj;
 
-		return this.getFlag() == other.getFlag() && this.getCharacter() == other.getCharacter();
+		return this.getFlag() == other.getFlag() && this.getChar() == other.getChar();
 	}
 
 	// ===========================================================

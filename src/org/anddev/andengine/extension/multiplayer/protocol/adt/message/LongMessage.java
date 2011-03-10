@@ -50,7 +50,7 @@ public abstract class LongMessage extends Message {
 
 	@Override
 	protected void onAppendTransmissionDataForToString(final StringBuilder pStringBuilder) {
-		pStringBuilder.append(", getInt()=").append(this.getLong());
+		pStringBuilder.append(", getLong()=").append(this.getLong());
 	}
 
 	@Override
