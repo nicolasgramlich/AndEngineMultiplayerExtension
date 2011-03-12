@@ -3,7 +3,9 @@ package org.anddev.andengine.extension.multiplayer.protocol.shared;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 import org.anddev.andengine.util.SocketUtils;
 
@@ -25,6 +27,16 @@ public class SocketConnection extends Connection {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
+
+	public static SocketConnection create(final String pHost, final int pPort, final int pTimeoutMilliseconds) throws IOException {
+		return SocketConnection.create(new InetSocketAddress(pHost, pPort), pTimeoutMilliseconds);
+	}
+
+	public static SocketConnection create(final SocketAddress pSocketAddress, final int pTimeoutMilliseconds) throws IOException {
+		final Socket socket = new Socket();
+		socket.connect(pSocketAddress, pTimeoutMilliseconds);
+		return new SocketConnection(socket);
+	}
 
 	public SocketConnection(final Socket pSocket) throws IOException {
 		super(new DataInputStream(pSocket.getInputStream()), new DataOutputStream(pSocket.getOutputStream()));
