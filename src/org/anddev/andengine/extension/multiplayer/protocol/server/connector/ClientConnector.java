@@ -96,7 +96,7 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		this.mClientMessageReader.registerMessageHandler(pFlag, pClientMessageHandler);
 	}
 
-	public void sendServerMessage(final IServerMessage pServerMessage) throws IOException {
+	public synchronized void sendServerMessage(final IServerMessage pServerMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
 		pServerMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();

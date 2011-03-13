@@ -50,10 +50,18 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-
+	
 	// ===========================================================
 	// Methods
 	// ===========================================================
+	
+	public void start() {
+		this.getConnection().start();
+	}
+	
+	public void interrupt() {
+		this.getConnection().interrupt();
+	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes

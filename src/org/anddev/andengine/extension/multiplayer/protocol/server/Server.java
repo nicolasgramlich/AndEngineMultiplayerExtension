@@ -98,7 +98,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 					this.mClientConnectors.add(clientConnector);
 
 					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
-					clientConnector.getConnection().start();
+					clientConnector.start();
 				} catch (final Throwable pThrowable) {
 					this.onException(pThrowable);
 				}
@@ -136,7 +136,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 				/* First interrupt all Clients. */
 				final ArrayList<CC> clientConnectors = this.mClientConnectors;
 				for(int i = 0; i < clientConnectors.size(); i++) {
-					clientConnectors.get(i).getConnection().interrupt();
+					clientConnectors.get(i).interrupt();
 				}
 				clientConnectors.clear();
 			} catch (final Exception e) {

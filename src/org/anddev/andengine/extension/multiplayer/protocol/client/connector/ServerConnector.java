@@ -100,7 +100,7 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		this.mServerMessageReader.registerMessageHandler(pFlag, pServerMessageHandler);
 	}
 
-	public void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
+	public synchronized void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
 		pClientMessage.transmit(dataOutputStream);
 		dataOutputStream.flush();
