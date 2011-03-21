@@ -2,8 +2,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.util;
 
 import java.util.regex.Pattern;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
+import org.anddev.andengine.util.DataUtils;
 
 /**
  * @author Nicolas Gramlich
@@ -41,17 +40,24 @@ public class IPUtils {
 	// Methods
 	// ===========================================================
 
-	public static String getIPAddress(final Context pContext) {
-		final WifiManager wifiManager = (WifiManager) pContext.getSystemService(Context.WIFI_SERVICE);
-		return IPUtils.ipAddressToString(wifiManager.getConnectionInfo().getIpAddress());
-	}
-
 	public static String ipAddressToString(int pIPAddress) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(pIPAddress  & 0xff).append('.')
-		.append((pIPAddress >>>= 8) & 0xff).append('.')
-		.append((pIPAddress >>>= 8) & 0xff).append('.')
-		.append((pIPAddress >>>= 8) & 0xff);
+		sb.append(pIPAddress & 0xff).append('.')
+			.append((pIPAddress >>>= 8) & 0xff).append('.')
+			.append((pIPAddress >>>= 8) & 0xff).append('.')
+			.append((pIPAddress >>>= 8) & 0xff);
+		return sb.toString();
+	}
+
+	public static String ipAddressToString(final byte[] pIPAddress) {
+		final StringBuilder sb = new StringBuilder();
+		final int length = pIPAddress.length;
+		for(int i = 0; i < length; i++) {
+			sb.append(DataUtils.unsignedByteToInt(pIPAddress[i]));
+			if(i < length -1) {
+				sb.append('.');
+			}
+		}
 		return sb.toString();
 	}
 

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.anddev.andengine.util.Debug;
 
@@ -25,7 +26,7 @@ public abstract class Connection extends Thread {
 	protected final DataOutputStream mDataOutputStream;
 
 	protected IConnectionListener mConnectionListener;
-	protected boolean mClosed = false;
+	protected AtomicBoolean mClosed = new AtomicBoolean(false);
 
 	// ===========================================================
 	// Constructors
@@ -75,7 +76,7 @@ public abstract class Connection extends Thread {
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY); // TODO What ThreadPriority makes sense here?
 
 		try {
-			while(!this.isInterrupted()) {
+			while(!this.mClosed.get()) {
 				try {
 					this.mConnectionListener.read(this.mDataInputStream);
 				} catch (final SocketException se) {
@@ -105,9 +106,7 @@ public abstract class Connection extends Thread {
 	// ===========================================================
 
 	public void close() {
-		if(!this.mClosed) {
-			this.mClosed = true;
-
+		if(!this.mClosed.getAndSet(true)) {
 			if(this.mConnectionListener != null) {
 				this.mConnectionListener.onDisconnected(this);
 			}

@@ -58,8 +58,12 @@ public class MessagePool<M extends IMessage> {
 
 	public M obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		final M message = this.mMessageMultiPool.obtainPoolItem(pFlag);
-		message.read(pDataInputStream);
-		return message;
+		if(message != null) { 
+			message.read(pDataInputStream);
+			return message;
+		} else {
+			throw new IllegalArgumentException("No message found for pFlag='" + pFlag + "'.");
+		}
 	}
 
 	public void recycleMessage(final M pMessage) {

@@ -2,6 +2,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
@@ -24,8 +25,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 	protected IServerListener<? extends Server<C, CC>> mServerListener;
 
-	private boolean mRunning = false;
-	private boolean mClosed = true;
+	private AtomicBoolean mRunning = new AtomicBoolean(false);
+	private AtomicBoolean mClosed = new AtomicBoolean(false);
 
 	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
 	protected IClientConnectorListener<C> mClientConnectorListener;
@@ -50,11 +51,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// ===========================================================
 
 	public boolean isRunning() {
-		return this.mRunning;
+		return this.mRunning.get();
 	}
 
-	public boolean isTerminated() {
-		return this.mClosed ;
+	public boolean isClosed() {
+		return this.mClosed.get();
 	}
 
 	public IClientConnectorListener<C> getClientConnectorListener() {
@@ -84,14 +85,13 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 	@Override
 	public void run() {
-		this.mRunning = true;
-		this.mClosed = false;
+		this.mRunning.set(true);
 		try {
 			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
 			this.onStart();
 
 			/* Endless waiting for incoming clients. */
-			while (!Thread.interrupted()) {
+			while (!Thread.interrupted() && this.mRunning.get() && !this.mClosed.get()) {
 				try {
 					final CC clientConnector = this.acceptClientConnector();
 					clientConnector.setClientConnectorListener(this.mClientConnectorListener);
@@ -128,9 +128,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// ===========================================================
 
 	public void close() {
-		if(!this.mClosed) {
-			this.mClosed = true;
-			this.mRunning = false;
+		if(!this.mClosed.getAndSet(true)) {
+			this.mRunning.set(false);
 
 			try {
 				/* First interrupt all Clients. */
@@ -153,7 +152,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	}
 
 	public void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
-		if(this.mRunning && !this.mClosed) {
+		if(this.mRunning.get()) {
 			final ArrayList<CC> clientConnectors = this.mClientConnectors;
 			for(int i = 0; i < clientConnectors.size(); i++) {
 				try {
