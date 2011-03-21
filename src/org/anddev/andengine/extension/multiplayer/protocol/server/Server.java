@@ -87,7 +87,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	public void run() {
 		this.mRunning.set(true);
 		try {
-			Thread.currentThread().setPriority(Thread.NORM_PRIORITY); // TODO What ThreadPriority makes sense here?
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);  // TODO What ThreadPriority makes sense here?
 			this.onStart();
 
 			/* Endless waiting for incoming clients. */

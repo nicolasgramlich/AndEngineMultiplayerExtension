@@ -73,7 +73,7 @@ public abstract class Connection extends Thread {
 			this.mConnectionListener.onConnected(this);
 		}
 
-		Thread.currentThread().setPriority(Thread.MAX_PRIORITY); // TODO What ThreadPriority makes sense here?
+		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
 		try {
 			while(!this.mClosed.get()) {

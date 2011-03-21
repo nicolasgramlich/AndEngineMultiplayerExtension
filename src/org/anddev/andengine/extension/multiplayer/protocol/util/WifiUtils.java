@@ -42,9 +42,12 @@ public class WifiUtils {
 		return (WifiManager) pContext.getSystemService(Context.WIFI_SERVICE);
 	}
 
-
 	public static boolean isWifiEnabled(final Context pContext) {
 		return WifiUtils.getWifiManager(pContext).isWifiEnabled();
+	}
+
+	public static String getWifiSSID(final Context pContext) {
+		return WifiUtils.getWifiManager(pContext).getConnectionInfo().getSSID();
 	}
 
 	public static int getWifiIPAddressRaw(final Context pContext) {
@@ -58,7 +61,6 @@ public class WifiUtils {
 	public static boolean isWifiIPAddressValid(final Context pContext) {
 		return WifiUtils.getWifiIPAddressRaw(pContext) != 0;
 	}
-
 
 	public static boolean isHotspotRunning() throws WifiException {
 		try {
