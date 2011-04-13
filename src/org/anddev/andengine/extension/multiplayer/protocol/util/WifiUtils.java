@@ -6,9 +6,11 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import org.anddev.andengine.extension.multiplayer.protocol.exception.WifiException;
+import org.anddev.andengine.util.SystemUtils;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 
 /**
  * @author Nicolas Gramlich
@@ -62,6 +64,13 @@ public class WifiUtils {
 		return WifiUtils.getWifiIPAddressRaw(pContext) != 0;
 	}
 
+	/**
+	 * The check currently performed is not sufficient, as some carriers disabled this feature manually!
+	 */
+	public static boolean isHotspotSupported() {
+		return SystemUtils.isAndroidVersionOrHigher(Build.VERSION_CODES.FROYO);
+	}
+
 	public static boolean isHotspotRunning() throws WifiException {
 		try {
 			final Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
@@ -106,7 +115,7 @@ public class WifiUtils {
 		return IPUtils.ipAddressToString(WifiUtils.getHotspotIPAddressRaw());
 	}
 
-	public static boolean isHotSpotIPAddressValid() throws WifiException {
+	public static boolean isHotspotIPAddressValid() throws WifiException {
 		return !IP_DEFAULT.equals(WifiUtils.getHotspotIPAddress());
 	}
 
