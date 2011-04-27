@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.shared;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -28,8 +29,8 @@ public class SocketConnection extends Connection {
 	// Constructors
 	// ===========================================================
 
-	public static SocketConnection create(final String pHost, final int pPort, final int pTimeoutMilliseconds) throws IOException {
-		return SocketConnection.create(new InetSocketAddress(pHost, pPort), pTimeoutMilliseconds);
+	public static SocketConnection create(final byte[] pIPAddress, final int pPort, final int pTimeoutMilliseconds) throws IOException {
+		return SocketConnection.create(new InetSocketAddress(InetAddress.getByAddress(pIPAddress), pPort), pTimeoutMilliseconds);
 	}
 
 	public static SocketConnection create(final SocketAddress pSocketAddress, final int pTimeoutMilliseconds) throws IOException {

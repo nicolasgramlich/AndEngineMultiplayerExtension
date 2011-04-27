@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.util;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import org.anddev.andengine.extension.multiplayer.protocol.exception.WifiException;
@@ -52,16 +53,16 @@ public class WifiUtils {
 		return WifiUtils.getWifiManager(pContext).getConnectionInfo().getSSID();
 	}
 
-	public static int getWifiIPAddressRaw(final Context pContext) {
-		return WifiUtils.getWifiManager(pContext).getConnectionInfo().getIpAddress();
+	public static byte[] getWifiIPv4AddressRaw(final Context pContext) {
+		return IPUtils.ipv4AddressToIPAddress(WifiUtils.getWifiManager(pContext).getConnectionInfo().getIpAddress());
 	}
 
-	public static String getWifiIPAddress(final Context pContext) {
-		return IPUtils.ipAddressToString(WifiUtils.getWifiIPAddressRaw(pContext));
+	public static String getWifiIPv4Address(final Context pContext) throws UnknownHostException {
+		return IPUtils.ipAddressToString(WifiUtils.getWifiIPv4AddressRaw(pContext));
 	}
 
 	public static boolean isWifiIPAddressValid(final Context pContext) {
-		return WifiUtils.getWifiIPAddressRaw(pContext) != 0;
+		return WifiUtils.getWifiManager(pContext).getConnectionInfo().getIpAddress() != 0;
 	}
 
 	/**
@@ -98,8 +99,7 @@ public class WifiUtils {
 				if(networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
 					final Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
 					if(inetAddressEnumeration.hasMoreElements()) {
-						final InetAddress inetAddress = inetAddressEnumeration.nextElement();
-						return inetAddress.getAddress();
+						return inetAddressEnumeration.nextElement().getAddress();
 					} else {
 						throw new WifiException("No IP bound to '" + HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT + "'!");
 					}
@@ -112,7 +112,11 @@ public class WifiUtils {
 	}
 
 	public static String getHotspotIPAddress() throws WifiException {
-		return IPUtils.ipAddressToString(WifiUtils.getHotspotIPAddressRaw());
+		try {
+			return IPUtils.ipAddressToString(WifiUtils.getHotspotIPAddressRaw());
+		} catch (final UnknownHostException e) {
+			throw new WifiException("Unexpected error!", e);
+		}
 	}
 
 	public static boolean isHotspotIPAddressValid() throws WifiException {
