@@ -89,6 +89,10 @@ public class WifiUtils {
 		}
 	}
 
+	/**
+	 * @return prefers to return an IPv4 address if found, otherwise an IPv6 address.
+	 * @throws WifiException
+	 */
 	public static byte[] getHotspotIPAddressRaw() throws WifiException {
 		try {
 			final Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
@@ -97,9 +101,18 @@ public class WifiUtils {
 				final String networkInterfaceNname = networkInterface.getName();
 
 				if(networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
+					byte[] ipv6Address = null;
 					final Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
-					if(inetAddressEnumeration.hasMoreElements()) {
-						return inetAddressEnumeration.nextElement().getAddress();
+					while(inetAddressEnumeration.hasMoreElements()) {
+						final byte[] ipAddress = inetAddressEnumeration.nextElement().getAddress();
+						if(ipAddress.length == 4) { // TODO Constant!
+							return ipAddress;
+						} else {
+							ipv6Address = ipAddress;
+						}
+					} 
+					if(ipv6Address != null) {
+						return ipv6Address;
 					} else {
 						throw new WifiException("No IP bound to '" + HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT + "'!");
 					}
@@ -119,7 +132,7 @@ public class WifiUtils {
 		}
 	}
 
-	public static boolean isHotspotIPAddressValid() throws WifiException {
+	public static boolean isHotspotIPAddressValid() throws WifiException { // TODO!
 		return !IP_DEFAULT.equals(WifiUtils.getHotspotIPAddress());
 	}
 

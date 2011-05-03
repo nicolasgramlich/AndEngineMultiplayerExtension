@@ -42,12 +42,10 @@ public class IPUtils {
 
 	public static byte[] ipv4AddressToIPAddress(final int pIPv4Address) {
 		final byte[] ip = new byte[4];
-
 		ip[0] = (byte)((pIPv4Address >> 0) & 0xff);
 		ip[1] = (byte)((pIPv4Address >> 8) & 0xff);
 		ip[2] = (byte)((pIPv4Address >> 16) & 0xff);
 		ip[3] = (byte)((pIPv4Address >> 24) & 0xff);
-
 		return ip;
 	}
 
