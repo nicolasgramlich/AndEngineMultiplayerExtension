@@ -20,6 +20,9 @@ public class IPUtils {
 
 	private static final Pattern IPv4_PATTERN = Pattern.compile(REGEXP_IPv4);
 
+	public static final int IPV4_LENGTH = 4;
+	public static final int IPV6_LENGTH = 16;
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
