@@ -105,7 +105,7 @@ public abstract class Connection extends Thread {
 	// Methods
 	// ===========================================================
 
-	public void close() {
+	private void close() {
 		if(!this.mClosed.getAndSet(true)) {
 			if(this.mConnectionListener != null) {
 				this.mConnectionListener.onDisconnected(this);

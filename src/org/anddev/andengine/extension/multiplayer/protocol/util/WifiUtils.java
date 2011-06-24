@@ -10,7 +10,9 @@ import org.anddev.andengine.extension.multiplayer.protocol.exception.WifiExcepti
 import org.anddev.andengine.util.SystemUtils;
 
 import android.content.Context;
+import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Build;
 
 /**
@@ -24,6 +26,7 @@ public class WifiUtils {
 
 	private static final String IP_DEFAULT = "0.0.0.0";
 	private static final String HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT = "wl0.1";
+	private static final String MULTICASTLOCK_NAME_DEFAULT = "AndEngineMultiplayerExtensionMulticastLock";
 
 	// ===========================================================
 	// Fields
@@ -110,7 +113,7 @@ public class WifiUtils {
 						} else {
 							ipv6Address = ipAddress;
 						}
-					} 
+					}
 					if(ipv6Address != null) {
 						return ipv6Address;
 					} else {
@@ -134,6 +137,36 @@ public class WifiUtils {
 
 	public static boolean isHotspotIPAddressValid() throws WifiException { // TODO!
 		return !IP_DEFAULT.equals(WifiUtils.getHotspotIPAddress());
+	}
+
+	public static byte[] getBroadcastIPAddressRaw(final Context pContext) throws WifiException {
+		final WifiManager wifiManager = WifiUtils.getWifiManager(pContext);
+		final DhcpInfo dhcp = wifiManager.getDhcpInfo();
+		// TODO handle null somehow...
+		
+		final int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+		final byte[] broadcastIP = new byte[4];
+		for(int k = 0; k < 4; k++) {
+			broadcastIP[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+		}
+		return broadcastIP;
+	}
+
+	public static MulticastLock aquireMulticastLock(final Context pContext) {
+		return aquireMulticastLock(pContext, MULTICASTLOCK_NAME_DEFAULT);
+	}
+	
+	public static MulticastLock aquireMulticastLock(final Context pContext, final String pMulticastLockName) {
+		MulticastLock multicastLock = getWifiManager(pContext).createMulticastLock(pMulticastLockName);
+		multicastLock.setReferenceCounted(true);
+		multicastLock.acquire();
+		return multicastLock;
+	}
+
+	public static void releaseMulticastLock(final MulticastLock pMulticastLock) {
+		if(pMulticastLock.isHeld()) {
+			pMulticastLock.release();
+		}
 	}
 
 	// ===========================================================

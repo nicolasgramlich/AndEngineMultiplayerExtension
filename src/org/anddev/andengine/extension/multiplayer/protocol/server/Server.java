@@ -25,8 +25,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 	protected IServerListener<? extends Server<C, CC>> mServerListener;
 
-	private AtomicBoolean mRunning = new AtomicBoolean(false);
-	private AtomicBoolean mClosed = new AtomicBoolean(false);
+	private final AtomicBoolean mRunning = new AtomicBoolean(false);
+	private final AtomicBoolean mTerminated = new AtomicBoolean(false);
 
 	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
 	protected IClientConnectorListener<C> mClientConnectorListener;
@@ -54,8 +54,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		return this.mRunning.get();
 	}
 
-	public boolean isClosed() {
-		return this.mClosed.get();
+	public boolean isTerminated() {
+		return this.mTerminated.get();
 	}
 
 	public IClientConnectorListener<C> getClientConnectorListener() {
@@ -81,17 +81,19 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	protected abstract void onStart() throws IOException;
 	protected abstract CC acceptClientConnector() throws IOException;
 	protected abstract void onTerminate();
-	protected abstract void onException(Throwable pPThrowable);
+	protected abstract void onException(Throwable pThrowable);
 
 	@Override
 	public void run() {
-		this.mRunning.set(true);
 		try {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);  // TODO What ThreadPriority makes sense here?
 			this.onStart();
 
+			this.mRunning.set(true);
+
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);  // TODO What ThreadPriority makes sense here?
+
 			/* Endless waiting for incoming clients. */
-			while (!Thread.interrupted() && this.mRunning.get() && !this.mClosed.get()) {
+			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
 					final CC clientConnector = this.acceptClientConnector();
 					clientConnector.setClientConnectorListener(this.mClientConnectorListener);
@@ -106,13 +108,13 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		} catch (final Throwable pThrowable) {
 			this.onException(pThrowable);
 		} finally {
-			this.close();
+			this.terminate();
 		}
 	}
 
 	@Override
 	public void interrupt() {
-		this.close();
+		this.terminate();
 
 		super.interrupt();
 	}
@@ -127,8 +129,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Methods
 	// ===========================================================
 
-	public void close() {
-		if(!this.mClosed.getAndSet(true)) {
+	public void terminate() {
+		if(!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
 
 			try {

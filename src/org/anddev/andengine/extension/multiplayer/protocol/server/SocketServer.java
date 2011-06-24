@@ -139,7 +139,6 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 		// ===========================================================
 
 		public static class DefaultSocketServerListener<CC extends ClientConnector<SocketConnection>> implements ISocketServerListener<CC> {
-
 			// ===========================================================
 			// Constants
 			// ===========================================================
@@ -162,12 +161,12 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 
 			@Override
 			public void onStarted(final SocketServer<CC> pSocketServer) {
-				Debug.d("Server started on port: " + pSocketServer.getPort());
+				Debug.d("SocketServer started on port: " + pSocketServer.getPort());
 			}
 
 			@Override
 			public void onTerminated(final SocketServer<CC> pSocketServer) {
-				Debug.d("Server terminated on port: " + pSocketServer.getPort());
+				Debug.d("SocketServer terminated on port: " + pSocketServer.getPort());
 			}
 
 			@Override
