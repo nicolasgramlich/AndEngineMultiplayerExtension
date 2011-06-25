@@ -65,20 +65,20 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	@Override
-	public void onConnected(final Connection pConnection) {
+	public void onStarted(final Connection pConnection) {
 		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
 		final int connectorListenerCount = connectorListeners.size();
 		for(int i = 0; i < connectorListenerCount; i++) {
-			connectorListeners.get(i).onConnected(this);
+			connectorListeners.get(i).onStarted(this);
 		}
 	}
 
 	@Override
-	public void onDisconnected(final Connection pConnection) {
+	public void onTerminated(final Connection pConnection) {
 		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
 		final int connectorListenerCount = connectorListeners.size();
 		for(int i = 0; i < connectorListenerCount; i++) {
-			connectorListeners.get(i).onDisconnected(this);
+			connectorListeners.get(i).onTerminated(this);
 		}
 	}
 
@@ -125,9 +125,9 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		// ===========================================================
 		
 		@Override
-		public void onConnected(final ClientConnector<T> pClientConnector);
+		public void onStarted(final ClientConnector<T> pClientConnector);
 		
 		@Override
-		public void onDisconnected(final ClientConnector<T> pClientConnector);
+		public void onTerminated(final ClientConnector<T> pClientConnector);
 	}
 }

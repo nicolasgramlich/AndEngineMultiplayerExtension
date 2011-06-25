@@ -53,12 +53,12 @@ public class BluetoothSocketConnectionServerConnector extends ServerConnector<Bl
 	
 	public static class DefaultBluetoothConnectionSocketServerConnectorListener implements IBluetoothSocketConnectionServerConnectorListener {
 		@Override
-		public void onConnected(final ServerConnector<BluetoothSocketConnection> pServerConnector) {
+		public void onStarted(final ServerConnector<BluetoothSocketConnection> pServerConnector) {
 			Debug.d("Accepted Server-Connection from: '" + pServerConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
 		}
 
 		@Override
-		public void onDisconnected(final ServerConnector<BluetoothSocketConnection> pServerConnector) {
+		public void onTerminated(final ServerConnector<BluetoothSocketConnection> pServerConnector) {
 			Debug.d("Closed Server-Connection from: '" + pServerConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
 		}
 	}

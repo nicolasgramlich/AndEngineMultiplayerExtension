@@ -120,12 +120,12 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onConnected(final ClientConnector<C> pClientConnector) {
+	public void onStarted(final ClientConnector<C> pClientConnector) {
 		this.mClientConnectors.add((CC) pClientConnector);
 	}
 
 	@Override
-	public void onDisconnected(final ClientConnector<C> pClientConnector) {
+	public void onTerminated(final ClientConnector<C> pClientConnector) {
 		this.mClientConnectors.remove(pClientConnector);
 	}
 

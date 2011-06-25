@@ -63,12 +63,12 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 
 	public static class DefaultBluetoothSocketClientConnectorListener implements IBluetoothSocketConnectionClientConnectorListener {
 		@Override
-		public void onConnected(ClientConnector<BluetoothSocketConnection> pClientConnector) {
+		public void onStarted(ClientConnector<BluetoothSocketConnection> pClientConnector) {
 			Debug.d("Accepted Client-Connection from: '" + pClientConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
 		}
 
 		@Override
-		public void onDisconnected(ClientConnector<BluetoothSocketConnection> pClientConnector) {
+		public void onTerminated(ClientConnector<BluetoothSocketConnection> pClientConnector) {
 			Debug.d("Closed Client-Connection from: '" + pClientConnector.getConnection().getBluetoothSocket().getRemoteDevice().getAddress());
 		}
 	}

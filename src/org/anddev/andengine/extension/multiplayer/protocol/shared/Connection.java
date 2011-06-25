@@ -26,7 +26,8 @@ public abstract class Connection extends Thread {
 	protected final DataOutputStream mDataOutputStream;
 
 	protected IConnectionListener mConnectionListener;
-	protected AtomicBoolean mClosed = new AtomicBoolean(false);
+	protected AtomicBoolean mRunning = new AtomicBoolean(false);
+	protected AtomicBoolean mTerminated = new AtomicBoolean(false);
 
 	// ===========================================================
 	// Constructors
@@ -65,24 +66,22 @@ public abstract class Connection extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	protected abstract void onClosed();
-
 	@Override
 	public void run() {
-		if(this.mConnectionListener != null) {
-			this.mConnectionListener.onConnected(this);
-		}
+		this.onStart();
+
+		this.mRunning.set(true);
 
 		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
 		try {
-			while(!this.mClosed.get()) {
+			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
 					this.mConnectionListener.read(this.mDataInputStream);
 				} catch (final SocketException se) {
-					this.interrupt();
+					this.terminate();
 				} catch (final EOFException eof) {
-					this.interrupt();
+					this.terminate();
 				} catch (final Throwable pThrowable) {
 					Debug.e(pThrowable);
 				}
@@ -90,28 +89,39 @@ public abstract class Connection extends Thread {
 		} catch (final Throwable pThrowable) {
 			Debug.e(pThrowable);
 		} finally {
-			this.close();
+			this.terminate();
 		}
 	}
 
 	@Override
-	public void interrupt() {
-		this.close();
-
-		super.interrupt();
+	protected void finalize() throws Throwable {
+		this.terminate();
+		super.finalize();
 	}
 
 	// ===========================================================
 	// Methods
 	// ===========================================================
 
-	private void close() {
-		if(!this.mClosed.getAndSet(true)) {
-			if(this.mConnectionListener != null) {
-				this.mConnectionListener.onDisconnected(this);
-			}
+	public void terminate() {
+		if(!this.mTerminated.getAndSet(true)) {
+			this.mRunning.set(false);
 
-			this.onClosed();
+			this.interrupt();
+
+			this.onTerminate();
+		}
+	}
+
+	protected void onStart() {
+		if(this.mConnectionListener != null) {
+			this.mConnectionListener.onStarted(this);
+		}
+	}
+
+	protected void onTerminate() {
+		if(this.mConnectionListener != null) {
+			this.mConnectionListener.onTerminated(this);
 		}
 	}
 
@@ -128,8 +138,8 @@ public abstract class Connection extends Thread {
 		// Methods
 		// ===========================================================
 
-		public void onConnected(final Connection pConnection);
-		public void onDisconnected(final Connection pConnection);
+		public void onStarted(final Connection pConnection);
+		public void onTerminated(final Connection pConnection);
 
 		public void read(final DataInputStream pDataInputStream) throws IOException;
 	}

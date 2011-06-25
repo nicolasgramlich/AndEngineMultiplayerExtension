@@ -63,7 +63,7 @@ public class BluetoothSocketConnection extends Connection {
 	// ===========================================================
 
 	@Override
-	protected void onClosed() {
+	protected void onTerminate() {
 		/* Ensure Socket is really closed. */
 		try {
 			this.mBluetoothSocket.close(); // TODO Put to SocketUtils

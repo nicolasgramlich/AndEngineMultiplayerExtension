@@ -72,7 +72,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	}
 	
 	public void terminate() {
-		this.getConnection().interrupt();
+		this.getConnection().terminate();
 	}
 
 	// ===========================================================
@@ -88,7 +88,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 		// Methods
 		// ===========================================================
 
-		public void onConnected(final C pConnector);
-		public void onDisconnected(final C pConnector);
+		public void onStarted(final C pConnector);
+		public void onTerminated(final C pConnector);
 	}
 }

@@ -53,12 +53,12 @@ public class SocketConnectionServerConnector extends ServerConnector<SocketConne
 	
 	public static class DefaultSocketConnectionServerConnectorListener implements ISocketConnectionServerConnectorListener {
 		@Override
-		public void onConnected(final ServerConnector<SocketConnection> pServerConnector) {
+		public void onStarted(final ServerConnector<SocketConnection> pServerConnector) {
 			Debug.d("Accepted Server-Connection from: '" + pServerConnector.getConnection().getSocket().getInetAddress().getHostAddress());
 		}
 
 		@Override
-		public void onDisconnected(final ServerConnector<SocketConnection> pServerConnector) {
+		public void onTerminated(final ServerConnector<SocketConnection> pServerConnector) {
 			Debug.d("Closed Server-Connection from: '" + pServerConnector.getConnection().getSocket().getInetAddress().getHostAddress());
 		}
 	}

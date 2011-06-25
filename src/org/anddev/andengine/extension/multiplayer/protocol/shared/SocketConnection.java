@@ -58,9 +58,10 @@ public class SocketConnection extends Connection {
 	// ===========================================================
 
 	@Override
-	protected void onClosed() {
+	protected void onTerminate() {
 		/* Ensure Socket is really closed. */
 		SocketUtils.closeSocket(this.mSocket);
+		super.onTerminate();
 	}
 
 	// ===========================================================
