@@ -1,8 +1,7 @@
 package org.anddev.andengine.extension.multiplayer.protocol.shared;
 
-import java.util.ArrayList;
-
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.IConnectionListener;
+import org.anddev.andengine.util.SmartList;
 
 /**
  * @author Nicolas Gramlich
@@ -18,7 +17,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	// ===========================================================
 
 	protected final C mConnection;
-	protected ArrayList<IConnectorListener<? extends Connector<C>>> mConnectorListeners = new ArrayList<IConnectorListener<? extends Connector<C>>>();
+	protected SmartList<IConnectorListener<? extends Connector<C>>> mConnectorListeners = new SmartList<IConnectorListener<? extends Connector<C>>>();
 
 	// ===========================================================
 	// Constructors
@@ -41,7 +40,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 		return this.mConnectorListeners != null;
 	}
 
-	public ArrayList<? extends IConnectorListener<? extends Connector<C>>> getConnectorListeners() {
+	public SmartList<? extends IConnectorListener<? extends Connector<C>>> getConnectorListeners() {
 		return this.mConnectorListeners;
 	}
 

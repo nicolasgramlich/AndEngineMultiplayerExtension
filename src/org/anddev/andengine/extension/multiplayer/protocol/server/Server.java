@@ -14,7 +14,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread implements IClientConnectorListener<C> {
+public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -96,7 +96,17 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
 					final CC clientConnector = this.acceptClientConnector();
-					clientConnector.addClientConnectorListener(this);
+					clientConnector.addClientConnectorListener(new IClientConnectorListener<C>() {
+						@Override
+						public void onStarted(final ClientConnector<C> pClientConnector) {
+							onAddClientConnector(clientConnector);
+						}
+
+						@Override
+						public void onTerminated(final ClientConnector<C> pClientConnector) {
+							onRemoveClientConnector(clientConnector);
+						}
+					});
 					clientConnector.addClientConnectorListener(this.mClientConnectorListener);
 
 					/* Start the ClientConnector(-Thread) so it starts receiving messages. */
@@ -118,20 +128,17 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		super.finalize();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void onStarted(final ClientConnector<C> pClientConnector) {
-		this.mClientConnectors.add((CC) pClientConnector);
-	}
-
-	@Override
-	public void onTerminated(final ClientConnector<C> pClientConnector) {
-		this.mClientConnectors.remove(pClientConnector);
-	}
-
 	// ===========================================================
 	// Methods
 	// ===========================================================
+
+	private void onAddClientConnector(final CC pClientConnector) {
+		Server.this.mClientConnectors.add(pClientConnector);
+	}
+
+	private void onRemoveClientConnector(final CC pClientConnector) {
+		Server.this.mClientConnectors.remove(pClientConnector);
+	}
 
 	public void terminate() {
 		if(!this.mTerminated.getAndSet(true)) {

@@ -3,7 +3,6 @@ package org.anddev.andengine.extension.multiplayer.protocol.client.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -12,6 +11,8 @@ import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessage
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
+import org.anddev.andengine.util.ParameterCallable;
+import org.anddev.andengine.util.SmartList;
 
 /**
  * @author Nicolas Gramlich
@@ -27,6 +28,20 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	private final IServerMessageReader<C> mServerMessageReader;
+
+	private final ParameterCallable<IServerConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ServerConnector.IServerConnectorListener<C>>() {
+		@Override
+		public void call(final IServerConnectorListener<C> pServerConnectorListener) {
+			pServerConnectorListener.onStarted(ServerConnector.this);
+		}
+	};
+
+	private final ParameterCallable<IServerConnectorListener<C>> mOnTerminatedParameterCallable = new ParameterCallable<ServerConnector.IServerConnectorListener<C>>() {
+		@Override
+		public void call(final IServerConnectorListener<C> pServerConnectorListener) {
+			pServerConnectorListener.onTerminated(ServerConnector.this);
+		}
+	};
 
 	// ===========================================================
 	// Constructors
@@ -52,8 +67,8 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<IServerConnectorListener<C>> getConnectorListeners() {
-		return (ArrayList<IServerConnectorListener<C>>) super.getConnectorListeners();
+	public SmartList<IServerConnectorListener<C>> getConnectorListeners() {
+		return (SmartList<IServerConnectorListener<C>>) super.getConnectorListeners();
 	}
 
 	public void addServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
@@ -70,20 +85,12 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	@Override
 	public void onStarted(final Connection pConnection) {
-		final ArrayList<IServerConnectorListener<C>> serverConnectorListeners = this.getConnectorListeners();
-		final int connectorListenerCount = serverConnectorListeners.size();
-		for(int i = 0; i < connectorListenerCount; i++) {
-			serverConnectorListeners.get(i).onStarted(this);
-		}
+		this.getConnectorListeners().call(this.mOnStartedParameterCallable);
 	}
 
 	@Override
 	public void onTerminated(final Connection pConnection) {
-		final ArrayList<IServerConnectorListener<C>> serverConnectorListeners = this.getConnectorListeners();
-		final int connectorListenerCount = serverConnectorListeners.size();
-		for(int i = 0; i < connectorListenerCount; i++) {
-			serverConnectorListeners.get(i).onTerminated(this);
-		}
+		this.getConnectorListeners().call(this.mOnTerminatedParameterCallable);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package org.anddev.andengine.extension.multiplayer.protocol.server.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -12,6 +11,8 @@ import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessage
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connector;
+import org.anddev.andengine.util.ParameterCallable;
+import org.anddev.andengine.util.SmartList;
 
 /**
  * @author Nicolas Gramlich
@@ -27,6 +28,20 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	private final IClientMessageReader<C> mClientMessageReader;
+
+	private final ParameterCallable<IClientConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ClientConnector.IClientConnectorListener<C>>() {
+		@Override
+		public void call(final IClientConnectorListener<C> pClientConnectorListener) {
+			pClientConnectorListener.onStarted(ClientConnector.this);
+		}
+	};
+
+	private final ParameterCallable<IClientConnectorListener<C>> mOnTerminatedParameterCallable = new ParameterCallable<ClientConnector.IClientConnectorListener<C>>() {
+		@Override
+		public void call(final IClientConnectorListener<C> pClientConnectorListener) {
+			pClientConnectorListener.onTerminated(ClientConnector.this);
+		}
+	};
 
 	// ===========================================================
 	// Constructors
@@ -52,12 +67,16 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ArrayList<IClientConnectorListener<C>> getConnectorListeners() {
-		return (ArrayList<IClientConnectorListener<C>>) super.getConnectorListeners();
+	public SmartList<IClientConnectorListener<C>> getConnectorListeners() {
+		return (SmartList<IClientConnectorListener<C>>) super.getConnectorListeners();
 	}
 
 	public void addClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
 		super.addConnectorListener(pClientConnectorListener);
+	}
+
+	public void removeClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
+		super.removeConnectorListener(pClientConnectorListener);
 	}
 
 	// ===========================================================
@@ -66,20 +85,12 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	@Override
 	public void onStarted(final Connection pConnection) {
-		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
-		final int connectorListenerCount = connectorListeners.size();
-		for(int i = 0; i < connectorListenerCount; i++) {
-			connectorListeners.get(i).onStarted(this);
-		}
+		this.getConnectorListeners().call(this.mOnStartedParameterCallable);
 	}
 
 	@Override
 	public void onTerminated(final Connection pConnection) {
-		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
-		final int connectorListenerCount = connectorListeners.size();
-		for(int i = 0; i < connectorListenerCount; i++) {
-			connectorListeners.get(i).onTerminated(this);
-		}
+		this.getConnectorListeners().call(this.mOnTerminatedParameterCallable);
 	}
 
 	@Override
@@ -123,10 +134,10 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		// ===========================================================
 		// Methods
 		// ===========================================================
-		
+
 		@Override
 		public void onStarted(final ClientConnector<T> pClientConnector);
-		
+
 		@Override
 		public void onTerminated(final ClientConnector<T> pClientConnector);
 	}
