@@ -14,7 +14,7 @@ import org.anddev.andengine.util.Debug;
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
-public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread {
+public abstract class Server<C extends Connection, CC extends ClientConnector<C>> extends Thread implements IClientConnectorListener<C> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -96,10 +96,10 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
 					final CC clientConnector = this.acceptClientConnector();
-					clientConnector.setClientConnectorListener(this.mClientConnectorListener);
-					this.mClientConnectors.add(clientConnector);
+					clientConnector.addClientConnectorListener(this);
+					clientConnector.addClientConnectorListener(this.mClientConnectorListener);
 
-					/* Start the ClientConnector(-Thread) so it starts receiving commands. */
+					/* Start the ClientConnector(-Thread) so it starts receiving messages. */
 					clientConnector.start();
 				} catch (final Throwable pThrowable) {
 					this.onException(pThrowable);
@@ -113,16 +113,20 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	}
 
 	@Override
-	public void interrupt() {
+	protected void finalize() throws Throwable {
 		this.terminate();
+		super.finalize();
+	}
 
-		super.interrupt();
+	@SuppressWarnings("unchecked")
+	@Override
+	public void onConnected(final ClientConnector<C> pClientConnector) {
+		this.mClientConnectors.add((CC) pClientConnector);
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		this.interrupt();
-		super.finalize();
+	public void onDisconnected(final ClientConnector<C> pClientConnector) {
+		this.mClientConnectors.remove(pClientConnector);
 	}
 
 	// ===========================================================
@@ -137,7 +141,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 				/* First interrupt all Clients. */
 				final ArrayList<CC> clientConnectors = this.mClientConnectors;
 				for(int i = 0; i < clientConnectors.size(); i++) {
-					clientConnectors.get(i).interrupt();
+					clientConnectors.get(i).terminate();
 				}
 				clientConnectors.clear();
 			} catch (final Exception e) {
@@ -149,6 +153,8 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 			} catch (final InterruptedException e) {
 				Debug.e(e);
 			}
+			this.interrupt();
+
 			this.onTerminate();
 		}
 	}

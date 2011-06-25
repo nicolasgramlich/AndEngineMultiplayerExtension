@@ -1,5 +1,7 @@
 package org.anddev.andengine.extension.multiplayer.protocol.shared;
 
+import java.util.ArrayList;
+
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection.IConnectionListener;
 
 /**
@@ -16,7 +18,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	// ===========================================================
 
 	protected final C mConnection;
-	protected IConnectorListener<? extends Connector<C>> mConnectorListener;
+	protected ArrayList<IConnectorListener<? extends Connector<C>>> mConnectorListeners = new ArrayList<IConnectorListener<? extends Connector<C>>>();
 
 	// ===========================================================
 	// Constructors
@@ -36,15 +38,25 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	}
 
 	public boolean hasConnectorListener() {
-		return this.mConnectorListener != null;
+		return this.mConnectorListeners != null;
 	}
 
-	public IConnectorListener<? extends Connector<C>> getConnectorListener() {
-		return this.mConnectorListener;
+	public ArrayList<? extends IConnectorListener<? extends Connector<C>>> getConnectorListeners() {
+		return this.mConnectorListeners;
 	}
 
-	protected void setConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
-		this.mConnectorListener = pConnectorListener;
+	protected void addConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
+		if(pConnectorListener != null) {
+			this.mConnectorListeners.add(pConnectorListener);
+		}
+	}
+
+	protected boolean removeConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
+		if(pConnectorListener == null) {
+			return false;
+		} else {
+			return this.mConnectorListeners.remove(pConnectorListener);
+		}
 	}
 
 	// ===========================================================
@@ -59,7 +71,7 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 		this.getConnection().start();
 	}
 	
-	public void interrupt() {
+	public void terminate() {
 		this.getConnection().interrupt();
 	}
 

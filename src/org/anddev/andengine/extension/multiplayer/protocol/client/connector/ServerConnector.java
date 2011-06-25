@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.client.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -38,7 +39,7 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	public ServerConnector(final C pConnection, final IServerMessageReader<C> pServerMessageReader, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
 		super(pConnection);
 		this.mServerMessageReader = pServerMessageReader;
-		this.setServerConnectorListener(pServerConnectorListener);
+		this.addServerConnectorListener(pServerConnectorListener);
 	}
 
 	// ===========================================================
@@ -51,12 +52,16 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IServerConnectorListener<C> getConnectorListener() {
-		return (IServerConnectorListener<C>) super.getConnectorListener();
+	public ArrayList<IServerConnectorListener<C>> getConnectorListeners() {
+		return (ArrayList<IServerConnectorListener<C>>) super.getConnectorListeners();
 	}
 
-	public void setServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
-		super.setConnectorListener(pServerConnectorListener);
+	public void addServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
+		super.addConnectorListener(pServerConnectorListener);
+	}
+
+	public boolean removeServerConnectorListener(final IServerConnectorListener<C> pServerConnectorListener) {
+		return super.removeConnectorListener(pServerConnectorListener);
 	}
 
 	// ===========================================================
@@ -65,15 +70,19 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	@Override
 	public void onConnected(final Connection pConnection) {
-		if(this.hasConnectorListener()) {
-			this.getConnectorListener().onConnected(this);
+		final ArrayList<IServerConnectorListener<C>> serverConnectorListeners = this.getConnectorListeners();
+		final int connectorListenerCount = serverConnectorListeners.size();
+		for(int i = 0; i < connectorListenerCount; i++) {
+			serverConnectorListeners.get(i).onConnected(this);
 		}
 	}
 
 	@Override
 	public void onDisconnected(final Connection pConnection) {
-		if(this.hasConnectorListener()) {
-			this.getConnectorListener().onDisconnected(this);
+		final ArrayList<IServerConnectorListener<C>> serverConnectorListeners = this.getConnectorListeners();
+		final int connectorListenerCount = serverConnectorListeners.size();
+		for(int i = 0; i < connectorListenerCount; i++) {
+			serverConnectorListeners.get(i).onDisconnected(this);
 		}
 	}
 
@@ -118,10 +127,10 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		// ===========================================================
 		// Methods
 		// ===========================================================
-		
+
 		@Override
 		public void onConnected(final ServerConnector<T> pServerConnector);
-		
+
 		@Override
 		public void onDisconnected(final ServerConnector<T> pServerConnector);
 	}

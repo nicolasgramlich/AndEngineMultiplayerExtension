@@ -143,6 +143,7 @@ public class SocketServerDiscoveryServer extends Thread {
 	public void run() {
 		try {
 			this.onStart();
+
 			this.mRunning.set(true);
 
 			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_LESS_FAVORABLE);  // TODO What ThreadPriority makes sense here?
@@ -168,15 +169,8 @@ public class SocketServerDiscoveryServer extends Thread {
 	}
 
 	@Override
-	public void interrupt() {
-		this.terminate();
-
-		super.interrupt();
-	}
-
-	@Override
 	protected void finalize() throws Throwable {
-		this.interrupt();
+		this.terminate();
 		super.finalize();
 	}
 
@@ -195,8 +189,8 @@ public class SocketServerDiscoveryServer extends Thread {
 		this.mSocketServerDiscoveryServerListener.onDiscovered(this, incomingDiscoveryIPAddress, incomingDiscoveryPort);
 
 		final byte[] outgoingDiscoveryDatagramPacketBuffer = this.mOutgoingDiscoveryDatagramPacketBuffer;
-		// TODO Can the DatagramPacket be safely reused/pooled?
 		final DatagramPacket outgoingDiscoveryDatagramPacket = new DatagramPacket(outgoingDiscoveryDatagramPacketBuffer, outgoingDiscoveryDatagramPacketBuffer.length, incomingDiscoveryIPAddress, incomingDiscoveryPort);
+
 		this.mDatagramSocket.send(outgoingDiscoveryDatagramPacket);
 	}
 
@@ -211,13 +205,15 @@ public class SocketServerDiscoveryServer extends Thread {
 		this.mSocketServerDiscoveryServerListener.onTerminated(this);
 	}
 
-	private void onException(final Throwable pThrowable) {
+	protected void onException(final Throwable pThrowable) {
 		this.mSocketServerDiscoveryServerListener.onException(this, pThrowable);
 	}
 
-	private void terminate() {
+	public void terminate() {
 		if(!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
+
+			this.interrupt();
 
 			this.onTerminate();
 		}
@@ -236,10 +232,9 @@ public class SocketServerDiscoveryServer extends Thread {
 		// Methods
 		// ===========================================================
 
-		// TODO Refine naming
 		public void onStarted(final SocketServerDiscoveryServer pSocketServerDiscoveryServer);
-		public void onTerminated(final SocketServerDiscoveryServer pSocketServerDiscoveryServer);
 		public void onDiscovered(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final InetAddress pInetAddress, final int pPort);
+		public void onTerminated(final SocketServerDiscoveryServer pSocketServerDiscoveryServer);
 		public void onException(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final Throwable pThrowable);
 
 		// ===========================================================

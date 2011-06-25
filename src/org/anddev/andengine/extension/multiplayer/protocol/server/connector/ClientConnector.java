@@ -3,6 +3,7 @@ package org.anddev.andengine.extension.multiplayer.protocol.server.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -51,12 +52,12 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IClientConnectorListener<C> getConnectorListener() {
-		return (IClientConnectorListener<C>) super.getConnectorListener();
+	public ArrayList<IClientConnectorListener<C>> getConnectorListeners() {
+		return (ArrayList<IClientConnectorListener<C>>) super.getConnectorListeners();
 	}
 
-	public void setClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
-		super.setConnectorListener(pClientConnectorListener);
+	public void addClientConnectorListener(final IClientConnectorListener<C> pClientConnectorListener) {
+		super.addConnectorListener(pClientConnectorListener);
 	}
 
 	// ===========================================================
@@ -65,12 +66,20 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	@Override
 	public void onConnected(final Connection pConnection) {
-		this.getConnectorListener().onConnected(this);
+		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
+		final int connectorListenerCount = connectorListeners.size();
+		for(int i = 0; i < connectorListenerCount; i++) {
+			connectorListeners.get(i).onConnected(this);
+		}
 	}
 
 	@Override
 	public void onDisconnected(final Connection pConnection) {
-		this.getConnectorListener().onDisconnected(this);
+		final ArrayList<IClientConnectorListener<C>> connectorListeners = this.getConnectorListeners();
+		final int connectorListenerCount = connectorListeners.size();
+		for(int i = 0; i < connectorListenerCount; i++) {
+			connectorListeners.get(i).onDisconnected(this);
+		}
 	}
 
 	@Override
