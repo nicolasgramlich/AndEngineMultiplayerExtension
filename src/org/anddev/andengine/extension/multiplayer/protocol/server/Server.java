@@ -9,6 +9,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.server.connector.Clie
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.SmartList;
 
 /**
  * @author Nicolas Gramlich
@@ -28,7 +29,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	private final AtomicBoolean mRunning = new AtomicBoolean(false);
 	private final AtomicBoolean mTerminated = new AtomicBoolean(false);
 
-	protected final ArrayList<CC> mClientConnectors = new ArrayList<CC>();
+	protected final SmartList<CC> mClientConnectors = new SmartList<CC>();
 	protected IClientConnectorListener<C> mClientConnectorListener;
 
 	// ===========================================================
@@ -132,11 +133,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	// Methods
 	// ===========================================================
 
-	private void onAddClientConnector(final CC pClientConnector) {
+	private synchronized void onAddClientConnector(final CC pClientConnector) {
 		Server.this.mClientConnectors.add(pClientConnector);
 	}
 
-	private void onRemoveClientConnector(final CC pClientConnector) {
+	private synchronized void onRemoveClientConnector(final CC pClientConnector) {
 		Server.this.mClientConnectors.remove(pClientConnector);
 	}
 
@@ -166,7 +167,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		}
 	}
 
-	public void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
+	public synchronized void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
 		if(this.mRunning.get()) {
 			final ArrayList<CC> clientConnectors = this.mClientConnectors;
 			for(int i = 0; i < clientConnectors.size(); i++) {
