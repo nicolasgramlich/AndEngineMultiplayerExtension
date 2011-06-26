@@ -8,6 +8,8 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
 import org.anddev.andengine.util.ArrayUtils;
 import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
@@ -16,7 +18,7 @@ import org.anddev.andengine.util.SocketUtils;
  * @author Nicolas Gramlich
  * @since 14:08:20 - 23.06.2011
  */
-public class SocketServerDiscoveryServer extends Thread {
+public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> extends Thread {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -62,17 +64,13 @@ public class SocketServerDiscoveryServer extends Thread {
 	// ===========================================================
 
 	private final int mDiscoveryPort;
-	private final String mServerIP;
-	private final int mServerPort;
 
 	private DatagramSocket mDatagramSocket;
 
-	private final byte[] mIncomingDiscoveryDatagramPacketBuffer = new byte[128];
-	private final DatagramPacket mIncomingDiscoveryDatagramPacket = new DatagramPacket(this.mIncomingDiscoveryDatagramPacketBuffer, this.mIncomingDiscoveryDatagramPacketBuffer.length);
+	private final byte[] mDiscoveryRequestData = new byte[1024];
+	private final DatagramPacket mDiscoveryRequestDatagramPacket = new DatagramPacket(this.mDiscoveryRequestData, this.mDiscoveryRequestData.length);
 
-	private final byte[] mOutgoingDiscoveryDatagramPacketBuffer;
-
-	protected ISocketServerDiscoveryServerListener mSocketServerDiscoveryServerListener;
+	protected ISocketServerDiscoveryServerListener<T> mSocketServerDiscoveryServerListener;
 	protected AtomicBoolean mRunning = new AtomicBoolean(false);
 	protected AtomicBoolean mTerminated = new AtomicBoolean(false);
 
@@ -80,21 +78,13 @@ public class SocketServerDiscoveryServer extends Thread {
 	// Constructors
 	// ===========================================================
 
-	public SocketServerDiscoveryServer(final String pServerIP, final int pServerPort) {
-		this(DISCOVERYPORT_DEFAULT, pServerIP, pServerPort, new DefaultSocketServerDiscoveryServerListener());
+	public SocketServerDiscoveryServer(final int pDiscoveryPort) {
+		this(pDiscoveryPort, new DefaultSocketServerDiscoveryServerListener<T>());
 	}
 
-	public SocketServerDiscoveryServer(final int pDiscoveryPort, final String pServerIP, final int pServerPort) {
-		this(pDiscoveryPort, pServerIP, pServerPort, new DefaultSocketServerDiscoveryServerListener());
-	}
-
-	public SocketServerDiscoveryServer(final int pDiscoveryPort, final String pServerIP, final int pServerPort, final ISocketServerDiscoveryServerListener pSocketServerDiscoveryServerListener) {
+	public SocketServerDiscoveryServer(final int pDiscoveryPort, final ISocketServerDiscoveryServerListener<T> pSocketServerDiscoveryServerListener) {
 		this.mDiscoveryPort = pDiscoveryPort;
-		this.mServerIP = pServerIP;
-		this.mServerPort = pServerPort;
 		this.mSocketServerDiscoveryServerListener = pSocketServerDiscoveryServerListener;
-
-		this.mOutgoingDiscoveryDatagramPacketBuffer = new StringBuilder().append(pServerIP).append(':').append(pServerPort).toString().getBytes();
 
 		this.initName();
 	}
@@ -119,25 +109,19 @@ public class SocketServerDiscoveryServer extends Thread {
 		return this.mDiscoveryPort;
 	}
 
-	public String getServerIP() {
-		return this.mServerIP;
-	}
-
-	public int getServerPort() {
-		return this.mServerPort;
-	}
-
 	public boolean hasSocketServerDiscoveryServerListener() {
 		return this.mSocketServerDiscoveryServerListener != null;
 	}
 
-	public ISocketServerDiscoveryServerListener getSocketServerDiscoveryServerListener() {
+	public ISocketServerDiscoveryServerListener<T> getSocketServerDiscoveryServerListener() {
 		return this.mSocketServerDiscoveryServerListener;
 	}
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+
+	protected abstract T onCreateDiscoveryResponse();
 
 	@Override
 	public void run() {
@@ -150,12 +134,12 @@ public class SocketServerDiscoveryServer extends Thread {
 
 			while(!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
-					final DatagramPacket incomingDiscoveryDatagramPacket = this.mIncomingDiscoveryDatagramPacket;
+					final DatagramPacket discoveryRequest = this.mDiscoveryRequestDatagramPacket;
+					this.mDatagramSocket.receive(discoveryRequest);
 
-					this.mDatagramSocket.receive(incomingDiscoveryDatagramPacket);
-
-					if(this.onVerifyIncomingDiscoveryDatagramPacket(incomingDiscoveryDatagramPacket)) {
-						this.onDiscovered(incomingDiscoveryDatagramPacket);
+					if(this.verifyDiscoveryRequest(discoveryRequest)) {
+						this.onDiscovered(discoveryRequest);
+						this.sendDiscoveryResponse(discoveryRequest);
 					}
 				} catch (final Throwable pThrowable) {
 					this.onException(pThrowable);
@@ -178,20 +162,18 @@ public class SocketServerDiscoveryServer extends Thread {
 	// Methods
 	// ===========================================================
 
-	protected boolean onVerifyIncomingDiscoveryDatagramPacket(final DatagramPacket pIncomingDiscoveryDatagramPacket) {
-		return ArrayUtils.equals(MAGIC_IDENTIFIER, 0, pIncomingDiscoveryDatagramPacket.getData(), pIncomingDiscoveryDatagramPacket.getOffset(), MAGIC_IDENTIFIER.length);
+	protected boolean verifyDiscoveryRequest(final DatagramPacket pDiscoveryRequest) {
+		return ArrayUtils.equals(MAGIC_IDENTIFIER, 0, pDiscoveryRequest.getData(), pDiscoveryRequest.getOffset(), MAGIC_IDENTIFIER.length);
 	}
 
-	protected void onDiscovered(final DatagramPacket pIncomingDiscoveryDatagramPacket) throws IOException {
-		final InetAddress incomingDiscoveryIPAddress = pIncomingDiscoveryDatagramPacket.getAddress();
-		final int incomingDiscoveryPort = pIncomingDiscoveryDatagramPacket.getPort();
+	protected void onDiscovered(final DatagramPacket pDiscoveryRequest) throws IOException {
+		this.mSocketServerDiscoveryServerListener.onDiscovered(this, pDiscoveryRequest.getAddress(), pDiscoveryRequest.getPort());
+	}
 
-		this.mSocketServerDiscoveryServerListener.onDiscovered(this, incomingDiscoveryIPAddress, incomingDiscoveryPort);
+	protected void sendDiscoveryResponse(final DatagramPacket pDatagramPacket) throws IOException {
+		final byte[] discoveryResponseData = DiscoveryDataFactory.write(this.onCreateDiscoveryResponse());
 
-		final byte[] outgoingDiscoveryDatagramPacketBuffer = this.mOutgoingDiscoveryDatagramPacketBuffer;
-		final DatagramPacket outgoingDiscoveryDatagramPacket = new DatagramPacket(outgoingDiscoveryDatagramPacketBuffer, outgoingDiscoveryDatagramPacketBuffer.length, incomingDiscoveryIPAddress, incomingDiscoveryPort);
-
-		this.mDatagramSocket.send(outgoingDiscoveryDatagramPacket);
+		this.mDatagramSocket.send(new DatagramPacket(discoveryResponseData, discoveryResponseData.length, pDatagramPacket.getAddress(), pDatagramPacket.getPort()));
 	}
 
 	protected void onStart() throws SocketException {
@@ -223,7 +205,7 @@ public class SocketServerDiscoveryServer extends Thread {
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface ISocketServerDiscoveryServerListener {
+	public interface ISocketServerDiscoveryServerListener<T extends IDiscoveryData> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -232,16 +214,16 @@ public class SocketServerDiscoveryServer extends Thread {
 		// Methods
 		// ===========================================================
 
-		public void onStarted(final SocketServerDiscoveryServer pSocketServerDiscoveryServer);
-		public void onDiscovered(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final InetAddress pInetAddress, final int pPort);
-		public void onTerminated(final SocketServerDiscoveryServer pSocketServerDiscoveryServer);
-		public void onException(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final Throwable pThrowable);
+		public void onStarted(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer);
+		public void onDiscovered(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer, final InetAddress pInetAddress, final int pPort);
+		public void onTerminated(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer);
+		public void onException(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer, final Throwable pThrowable);
 
 		// ===========================================================
 		// Inner and Anonymous Classes
 		// ===========================================================
 
-		public static class DefaultSocketServerDiscoveryServerListener implements ISocketServerDiscoveryServerListener {
+		public static class DefaultSocketServerDiscoveryServerListener<T extends IDiscoveryData> implements ISocketServerDiscoveryServerListener<T> {
 			// ===========================================================
 			// Constants
 			// ===========================================================
@@ -263,22 +245,22 @@ public class SocketServerDiscoveryServer extends Thread {
 			// ===========================================================
 
 			@Override
-			public void onStarted(final SocketServerDiscoveryServer pSocketServerDiscoveryServer) {
+			public void onStarted(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer) {
 				Debug.d("SocketServerDiscoveryServer started on discoveryPort: " + pSocketServerDiscoveryServer.getDiscoveryPort());
 			}
 
 			@Override
-			public void onTerminated(final SocketServerDiscoveryServer pSocketServerDiscoveryServer) {
+			public void onTerminated(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer) {
 				Debug.d("SocketServerDiscoveryServer terminated on discoveryPort: " + pSocketServerDiscoveryServer.getDiscoveryPort());
 			}
 
 			@Override
-			public void onDiscovered(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final InetAddress pInetAddress, final int pPort) {
+			public void onDiscovered(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer, final InetAddress pInetAddress, final int pPort) {
 				Debug.d("SocketServerDiscoveryServer discovered by: " + pInetAddress.getHostAddress() + ":" + pPort);
 			}
 
 			@Override
-			public void onException(final SocketServerDiscoveryServer pSocketServerDiscoveryServer, final Throwable pThrowable) {
+			public void onException(final SocketServerDiscoveryServer<T> pSocketServerDiscoveryServer, final Throwable pThrowable) {
 				Debug.e(pThrowable);
 			}
 

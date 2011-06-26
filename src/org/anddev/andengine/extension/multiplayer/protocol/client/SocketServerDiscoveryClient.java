@@ -11,18 +11,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.anddev.andengine.extension.multiplayer.protocol.exception.WifiException;
 import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServerDiscoveryServer;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
+import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
 import org.anddev.andengine.extension.multiplayer.protocol.util.WifiUtils;
+import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SocketUtils;
-
-import android.content.Context;
+import org.anddev.andengine.util.pool.GenericPool;
 
 /**
  * @author Nicolas Gramlich
  * @since 15:50:07 - 23.06.2011
  */
-public class SocketServerDiscoveryClient {
+public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -41,40 +42,51 @@ public class SocketServerDiscoveryClient {
 	private final int mDiscoveryPort;
 	private final int mLocalPort;
 	private int mTimeout = TIMEOUT_DEFAULT;
-	private final ISocketServerDiscoveryClientListener mSocketServerDiscoveryClientListener;
+	private final ISocketServerDiscoveryClientListener<T> mSocketServerDiscoveryClientListener;
 
 	private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
-	private final byte[] mIncomingDiscoveryDatagramPacketBuffer = new byte[128];
-	private final DatagramPacket mIncomingDiscoveryDatagramPacket = new DatagramPacket(this.mIncomingDiscoveryDatagramPacketBuffer, this.mIncomingDiscoveryDatagramPacketBuffer.length);
+	private final byte[] mDiscoveryResponseData = new byte[1024];
+	private final DatagramPacket mDiscoveryResponseDatagramPacket = new DatagramPacket(this.mDiscoveryResponseData, this.mDiscoveryResponseData.length);
 
-	private final DatagramPacket mOutgoingDiscoveryDatagramPacket;
+	private final DatagramPacket mDiscoveryRequestDatagramPacket;
+
+	private final GenericPool<T> mDiscoveryDataPool;
 
 	// ===========================================================
 	// Constructors
 	// ===========================================================
 
-	public SocketServerDiscoveryClient(final Context pContext, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException, WifiException {
-		this(WifiUtils.getBroadcastIPAddressRaw(pContext), pSocketServerDiscoveryClientListener);
+	/**
+	 * @param pDiscoveryBroadcastIPAddress use {@link WifiUtils#getBroadcastIPAddressRaw(android.content.Context)}.
+	 * @param pDiscoveryDataClass
+	 * @param pSocketServerDiscoveryClientListener
+	 * @throws UnknownHostException
+	 */
+	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final Class<? extends T> pDiscoveryDataClass, final ISocketServerDiscoveryClientListener<T> pSocketServerDiscoveryClientListener) throws UnknownHostException {
+		this(pDiscoveryBroadcastIPAddress, SocketServerDiscoveryServer.DISCOVERYPORT_DEFAULT, LOCALPORT_DEFAULT, pDiscoveryDataClass, pSocketServerDiscoveryClientListener);
 	}
 
-	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException {
-		this(pDiscoveryBroadcastIPAddress, SocketServerDiscoveryServer.DISCOVERYPORT_DEFAULT, LOCALPORT_DEFAULT, pSocketServerDiscoveryClientListener);
+	/**
+	 * @param pDiscoveryBroadcastIPAddress use {@link WifiUtils#getBroadcastIPAddressRaw(android.content.Context)}.
+	 * @param pDiscoveryPort
+	 * @param pDiscoveryDataClass
+	 * @param pSocketServerDiscoveryClientListener
+	 * @throws UnknownHostException
+	 */
+	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final int pDiscoveryPort, final Class<? extends T> pDiscoveryDataClass, final ISocketServerDiscoveryClientListener<T> pSocketServerDiscoveryClientListener) throws UnknownHostException {
+		this(pDiscoveryBroadcastIPAddress, pDiscoveryPort, LOCALPORT_DEFAULT, pDiscoveryDataClass, pSocketServerDiscoveryClientListener);
 	}
 
-	public SocketServerDiscoveryClient(final Context pContext, final int pDiscoveryPort, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException, WifiException {
-		this(WifiUtils.getBroadcastIPAddressRaw(pContext), pDiscoveryPort, LOCALPORT_DEFAULT, pSocketServerDiscoveryClientListener);
-	}
-
-	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final int pDiscoveryPort, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException {
-		this(pDiscoveryBroadcastIPAddress, pDiscoveryPort, LOCALPORT_DEFAULT, pSocketServerDiscoveryClientListener);
-	}
-
-	public SocketServerDiscoveryClient(final Context pContext, final int pDiscoveryPort, final int pLocalPort, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException, WifiException {
-		this(WifiUtils.getBroadcastIPAddressRaw(pContext), pDiscoveryPort, pLocalPort, pSocketServerDiscoveryClientListener);
-	}
-
-	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final int pDiscoveryPort, final int pLocalPort, final ISocketServerDiscoveryClientListener pSocketServerDiscoveryClientListener) throws UnknownHostException {
+	/**
+	 * @param pDiscoveryBroadcastIPAddress use {@link WifiUtils#getBroadcastIPAddressRaw(android.content.Context)}.
+	 * @param pDiscoveryPort
+	 * @param pLocalPort
+	 * @param pDiscoveryDataClass
+	 * @param pSocketServerDiscoveryClientListener
+	 * @throws UnknownHostException
+	 */
+	public SocketServerDiscoveryClient(final byte[] pDiscoveryBroadcastIPAddress, final int pDiscoveryPort, final int pLocalPort, final Class<? extends T> pDiscoveryDataClass, final ISocketServerDiscoveryClientListener<T> pSocketServerDiscoveryClientListener) throws UnknownHostException {
 		this.mDiscoveryPort = pDiscoveryPort;
 		this.mLocalPort = pLocalPort;
 		this.mSocketServerDiscoveryClientListener = pSocketServerDiscoveryClientListener;
@@ -82,7 +94,19 @@ public class SocketServerDiscoveryClient {
 		this.mDiscoveryBroadcastInetAddress = InetAddress.getByAddress(pDiscoveryBroadcastIPAddress);
 
 		final byte[] out = SocketServerDiscoveryServer.MAGIC_IDENTIFIER;
-		this.mOutgoingDiscoveryDatagramPacket = new DatagramPacket(out, out.length, SocketServerDiscoveryClient.this.mDiscoveryBroadcastInetAddress, SocketServerDiscoveryClient.this.mDiscoveryPort);
+		this.mDiscoveryRequestDatagramPacket = new DatagramPacket(out, out.length, SocketServerDiscoveryClient.this.mDiscoveryBroadcastInetAddress, SocketServerDiscoveryClient.this.mDiscoveryPort);
+
+		this.mDiscoveryDataPool = new GenericPool<T>() {
+			@Override
+			protected T onAllocatePoolItem() {
+				try {
+					return pDiscoveryDataClass.newInstance();
+				} catch (final Throwable t) {
+					Debug.e(t);
+					return null;
+				}
+			}
+		};
 	}
 
 	// ===========================================================
@@ -146,9 +170,9 @@ public class SocketServerDiscoveryClient {
 			datagramSocket = new DatagramSocket(this.mLocalPort);
 			datagramSocket.setBroadcast(true);
 
-			this.sendOutgoingDiscovery(datagramSocket);
+			sendDiscoveryRequest(datagramSocket);
 
-			this.receiveIncomingDiscovery(datagramSocket);
+			this.receiveDiscoveryResponse(datagramSocket);
 		} catch (final SocketTimeoutException t) {
 			this.mSocketServerDiscoveryClientListener.onTimeout(this, t);
 		} catch (final Throwable t) {
@@ -158,30 +182,34 @@ public class SocketServerDiscoveryClient {
 		}
 	}
 
-	private void sendOutgoingDiscovery(final DatagramSocket pDatagramSocket) throws SocketException, IOException {
-		pDatagramSocket.send(this.mOutgoingDiscoveryDatagramPacket);
+	private void sendDiscoveryRequest(DatagramSocket datagramSocket) throws IOException {
+		datagramSocket.send(this.mDiscoveryRequestDatagramPacket);
 	}
 
-	private void receiveIncomingDiscovery(final DatagramSocket datagramSocket) throws SocketException, IOException {
+	protected void receiveDiscoveryResponse(final DatagramSocket datagramSocket) throws SocketException, IOException {
 		datagramSocket.setSoTimeout(this.mTimeout);
-		final DatagramPacket incomingDiscoveryDatagramPacket = this.mIncomingDiscoveryDatagramPacket;
-		datagramSocket.receive(incomingDiscoveryDatagramPacket);
+		datagramSocket.receive(this.mDiscoveryResponseDatagramPacket);
 
-		final String result = new String(incomingDiscoveryDatagramPacket.getData(), incomingDiscoveryDatagramPacket.getOffset(), incomingDiscoveryDatagramPacket.getLength());
+		final byte[] data = new byte[this.mDiscoveryResponseDatagramPacket.getLength()];
+		System.arraycopy(this.mDiscoveryResponseDatagramPacket.getData(), this.mDiscoveryResponseDatagramPacket.getOffset(), data, 0, this.mDiscoveryResponseDatagramPacket.getLength());
 
-		/* Parse result. */
-		final int separator = result.indexOf(':');
-		final String ipAddress = result.substring(0, separator);
-		final int port = Integer.parseInt(result.substring(separator + 1));
+		final T discoveryResponse = this.mDiscoveryDataPool.obtainPoolItem();
+		
+		try {
+			DiscoveryDataFactory.read(data, discoveryResponse);
+			this.mSocketServerDiscoveryClientListener.onDiscovery(SocketServerDiscoveryClient.this, discoveryResponse);
+		} catch(final Throwable t) {
+			this.mSocketServerDiscoveryClientListener.onException(this, t);
+		}
 
-		this.mSocketServerDiscoveryClientListener.onDiscovery(SocketServerDiscoveryClient.this, ipAddress, port);
+		this.mDiscoveryDataPool.recyclePoolItem(discoveryResponse);
 	}
 
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public interface ISocketServerDiscoveryClientListener {
+	public interface ISocketServerDiscoveryClientListener<T extends IDiscoveryData> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
@@ -190,8 +218,8 @@ public class SocketServerDiscoveryClient {
 		// Methods
 		// ===========================================================
 
-		public void onDiscovery(final SocketServerDiscoveryClient pSocketServerDiscoveryClient, final String pIPAddress, final int pPort);
-		public void onTimeout(final SocketServerDiscoveryClient pSocketServerDiscoveryClient, final SocketTimeoutException pSocketTimeoutException);
-		public void onException(final SocketServerDiscoveryClient pSocketServerDiscoveryClient, final Throwable pThrowable);
+		public void onDiscovery(final SocketServerDiscoveryClient<T> pSocketServerDiscoveryClient, final T pDiscoveryData);
+		public void onTimeout(final SocketServerDiscoveryClient<T> pSocketServerDiscoveryClient, final SocketTimeoutException pSocketTimeoutException);
+		public void onException(final SocketServerDiscoveryClient<T> pSocketServerDiscoveryClient, final Throwable pThrowable);
 	}
 }

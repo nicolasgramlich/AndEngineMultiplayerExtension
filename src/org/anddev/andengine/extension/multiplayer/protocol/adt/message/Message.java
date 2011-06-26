@@ -75,7 +75,7 @@ public abstract class Message implements IMessage {
 	// ===========================================================
 
 	@Override
-	public void transmit(final DataOutputStream pDataOutputStream) throws IOException {
+	public void write(final DataOutputStream pDataOutputStream) throws IOException {
 		pDataOutputStream.writeShort(this.getFlag());
 		this.onWriteTransmissionData(pDataOutputStream);
 	}

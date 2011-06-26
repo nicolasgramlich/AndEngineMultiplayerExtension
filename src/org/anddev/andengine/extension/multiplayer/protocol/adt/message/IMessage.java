@@ -20,5 +20,5 @@ public interface IMessage {
 	public short getFlag();
 
 	public void read(final DataInputStream pDataInputStream) throws IOException;
-	public void transmit(final DataOutputStream pDataOutputStream) throws IOException;
+	public void write(final DataOutputStream pDataOutputStream) throws IOException;
 }

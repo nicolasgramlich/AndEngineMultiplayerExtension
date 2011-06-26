@@ -118,7 +118,7 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	public synchronized void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
 		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
-		pClientMessage.transmit(dataOutputStream);
+		pClientMessage.write(dataOutputStream);
 		dataOutputStream.flush();
 	}
 
