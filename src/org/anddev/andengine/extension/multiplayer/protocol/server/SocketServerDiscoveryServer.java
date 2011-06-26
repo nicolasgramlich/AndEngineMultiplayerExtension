@@ -78,8 +78,16 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 	// Constructors
 	// ===========================================================
 
+	public SocketServerDiscoveryServer() {
+		this(DISCOVERYPORT_DEFAULT);
+	}
+
 	public SocketServerDiscoveryServer(final int pDiscoveryPort) {
 		this(pDiscoveryPort, new DefaultSocketServerDiscoveryServerListener<T>());
+	}
+
+	public SocketServerDiscoveryServer(final ISocketServerDiscoveryServerListener<T> pSocketServerDiscoveryServerListener) {
+		this(DISCOVERYPORT_DEFAULT, pSocketServerDiscoveryServerListener);
 	}
 
 	public SocketServerDiscoveryServer(final int pDiscoveryPort, final ISocketServerDiscoveryServerListener<T> pSocketServerDiscoveryServerListener) {
