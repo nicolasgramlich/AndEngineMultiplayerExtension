@@ -134,12 +134,11 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 
 			while(!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
-					final DatagramPacket discoveryRequest = this.mDiscoveryRequestDatagramPacket;
-					this.mDatagramSocket.receive(discoveryRequest);
+					this.mDatagramSocket.receive(this.mDiscoveryRequestDatagramPacket);
 
-					if(this.verifyDiscoveryRequest(discoveryRequest)) {
-						this.onDiscovered(discoveryRequest);
-						this.sendDiscoveryResponse(discoveryRequest);
+					if(this.verifyDiscoveryRequest(this.mDiscoveryRequestDatagramPacket)) {
+						this.onDiscovered(this.mDiscoveryRequestDatagramPacket);
+						this.sendDiscoveryResponse(this.mDiscoveryRequestDatagramPacket);
 					}
 				} catch (final Throwable pThrowable) {
 					this.onException(pThrowable);

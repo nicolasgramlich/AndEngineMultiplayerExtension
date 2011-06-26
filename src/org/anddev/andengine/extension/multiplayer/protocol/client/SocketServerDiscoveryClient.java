@@ -141,16 +141,6 @@ public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 	// Methods
 	// ===========================================================
 
-	public void terminate() {
-		if(!this.mTerminated.getAndSet(true)) {
-			this.onTerminate();
-		}
-	}
-
-	private void onTerminate() {
-		this.mExecutorService.shutdownNow();
-	}
-
 	public void discoverAsync() throws IllegalStateException {
 		if(this.mTerminated.get()) {
 			throw new IllegalStateException(this.getClass().getSimpleName() + " was already terminated.");
@@ -170,9 +160,11 @@ public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 			datagramSocket = new DatagramSocket(this.mLocalPort);
 			datagramSocket.setBroadcast(true);
 
-			sendDiscoveryRequest(datagramSocket);
+			this.sendDiscoveryRequest(datagramSocket);
 
-			this.receiveDiscoveryResponse(datagramSocket);
+			final byte[] discoveryResponseData = this.receiveDiscoveryResponseData(datagramSocket);
+
+			this.handleDiscoveryResponseData(discoveryResponseData);
 		} catch (final SocketTimeoutException t) {
 			this.mSocketServerDiscoveryClientListener.onTimeout(this, t);
 		} catch (final Throwable t) {
@@ -182,27 +174,40 @@ public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 		}
 	}
 
-	private void sendDiscoveryRequest(DatagramSocket datagramSocket) throws IOException {
+	private void sendDiscoveryRequest(final DatagramSocket datagramSocket) throws IOException {
 		datagramSocket.send(this.mDiscoveryRequestDatagramPacket);
 	}
 
-	protected void receiveDiscoveryResponse(final DatagramSocket datagramSocket) throws SocketException, IOException {
+	protected byte[] receiveDiscoveryResponseData(final DatagramSocket datagramSocket) throws SocketException, IOException {
 		datagramSocket.setSoTimeout(this.mTimeout);
 		datagramSocket.receive(this.mDiscoveryResponseDatagramPacket);
 
-		final byte[] data = new byte[this.mDiscoveryResponseDatagramPacket.getLength()];
-		System.arraycopy(this.mDiscoveryResponseDatagramPacket.getData(), this.mDiscoveryResponseDatagramPacket.getOffset(), data, 0, this.mDiscoveryResponseDatagramPacket.getLength());
+		final byte[] discoveryResponseData = new byte[this.mDiscoveryResponseDatagramPacket.getLength()];
+		System.arraycopy(this.mDiscoveryResponseDatagramPacket.getData(), this.mDiscoveryResponseDatagramPacket.getOffset(), discoveryResponseData, 0, this.mDiscoveryResponseDatagramPacket.getLength());
+		return discoveryResponseData;
+	}
 
+	private void handleDiscoveryResponseData(final byte[] pDiscoveryResponseData) {
 		final T discoveryResponse = this.mDiscoveryDataPool.obtainPoolItem();
-		
+
 		try {
-			DiscoveryDataFactory.read(data, discoveryResponse);
+			DiscoveryDataFactory.read(pDiscoveryResponseData, discoveryResponse);
 			this.mSocketServerDiscoveryClientListener.onDiscovery(SocketServerDiscoveryClient.this, discoveryResponse);
 		} catch(final Throwable t) {
 			this.mSocketServerDiscoveryClientListener.onException(this, t);
 		}
 
 		this.mDiscoveryDataPool.recyclePoolItem(discoveryResponse);
+	}
+
+	public void terminate() {
+		if(!this.mTerminated.getAndSet(true)) {
+			this.onTerminate();
+		}
+	}
+
+	private void onTerminate() {
+		this.mExecutorService.shutdownNow();
 	}
 
 	// ===========================================================
