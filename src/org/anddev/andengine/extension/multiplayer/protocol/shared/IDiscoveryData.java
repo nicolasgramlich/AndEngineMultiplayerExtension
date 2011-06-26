@@ -97,6 +97,11 @@ public interface IDiscoveryData {
 		// Constructors
 		// ===========================================================
 
+		@Deprecated
+		public DefaultDiscoveryData() {
+
+		}
+
 		public DefaultDiscoveryData(final byte[] pServerIP, final int pServerPort) {
 			this.mServerIP = pServerIP;
 			this.mServerPort = pServerPort;
