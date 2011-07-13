@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.anddev.andengine.extension.multiplayer.protocol.adt.message.IMessage;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 11:57:21 - 04.03.2011
  */

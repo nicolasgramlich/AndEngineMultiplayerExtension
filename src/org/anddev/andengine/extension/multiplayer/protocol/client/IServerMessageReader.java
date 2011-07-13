@@ -11,6 +11,9 @@ import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageReader
 import org.anddev.andengine.extension.multiplayer.protocol.shared.MessageReader;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 13:11:07 - 02.03.2011
  */

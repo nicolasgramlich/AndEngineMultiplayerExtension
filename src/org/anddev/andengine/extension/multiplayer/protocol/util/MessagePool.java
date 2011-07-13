@@ -10,6 +10,9 @@ import org.anddev.andengine.util.pool.GenericPool;
 import org.anddev.andengine.util.pool.MultiPool;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 11:33:23 - 02.03.2011
  */

@@ -9,6 +9,9 @@ import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.anddev.andengine.util.Debug;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 15:44:42 - 04.03.2011
  */

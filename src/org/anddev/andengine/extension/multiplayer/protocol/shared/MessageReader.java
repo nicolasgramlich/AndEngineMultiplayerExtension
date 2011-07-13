@@ -9,6 +9,9 @@ import org.anddev.andengine.extension.multiplayer.protocol.util.MessagePool;
 import android.util.SparseArray;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 11:05:58 - 21.09.2009
  */

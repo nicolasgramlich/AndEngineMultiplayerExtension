@@ -13,12 +13,7 @@
 	
 	<property name="binfile" value="bin/andenginemultiplayerextension.jar" />
 	
-	<property name="targetlist" value="../AndCards/lib/andenginemultiplayerextension.jar,
-		../AndEngineExamples/lib/andenginemultiplayerextension.jar,
-		../AndEngineGameTemplate/lib/andenginemultiplayerextension.jar,
-		../APlay/lib/andenginemultiplayerextension.jar,
-		../APlayShared/lib/andenginemultiplayerextension.jar,
-		../APlayController/lib/andenginemultiplayerextension.jar" />
+	<property name="targetlist" value="../AndEngineExamples/lib/andenginemultiplayerextension.jar" />
    	
    	<target name="package">
 		<jar destfile="${binfile}">

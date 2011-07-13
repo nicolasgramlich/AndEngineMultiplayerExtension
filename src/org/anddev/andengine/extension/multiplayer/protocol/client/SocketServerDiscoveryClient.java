@@ -20,6 +20,9 @@ import org.anddev.andengine.util.SocketUtils;
 import org.anddev.andengine.util.pool.GenericPool;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 15:50:07 - 23.06.2011
  */

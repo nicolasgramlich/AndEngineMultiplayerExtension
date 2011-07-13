@@ -10,6 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.anddev.andengine.util.Debug;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */

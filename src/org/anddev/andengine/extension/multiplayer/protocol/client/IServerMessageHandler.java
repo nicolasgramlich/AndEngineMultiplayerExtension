@@ -8,6 +8,9 @@ import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.IMessageHandler;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 21:01:19 - 19.09.2009
  */

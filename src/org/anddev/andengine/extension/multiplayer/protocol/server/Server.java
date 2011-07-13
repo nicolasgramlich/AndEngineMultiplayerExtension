@@ -12,6 +12,9 @@ import org.anddev.andengine.util.Debug;
 import org.anddev.andengine.util.SmartList;
 
 /**
+ * (c) 2010 Nicolas Gramlich 
+ * (c) 2011 Zynga Inc.
+ * 
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
