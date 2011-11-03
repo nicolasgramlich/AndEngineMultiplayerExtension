@@ -11,7 +11,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.server.SocketServerDi
 import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
 import org.anddev.andengine.util.ArrayUtils;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 import org.anddev.andengine.util.SocketUtils;
 
 /**

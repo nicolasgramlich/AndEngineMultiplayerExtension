@@ -6,7 +6,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothEx
 import org.anddev.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich 

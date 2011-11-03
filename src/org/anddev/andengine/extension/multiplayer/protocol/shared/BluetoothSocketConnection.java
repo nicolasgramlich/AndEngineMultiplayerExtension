@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.anddev.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.anddev.andengine.extension.multiplayer.protocol.util.Bluetooth;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

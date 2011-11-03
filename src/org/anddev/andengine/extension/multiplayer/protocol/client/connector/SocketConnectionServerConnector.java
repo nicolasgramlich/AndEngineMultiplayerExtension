@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.anddev.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich 

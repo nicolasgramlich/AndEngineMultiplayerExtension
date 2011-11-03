@@ -11,7 +11,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.server.connector.Clie
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector.DefaultSocketConnectionClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.SocketConnection;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 import org.anddev.andengine.util.SocketUtils;
 
 /**

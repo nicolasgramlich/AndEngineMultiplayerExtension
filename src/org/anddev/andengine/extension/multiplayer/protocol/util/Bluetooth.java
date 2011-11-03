@@ -1,6 +1,6 @@
 package org.anddev.andengine.extension.multiplayer.protocol.util;
 
-import org.anddev.andengine.util.SystemUtils;
+import org.anddev.andengine.util.system.SystemUtils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import org.anddev.andengine.extension.multiplayer.protocol.exception.WifiException;
-import org.anddev.andengine.util.SystemUtils;
+import org.anddev.andengine.util.system.SystemUtils;
 
 import android.content.Context;
 import android.net.DhcpInfo;

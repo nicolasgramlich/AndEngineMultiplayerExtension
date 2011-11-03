@@ -8,7 +8,7 @@ import org.anddev.andengine.extension.multiplayer.protocol.adt.message.server.IS
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.anddev.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.anddev.andengine.extension.multiplayer.protocol.shared.Connection;
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 import org.anddev.andengine.util.SmartList;
 
 /**

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.anddev.andengine.util.Debug;
+import org.anddev.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich 
