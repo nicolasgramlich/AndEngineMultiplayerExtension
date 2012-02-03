@@ -11,8 +11,8 @@ import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.andengine.extension.multiplayer.protocol.shared.Connector;
-import org.andengine.util.ParameterCallable;
-import org.andengine.util.SmartList;
+import org.andengine.util.adt.list.SmartList;
+import org.andengine.util.call.ParameterCallable;
 
 /**
  * (c) 2010 Nicolas Gramlich 

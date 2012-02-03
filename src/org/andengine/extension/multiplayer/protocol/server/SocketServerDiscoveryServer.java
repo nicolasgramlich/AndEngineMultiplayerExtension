@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.andengine.extension.multiplayer.protocol.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
-import org.andengine.util.ArrayUtils;
-import org.andengine.util.debug.Debug;
 import org.andengine.util.SocketUtils;
+import org.andengine.util.adt.array.ArrayUtils;
+import org.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich 

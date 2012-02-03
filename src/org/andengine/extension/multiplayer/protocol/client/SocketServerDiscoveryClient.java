@@ -15,9 +15,9 @@ import org.andengine.extension.multiplayer.protocol.server.SocketServerDiscovery
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
 import org.andengine.extension.multiplayer.protocol.util.WifiUtils;
-import org.andengine.util.debug.Debug;
 import org.andengine.util.SocketUtils;
-import org.andengine.util.pool.GenericPool;
+import org.andengine.util.adt.pool.GenericPool;
+import org.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich 

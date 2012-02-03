@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.andengine.extension.multiplayer.protocol.adt.message.IMessage;
+import org.andengine.util.adt.pool.GenericPool;
+import org.andengine.util.adt.pool.MultiPool;
 import org.andengine.util.debug.Debug;
-import org.andengine.util.pool.GenericPool;
-import org.andengine.util.pool.MultiPool;
 
 /**
  * (c) 2010 Nicolas Gramlich 

@@ -8,8 +8,8 @@ import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMe
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
 import org.andengine.extension.multiplayer.protocol.shared.Connection;
+import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.debug.Debug;
-import org.andengine.util.SmartList;
 
 /**
  * (c) 2010 Nicolas Gramlich 
