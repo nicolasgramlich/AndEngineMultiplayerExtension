@@ -3,12 +3,12 @@ package org.andengine.extension.multiplayer.protocol.server;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
+import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.andengine.extension.multiplayer.protocol.server.BluetoothSocketServer.IBluetoothSocketServerListener.DefaultBluetoothSocketServerListener;
 import org.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketConnectionClientConnector.DefaultBluetoothSocketClientConnectorListener;
-import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
-import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.andengine.extension.multiplayer.protocol.util.Bluetooth;
 import org.andengine.util.debug.Debug;
 
@@ -125,7 +125,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> extends IServerListener<BluetoothSocketServer<CC>> {
+	public static interface IBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> extends Server.IServerListener<BluetoothSocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
