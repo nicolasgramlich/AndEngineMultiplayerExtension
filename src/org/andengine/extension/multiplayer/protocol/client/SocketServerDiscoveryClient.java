@@ -145,7 +145,7 @@ public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 	// ===========================================================
 
 	public void discoverAsync() throws IllegalStateException {
-		if(this.mTerminated.get()) {
+		if (this.mTerminated.get()) {
 			throw new IllegalStateException(this.getClass().getSimpleName() + " was already terminated.");
 		}
 
@@ -204,7 +204,7 @@ public class SocketServerDiscoveryClient<T extends IDiscoveryData> {
 	}
 
 	public void terminate() {
-		if(!this.mTerminated.getAndSet(true)) {
+		if (!this.mTerminated.getAndSet(true)) {
 			this.onTerminate();
 		}
 	}

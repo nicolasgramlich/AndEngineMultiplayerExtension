@@ -61,7 +61,7 @@ public class MessagePool<M extends IMessage> {
 
 	public M obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		final M message = this.mMessageMultiPool.obtainPoolItem(pFlag);
-		if(message != null) { 
+		if (message != null) { 
 			message.read(pDataInputStream);
 			return message;
 		} else {
@@ -75,7 +75,7 @@ public class MessagePool<M extends IMessage> {
 
 	public void recycleMessages(final List<? extends M> pMessages) {
 		final MultiPool<M> messageMultiPool = this.mMessageMultiPool;
-		for(int i = pMessages.size() - 1; i >= 0; i--) {
+		for (int i = pMessages.size() - 1; i >= 0; i--) {
 			final M message = pMessages.get(i);
 			messageMultiPool.recyclePoolItem(message.getFlag(), message);
 		}

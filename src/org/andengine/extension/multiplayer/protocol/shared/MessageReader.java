@@ -68,7 +68,7 @@ public abstract class MessageReader<C extends Connection, CC extends Connector<C
 	@Override
 	public void handleMessage(final CC pConnector, final M pMessage) throws IOException {
 		final IMessageHandler<C, CC, M> messageHandler = this.mMessageHandlers.get(pMessage.getFlag());
-		if(messageHandler != null) {
+		if (messageHandler != null) {
 			messageHandler.onHandleMessage(pConnector, pMessage);
 		}
 	}

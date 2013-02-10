@@ -130,7 +130,7 @@ public interface IDiscoveryData {
 		public void read(final DataInputStream pDataInputStream) throws IOException {
 			final byte serverIPLength = pDataInputStream.readByte();
 			this.mServerIP = new byte[serverIPLength];
-			for(int i = 0; i < this.mServerIP.length; i++) {
+			for (int i = 0; i < this.mServerIP.length; i++) {
 				this.mServerIP[i] = pDataInputStream.readByte();
 			}
 			this.mServerPort = pDataInputStream.readShort();

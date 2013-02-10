@@ -144,13 +144,13 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	}
 
 	public void terminate() {
-		if(!this.mTerminated.getAndSet(true)) {
+		if (!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
 
 			try {
 				/* First interrupt all Clients. */
 				final SmartList<CC> clientConnectors = this.mClientConnectors;
-				for(int i = 0; i < clientConnectors.size(); i++) {
+				for (int i = 0; i < clientConnectors.size(); i++) {
 					clientConnectors.get(i).terminate();
 				}
 				clientConnectors.clear();
@@ -170,9 +170,9 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 	}
 
 	public synchronized void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
-		if(this.mRunning.get()) {
+		if (this.mRunning.get()) {
 			final SmartList<CC> clientConnectors = this.mClientConnectors;
-			for(int i = 0; i < clientConnectors.size(); i++) {
+			for (int i = 0; i < clientConnectors.size(); i++) {
 				try {
 					clientConnectors.get(i).sendServerMessage(pServerMessage);
 				} catch (final IOException e) {

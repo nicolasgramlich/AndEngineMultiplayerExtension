@@ -85,7 +85,7 @@ public class WifiUtils {
 				final NetworkInterface networkInterface = networkInterfaceEnumeration.nextElement();
 				final String networkInterfaceNname = networkInterface.getName();
 
-				if(networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
+				if (networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
 					return true;
 				}
 			}
@@ -106,18 +106,18 @@ public class WifiUtils {
 				final NetworkInterface networkInterface = networkInterfaceEnumeration.nextElement();
 				final String networkInterfaceNname = networkInterface.getName();
 
-				if(networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
+				if (networkInterfaceNname.equals(HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT)) {
 					byte[] ipv6Address = null;
 					final Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
 					while(inetAddressEnumeration.hasMoreElements()) {
 						final byte[] ipAddress = inetAddressEnumeration.nextElement().getAddress();
-						if(ipAddress.length == 4) { // TODO Constant!
+						if (ipAddress.length == 4) { // TODO Constant!
 							return ipAddress;
 						} else {
 							ipv6Address = ipAddress;
 						}
 					}
-					if(ipv6Address != null) {
+					if (ipv6Address != null) {
 						return ipv6Address;
 					} else {
 						throw new WifiException("No IP bound to '" + HOTSPOT_NETWORKINTERFACE_NAME_DEFAULT + "'!");
@@ -149,7 +149,7 @@ public class WifiUtils {
 
 		final int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
 		final byte[] broadcastIP = new byte[4];
-		for(int k = 0; k < 4; k++) {
+		for (int k = 0; k < 4; k++) {
 			broadcastIP[k] = (byte) ((broadcast >> k * 8) & 0xFF);
 		}
 		return broadcastIP;
@@ -167,7 +167,7 @@ public class WifiUtils {
 	}
 
 	public static void releaseMulticastLock(final MulticastLock pMulticastLock) {
-		if(pMulticastLock.isHeld()) {
+		if (pMulticastLock.isHeld()) {
 			pMulticastLock.release();
 		}
 	}

@@ -147,7 +147,7 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 				try {
 					this.mDatagramSocket.receive(this.mDiscoveryRequestDatagramPacket);
 
-					if(this.verifyDiscoveryRequest(this.mDiscoveryRequestDatagramPacket)) {
+					if (this.verifyDiscoveryRequest(this.mDiscoveryRequestDatagramPacket)) {
 						this.onDiscovered(this.mDiscoveryRequestDatagramPacket);
 						this.sendDiscoveryResponse(this.mDiscoveryRequestDatagramPacket);
 					}
@@ -202,7 +202,7 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 	}
 
 	public void terminate() {
-		if(!this.mTerminated.getAndSet(true)) {
+		if (!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
 
 			this.interrupt();

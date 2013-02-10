@@ -53,7 +53,7 @@ public abstract class Connection extends Thread {
 		return this.mDataInputStream;
 	}
 
-	public boolean hasConnectionListener(){
+	public boolean hasConnectionListener() {
 		return this.mConnectionListener != null;
 	}
 
@@ -107,7 +107,7 @@ public abstract class Connection extends Thread {
 	// ===========================================================
 
 	public void terminate() {
-		if(!this.mTerminated.getAndSet(true)) {
+		if (!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
 
 			this.interrupt();
@@ -117,13 +117,13 @@ public abstract class Connection extends Thread {
 	}
 
 	protected void onStart() {
-		if(this.mConnectionListener != null) {
+		if (this.mConnectionListener != null) {
 			this.mConnectionListener.onStarted(this);
 		}
 	}
 
 	protected void onTerminate() {
-		if(this.mConnectionListener != null) {
+		if (this.mConnectionListener != null) {
 			this.mConnectionListener.onTerminated(this);
 		}
 	}

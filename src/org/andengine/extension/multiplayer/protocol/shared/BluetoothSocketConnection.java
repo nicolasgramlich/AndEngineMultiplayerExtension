@@ -48,7 +48,7 @@ public class BluetoothSocketConnection extends Connection {
 
 		this.mBluetoothSocket = pBluetoothSocket;
 
-		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+		if (Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}
 	}

@@ -48,13 +48,13 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	}
 
 	protected void addConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
-		if(pConnectorListener != null) {
+		if (pConnectorListener != null) {
 			this.mConnectorListeners.add(pConnectorListener);
 		}
 	}
 
 	protected boolean removeConnectorListener(final IConnectorListener<? extends Connector<C>> pConnectorListener) {
-		if(pConnectorListener == null) {
+		if (pConnectorListener == null) {
 			return false;
 		} else {
 			return this.mConnectorListeners.remove(pConnectorListener);

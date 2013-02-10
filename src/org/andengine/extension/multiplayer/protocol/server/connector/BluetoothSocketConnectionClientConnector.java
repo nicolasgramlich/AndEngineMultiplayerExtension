@@ -31,7 +31,7 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection);
 
-		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+		if (Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}
 	}
@@ -39,7 +39,7 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection, pClientMessageReader);
 
-		if(Bluetooth.isSupportedByAndroidVersion() == false) {
+		if (Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}
 	}
