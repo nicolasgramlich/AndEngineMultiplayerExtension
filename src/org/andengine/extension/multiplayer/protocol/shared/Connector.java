@@ -64,15 +64,15 @@ public abstract class Connector<C extends Connection> implements IConnectionList
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-	
+
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+
 	public void start() {
 		this.getConnection().start();
 	}
-	
+
 	public void terminate() {
 		this.getConnection().terminate();
 	}

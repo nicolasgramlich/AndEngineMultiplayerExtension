@@ -56,7 +56,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 		super(pClientConnectorListener, pBluetoothSocketServerListener);
 
 		this.mUUID = pUUID;
-		
+
 		if(Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}

@@ -146,7 +146,7 @@ public class WifiUtils {
 		final WifiManager wifiManager = WifiUtils.getWifiManager(pContext);
 		final DhcpInfo dhcp = wifiManager.getDhcpInfo();
 		// TODO handle null somehow...
-		
+
 		final int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
 		final byte[] broadcastIP = new byte[4];
 		for(int k = 0; k < 4; k++) {
@@ -158,7 +158,7 @@ public class WifiUtils {
 	public static MulticastLock aquireMulticastLock(final Context pContext) {
 		return aquireMulticastLock(pContext, MULTICASTLOCK_NAME_DEFAULT);
 	}
-	
+
 	public static MulticastLock aquireMulticastLock(final Context pContext, final String pMulticastLockName) {
 		MulticastLock multicastLock = getWifiManager(pContext).createMulticastLock(pMulticastLockName);
 		multicastLock.setReferenceCounted(true);

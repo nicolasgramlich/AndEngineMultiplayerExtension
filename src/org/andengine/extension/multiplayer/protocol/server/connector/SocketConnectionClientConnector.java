@@ -49,9 +49,9 @@ public class SocketConnectionClientConnector extends ClientConnector<SocketConne
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	public static interface ISocketConnectionClientConnectorListener extends IClientConnectorListener<SocketConnection> {
-		
+
 	}
 
 	public static class DefaultSocketConnectionClientConnectorListener implements ISocketConnectionClientConnectorListener {

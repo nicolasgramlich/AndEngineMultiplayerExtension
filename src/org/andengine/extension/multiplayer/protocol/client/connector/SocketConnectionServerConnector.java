@@ -49,11 +49,11 @@ public class SocketConnectionServerConnector extends ServerConnector<SocketConne
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	public static interface ISocketConnectionServerConnectorListener extends IServerConnectorListener<SocketConnection> {
-		
+
 	}
-	
+
 	public static class DefaultSocketConnectionServerConnectorListener implements ISocketConnectionServerConnectorListener {
 		@Override
 		public void onStarted(final ServerConnector<SocketConnection> pServerConnector) {

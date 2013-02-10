@@ -30,7 +30,7 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 
 	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection);
-		
+
 		if(Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}
@@ -38,7 +38,7 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 
 	public BluetoothSocketConnectionClientConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IClientMessageReader<BluetoothSocketConnection> pClientMessageReader) throws IOException, BluetoothException {
 		super(pBluetoothSocketConnection, pClientMessageReader);
-		
+
 		if(Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}
@@ -59,9 +59,9 @@ public class BluetoothSocketConnectionClientConnector extends ClientConnector<Bl
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	public static interface IBluetoothSocketConnectionClientConnectorListener extends IClientConnectorListener<BluetoothSocketConnection> {
-		
+
 	}
 
 	public static class DefaultBluetoothSocketClientConnectorListener implements IBluetoothSocketConnectionClientConnectorListener {

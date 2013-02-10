@@ -34,11 +34,11 @@ public class BluetoothSocketConnection extends Connection {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	
+
 	public BluetoothSocketConnection(final BluetoothAdapter pBluetoothAdapter, final String pMacAddress, final String pUUID) throws IOException, BluetoothException {
 		this(pBluetoothAdapter.getRemoteDevice(pMacAddress), pUUID);
 	}
-	
+
 	public BluetoothSocketConnection(final BluetoothDevice pBluetoothDevice, final String pUUID) throws IOException, BluetoothException {
 		this(pBluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString(pUUID)));
 	}
@@ -47,7 +47,7 @@ public class BluetoothSocketConnection extends Connection {
 		super(new DataInputStream(pBluetoothSocket.getInputStream()), new DataOutputStream(pBluetoothSocket.getOutputStream()));
 
 		this.mBluetoothSocket = pBluetoothSocket;
-		
+
 		if(Bluetooth.isSupportedByAndroidVersion() == false) {
 			throw new BluetoothException();
 		}

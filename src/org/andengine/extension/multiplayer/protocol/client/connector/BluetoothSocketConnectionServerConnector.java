@@ -49,11 +49,11 @@ public class BluetoothSocketConnectionServerConnector extends ServerConnector<Bl
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	
+
 	public static interface IBluetoothSocketConnectionServerConnectorListener extends IServerConnectorListener<BluetoothSocketConnection> {
-		
+
 	}
-	
+
 	public static class DefaultBluetoothConnectionSocketServerConnectorListener implements IBluetoothSocketConnectionServerConnectorListener {
 		@Override
 		public void onStarted(final ServerConnector<BluetoothSocketConnection> pServerConnector) {

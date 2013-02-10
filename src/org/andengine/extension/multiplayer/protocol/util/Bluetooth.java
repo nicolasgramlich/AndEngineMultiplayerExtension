@@ -39,7 +39,7 @@ public class Bluetooth {
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+
 	public static boolean isSupported(final Context pContext) {
 		if(SUPPORTED == null) {
 			SUPPORTED = SystemUtils.isAndroidVersionOrHigher(Build.VERSION_CODES.ECLAIR_MR1) && SystemUtils.hasSystemFeature(pContext, PackageManager.FEATURE_BLUETOOTH);
