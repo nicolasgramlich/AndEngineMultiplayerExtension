@@ -2,9 +2,9 @@ package org.andengine.extension.multiplayer.protocol.exception;
 
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 16:58:37 - 20.03.2011
  */

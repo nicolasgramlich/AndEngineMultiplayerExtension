@@ -4,9 +4,9 @@ import org.andengine.extension.multiplayer.protocol.shared.Connection.IConnectio
 import org.andengine.util.adt.list.SmartList;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 13:51:22 - 03.03.2011
  */

@@ -7,13 +7,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 
 import org.andengine.util.SocketUtils;
+import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
@@ -44,6 +46,22 @@ public class SocketConnection extends Connection {
 
 	public SocketConnection(final Socket pSocket) throws IOException {
 		super(new DataInputStream(pSocket.getInputStream()), new DataOutputStream(pSocket.getOutputStream()));
+
+//		pSocket.setPerformancePreferences(1, 3, 2);
+//
+//		final int sendBufferSize = pSocket.getSendBufferSize();
+//		pSocket.setSendBufferSize(sendBufferSize);
+//
+//		final int receiveBufferSize = pSocket.getReceiveBufferSize();
+//		pSocket.setReceiveBufferSize(receiveBufferSize);
+
+		try {
+			if (!pSocket.getTcpNoDelay()) {
+				pSocket.setTcpNoDelay(true);
+			}
+		} catch (SocketException e) {
+			Debug.w(e);
+		}
 
 		this.mSocket = pSocket;
 	}

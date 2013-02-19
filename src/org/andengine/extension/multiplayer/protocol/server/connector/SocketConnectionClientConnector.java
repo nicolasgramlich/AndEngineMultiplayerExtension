@@ -7,9 +7,9 @@ import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 15:44:42 - 04.03.2011
  */

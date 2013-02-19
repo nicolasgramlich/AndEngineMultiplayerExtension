@@ -15,9 +15,9 @@ import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.call.ParameterCallable;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */

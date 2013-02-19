@@ -15,9 +15,9 @@ import org.andengine.util.adt.array.ArrayUtils;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 14:08:20 - 23.06.2011
  */
@@ -141,7 +141,7 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 
 			this.mRunning.set(true);
 
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_LESS_FAVORABLE);  // TODO What ThreadPriority makes sense here?
+//			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_LESS_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
 			while(!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {

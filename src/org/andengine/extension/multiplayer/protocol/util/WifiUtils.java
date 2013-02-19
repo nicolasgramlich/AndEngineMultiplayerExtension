@@ -16,9 +16,9 @@ import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Build;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 16:54:01 - 20.03.2011
  */

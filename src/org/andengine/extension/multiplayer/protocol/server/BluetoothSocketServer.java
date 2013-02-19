@@ -17,10 +17,10 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 
 /**
- * TODO allow to pass {@link BluetoothAdapter} to the constructor. 
- * (c) 2010 Nicolas Gramlich 
+ * TODO allow to pass {@link BluetoothAdapter} to the constructor.
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 15:41:31 - 03.03.2011
  */

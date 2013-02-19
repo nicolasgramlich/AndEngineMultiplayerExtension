@@ -7,9 +7,9 @@ import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnec
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 15:45:57 - 04.03.2011
  */

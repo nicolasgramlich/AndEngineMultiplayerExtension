@@ -11,9 +11,9 @@ import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 14:36:54 - 18.09.2009
  */
@@ -93,7 +93,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 
 			this.mRunning.set(true);
 
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);  // TODO What ThreadPriority makes sense here?
+//			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DEFAULT);  // TODO What ThreadPriority makes sense here?
 
 			/* Endless waiting for incoming clients. */
 			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {

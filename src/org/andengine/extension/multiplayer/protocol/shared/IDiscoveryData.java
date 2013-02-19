@@ -9,9 +9,9 @@ import java.io.IOException;
 import org.andengine.util.StreamUtils;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 18:01:23 - 26.06.2011
  */

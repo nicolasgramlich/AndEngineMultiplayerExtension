@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
@@ -75,7 +75,7 @@ public abstract class Connection extends Thread {
 
 		this.mRunning.set(true);
 
-		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
+//		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
 		try {
 			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {

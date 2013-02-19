@@ -10,9 +10,9 @@ import org.andengine.util.adt.pool.MultiPool;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich 
+ * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga Inc.
- * 
+ *
  * @author Nicolas Gramlich
  * @since 11:33:23 - 02.03.2011
  */
@@ -61,7 +61,7 @@ public class MessagePool<M extends IMessage> {
 
 	public M obtainMessage(final short pFlag, final DataInputStream pDataInputStream) throws IOException {
 		final M message = this.mMessageMultiPool.obtainPoolItem(pFlag);
-		if (message != null) { 
+		if (message != null) {
 			message.read(pDataInputStream);
 			return message;
 		} else {
