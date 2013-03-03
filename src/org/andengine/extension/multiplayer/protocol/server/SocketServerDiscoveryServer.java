@@ -215,7 +215,7 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public interface ISocketServerDiscoveryServerListener<T extends IDiscoveryData> {
+	public static interface ISocketServerDiscoveryServerListener<T extends IDiscoveryData> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================

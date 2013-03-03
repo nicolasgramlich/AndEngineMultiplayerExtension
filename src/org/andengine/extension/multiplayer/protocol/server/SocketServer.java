@@ -119,7 +119,7 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface ISocketServerListener<CC extends ClientConnector<SocketConnection>> extends IServerListener<SocketServer<CC>> {
+	public static interface ISocketServerListener<CC extends ClientConnector<SocketConnection>> extends Server.IServerListener<SocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================

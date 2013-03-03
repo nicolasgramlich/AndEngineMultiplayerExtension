@@ -125,7 +125,7 @@ public abstract class BluetoothSocketServer<CC extends ClientConnector<Bluetooth
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface IBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> extends IServerListener<BluetoothSocketServer<CC>> {
+	public static interface IBluetoothSocketServerListener<CC extends ClientConnector<BluetoothSocketConnection>> extends Server.IServerListener<BluetoothSocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================

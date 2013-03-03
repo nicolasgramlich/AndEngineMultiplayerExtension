@@ -69,7 +69,7 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		this.mClientConnectorListener = pClientConnectorListener;
 	}
 
-	public IServerListener<? extends Server<C, CC>> getServerListener() {
+	public IServerListener<? extends Server<C, ? extends ClientConnector<C>>> getServerListener() {
 		return this.mServerListener;
 	}
 
