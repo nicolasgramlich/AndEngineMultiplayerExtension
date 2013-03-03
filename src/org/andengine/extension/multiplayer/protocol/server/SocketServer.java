@@ -6,11 +6,11 @@ import java.net.Socket;
 
 import javax.net.ServerSocketFactory;
 
-import org.andengine.extension.multiplayer.protocol.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
+import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
+import org.andengine.extension.multiplayer.protocol.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
 import org.andengine.extension.multiplayer.protocol.server.connector.SocketConnectionClientConnector.DefaultSocketConnectionClientConnectorListener;
-import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.andengine.util.SocketUtils;
 import org.andengine.util.debug.Debug;
 
@@ -119,7 +119,7 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static interface ISocketServerListener<CC extends ClientConnector<SocketConnection>> extends IServerListener<SocketServer<CC>> {
+	public static interface ISocketServerListener<CC extends ClientConnector<SocketConnection>> extends Server.IServerListener<SocketServer<CC>> {
 		// ===========================================================
 		// Final Fields
 		// ===========================================================
