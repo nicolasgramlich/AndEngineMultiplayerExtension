@@ -7,9 +7,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.andengine.extension.multiplayer.protocol.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData;
 import org.andengine.extension.multiplayer.protocol.shared.IDiscoveryData.DiscoveryDataFactory;
-import org.andengine.extension.multiplayer.protocol.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
 import org.andengine.util.SocketUtils;
 import org.andengine.util.adt.array.ArrayUtils;
 import org.andengine.util.debug.Debug;
@@ -143,7 +143,7 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 
 //			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_LESS_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
-			while(!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
+			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
 					this.mDatagramSocket.receive(this.mDiscoveryRequestDatagramPacket);
 

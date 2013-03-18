@@ -31,7 +31,7 @@ public interface IDiscoveryData {
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	public static class DiscoveryDataFactory {
+	public static final class DiscoveryDataFactory {
 		// ===========================================================
 		// Constants
 		// ===========================================================
@@ -43,6 +43,10 @@ public interface IDiscoveryData {
 		// ===========================================================
 		// Constructors
 		// ===========================================================
+
+		private DiscoveryDataFactory() {
+			
+		}
 
 		// ===========================================================
 		// Getter & Setter

@@ -2,11 +2,11 @@ package org.andengine.extension.multiplayer.protocol.server.connector;
 
 import java.io.IOException;
 
-import org.andengine.extension.multiplayer.protocol.exception.BluetoothException;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
-import org.andengine.extension.multiplayer.protocol.util.Bluetooth;
+import org.andengine.util.Bluetooth;
 import org.andengine.util.debug.Debug;
+import org.andengine.util.exception.BluetoothException;
 
 /**
  * (c) 2010 Nicolas Gramlich
