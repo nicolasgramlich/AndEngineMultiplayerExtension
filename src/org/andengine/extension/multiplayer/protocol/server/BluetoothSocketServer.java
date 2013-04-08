@@ -3,11 +3,11 @@ package org.andengine.extension.multiplayer.protocol.server;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
+import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.andengine.extension.multiplayer.protocol.server.BluetoothSocketServer.IBluetoothSocketServerListener.DefaultBluetoothSocketServerListener;
 import org.andengine.extension.multiplayer.protocol.server.connector.BluetoothSocketConnectionClientConnector.DefaultBluetoothSocketClientConnectorListener;
-import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector.IClientConnectorListener;
-import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
 import org.andengine.util.Bluetooth;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.exception.BluetoothException;
