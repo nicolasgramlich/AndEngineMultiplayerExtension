@@ -9,8 +9,10 @@ import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMe
 import org.andengine.extension.multiplayer.protocol.client.IServerMessageHandler;
 import org.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
 import org.andengine.extension.multiplayer.protocol.client.IServerMessageReader.ServerMessageReader;
+import org.andengine.extension.multiplayer.protocol.server.ClientMessagePool;
 import org.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.andengine.extension.multiplayer.protocol.shared.Connector;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.call.ParameterCallable;
 
@@ -32,6 +34,8 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	private final IServerMessageReader<C> mServerMessageReader;
 
+	private final MessagePool<IClientMessage> mClientMessagePool;
+
 	private final ParameterCallable<IServerConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ServerConnector.IServerConnectorListener<C>>() {
 		@Override
 		public void call(final IServerConnectorListener<C> pServerConnectorListener) {
@@ -51,12 +55,23 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	public ServerConnector(final C pConnection, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
-		this(pConnection, new ServerMessageReader<C>(), pServerConnectorListener);
+		this(pConnection, new ServerMessageReader<C>(), new ClientMessagePool(), pServerConnectorListener);
 	}
 
 	public ServerConnector(final C pConnection, final IServerMessageReader<C> pServerMessageReader, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
+		this(pConnection, pServerMessageReader, new ClientMessagePool(), pServerConnectorListener);
+	}
+
+	public ServerConnector(final C pConnection, final MessagePool<IClientMessage> pClientMessagePool, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
+		this(pConnection, new ServerMessageReader<C>(), pClientMessagePool, pServerConnectorListener);
+	}
+
+	public ServerConnector(final C pConnection, final IServerMessageReader<C> pServerMessageReader, final MessagePool<IClientMessage> pClientMessagePool, final IServerConnectorListener<C> pServerConnectorListener) throws IOException {
 		super(pConnection);
+
 		this.mServerMessageReader = pServerMessageReader;
+		this.mClientMessagePool = pClientMessagePool;
+
 		this.addServerConnectorListener(pServerConnectorListener);
 	}
 
@@ -66,6 +81,14 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 
 	public IServerMessageReader<C> getServerMessageReader() {
 		return this.mServerMessageReader;
+	}
+
+	public MessagePool<IClientMessage> getClientMessagePool() {
+		return this.mClientMessagePool;
+	}
+
+	public IClientMessage obtainClientMessage(final short pFlag) {
+		return this.mClientMessagePool.obtainMessage(pFlag);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -119,10 +142,11 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		this.mServerMessageReader.registerMessageHandler(pFlag, pServerMessageHandler);
 	}
 
-	public synchronized void sendClientMessage(final IClientMessage pClientMessage) throws IOException {
+	public synchronized void sendClientMessage(final IClientMessage pClientMessage) throws IOException { // TODO Will no more throw IOException since it's not blocking anymore -> ExceptionCallback?
 		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
 		pClientMessage.write(dataOutputStream);
 		dataOutputStream.flush();
+		this.mClientMessagePool.recycleMessage(pClientMessage);
 	}
 
 	// ===========================================================

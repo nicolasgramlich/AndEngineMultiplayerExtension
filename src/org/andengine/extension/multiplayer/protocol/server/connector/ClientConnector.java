@@ -6,11 +6,13 @@ import java.io.IOException;
 
 import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
+import org.andengine.extension.multiplayer.protocol.client.ServerMessagePool;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageHandler;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader.ClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.andengine.extension.multiplayer.protocol.shared.Connector;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.call.ParameterCallable;
 
@@ -32,6 +34,8 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	private final IClientMessageReader<C> mClientMessageReader;
 
+	private final MessagePool<IServerMessage> mServerMessagePool;
+
 	private final ParameterCallable<IClientConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ClientConnector.IClientConnectorListener<C>>() {
 		@Override
 		public void call(final IClientConnectorListener<C> pClientConnectorListener) {
@@ -51,13 +55,22 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	// ===========================================================
 
 	public ClientConnector(final C pConnection) throws IOException {
-		this(pConnection, new ClientMessageReader<C>());
+		this(pConnection, new ClientMessageReader<C>(), new ServerMessagePool());
 	}
 
 	public ClientConnector(final C pConnection, final IClientMessageReader<C> pClientMessageReader) throws IOException {
+		this(pConnection, pClientMessageReader, new ServerMessagePool());
+	}
+
+	public ClientConnector(final C pConnection, final MessagePool<IServerMessage> pServerMessagePool) throws IOException {
+		this(pConnection, new ClientMessageReader<C>(), pServerMessagePool);
+	}
+
+	public ClientConnector(final C pConnection, final IClientMessageReader<C> pClientMessageReader, final MessagePool<IServerMessage> pServerMessagePool) throws IOException {
 		super(pConnection);
 
 		this.mClientMessageReader = pClientMessageReader;
+		this.mServerMessagePool = pServerMessagePool;
 	}
 
 	// ===========================================================
@@ -66,6 +79,14 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 	public IClientMessageReader<C> getClientMessageReader() {
 		return this.mClientMessageReader;
+	}
+
+	public MessagePool<IServerMessage> getServerMessagePool() {
+		return this.mServerMessagePool;
+	}
+
+	public IServerMessage obtainServerMessagePool(final short pFlag) {
+		return this.mServerMessagePool.obtainMessage(pFlag);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,6 +144,7 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
 		pServerMessage.write(dataOutputStream);
 		dataOutputStream.flush();
+		this.mServerMessagePool.recycleMessage(pServerMessage);
 	}
 
 	// ===========================================================

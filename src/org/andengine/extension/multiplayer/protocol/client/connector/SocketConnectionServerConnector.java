@@ -2,8 +2,10 @@ package org.andengine.extension.multiplayer.protocol.client.connector;
 
 import java.io.IOException;
 
+import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.debug.Debug;
 
 /**
@@ -32,6 +34,14 @@ public class SocketConnectionServerConnector extends ServerConnector<SocketConne
 
 	public SocketConnectionServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
 		super(pConnection, pServerMessageReader, pSocketConnectionServerConnectorListener);
+	}
+
+	public SocketConnectionServerConnector(final SocketConnection pConnection, final MessagePool<IClientMessage> pClientMessagePool, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+		super(pConnection, pClientMessagePool, pSocketConnectionServerConnectorListener);
+	}
+
+	public SocketConnectionServerConnector(final SocketConnection pConnection, final IServerMessageReader<SocketConnection> pServerMessageReader, final MessagePool<IClientMessage> pClientMessagePool, final ISocketConnectionServerConnectorListener pSocketConnectionServerConnectorListener) throws IOException {
+		super(pConnection, pServerMessageReader, pClientMessagePool, pSocketConnectionServerConnectorListener);
 	}
 
 	// ===========================================================

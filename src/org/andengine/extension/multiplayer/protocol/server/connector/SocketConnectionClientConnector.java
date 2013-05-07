@@ -2,8 +2,10 @@ package org.andengine.extension.multiplayer.protocol.server.connector;
 
 import java.io.IOException;
 
+import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
 import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.debug.Debug;
 
 /**
@@ -32,6 +34,14 @@ public class SocketConnectionClientConnector extends ClientConnector<SocketConne
 
 	public SocketConnectionClientConnector(final SocketConnection pSocketConnection, final IClientMessageReader<SocketConnection> pClientMessageReader) throws IOException {
 		super(pSocketConnection, pClientMessageReader);
+	}
+
+	public SocketConnectionClientConnector(final SocketConnection pSocketConnection, final MessagePool<IServerMessage> pServerMessagePool) throws IOException {
+		super(pSocketConnection, pServerMessagePool);
+	}
+
+	public SocketConnectionClientConnector(final SocketConnection pSocketConnection, final IClientMessageReader<SocketConnection> pClientMessageReader, final MessagePool<IServerMessage> pServerMessagePool) throws IOException {
+		super(pSocketConnection, pClientMessageReader, pServerMessagePool);
 	}
 
 	// ===========================================================

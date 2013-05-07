@@ -2,8 +2,10 @@ package org.andengine.extension.multiplayer.protocol.client.connector;
 
 import java.io.IOException;
 
+import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.client.IServerMessageReader;
 import org.andengine.extension.multiplayer.protocol.shared.BluetoothSocketConnection;
+import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.debug.Debug;
 
 /**
@@ -30,8 +32,16 @@ public class BluetoothSocketConnectionServerConnector extends ServerConnector<Bl
 		super(pBluetoothSocketConnection, pBlutetoothSocketConnectionServerConnectorListener);
 	}
 
-	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
-		super(pBluetoothSocketConnection, pServerMessageReader, pBlutetoothSocketConnectionServerConnectorListener);
+	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
+		super(pConnection, pServerMessageReader, pBlutetoothSocketConnectionServerConnectorListener);
+	}
+
+	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pConnection, final MessagePool<IClientMessage> pClientMessagePool, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
+		super(pConnection, pClientMessagePool, pBlutetoothSocketConnectionServerConnectorListener);
+	}
+
+	public BluetoothSocketConnectionServerConnector(final BluetoothSocketConnection pBluetoothSocketConnection, final IServerMessageReader<BluetoothSocketConnection> pServerMessageReader, final MessagePool<IClientMessage> pClientMessagePool, final IBluetoothSocketConnectionServerConnectorListener pBlutetoothSocketConnectionServerConnectorListener) throws IOException {
+		super(pBluetoothSocketConnection, pServerMessageReader, pClientMessagePool, pBlutetoothSocketConnectionServerConnectorListener);
 	}
 
 	// ===========================================================
