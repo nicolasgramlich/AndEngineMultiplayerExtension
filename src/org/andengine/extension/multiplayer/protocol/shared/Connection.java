@@ -5,6 +5,9 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.andengine.util.debug.Debug;
@@ -16,7 +19,7 @@ import org.andengine.util.debug.Debug;
  * @author Nicolas Gramlich
  * @since 21:40:51 - 18.09.2009
  */
-public abstract class Connection extends Thread {
+public abstract class Connection {
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -29,8 +32,31 @@ public abstract class Connection extends Thread {
 	protected final DataOutputStream mDataOutputStream;
 
 	protected IConnectionListener mConnectionListener;
-	protected AtomicBoolean mRunning = new AtomicBoolean(false);
-	protected AtomicBoolean mTerminated = new AtomicBoolean(false);
+	protected final AtomicBoolean mRunning = new AtomicBoolean(false);
+	protected final AtomicBoolean mTerminated = new AtomicBoolean(false);
+
+	protected final CyclicBarrier mStartBarrier = new CyclicBarrier(2, new Runnable() {
+		@Override
+		public void run() {
+			Connection.this.onStart();
+
+			Connection.this.mRunning.set(true);
+		}
+	});
+
+	protected final Thread mInputThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			Connection.this.runInputThread();
+		}
+	});
+
+	protected final Thread mOutputThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			Connection.this.runOutputThread();
+		}
+	});
 
 	// ===========================================================
 	// Constructors
@@ -69,11 +95,14 @@ public abstract class Connection extends Thread {
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 
-	@Override
-	public void run() {
-		this.onStart();
-
-		this.mRunning.set(true);
+	public void runInputThread() {
+		try {
+			this.mStartBarrier.await();
+		} catch (final BrokenBarrierException e) {
+			Debug.e(e);
+		} catch (InterruptedException e) {
+			Debug.e(e);
+		}
 
 //		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
 
@@ -96,6 +125,37 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	public void runOutputThread() {
+		try {
+			this.mStartBarrier.await();
+		} catch (final BrokenBarrierException e) {
+			Debug.e(e);
+		} catch (InterruptedException e) {
+			Debug.e(e);
+		}
+
+//		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE);  // TODO What ThreadPriority makes sense here?
+
+		try {
+			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
+				try {
+					Debug.v("AYE");
+					Thread.sleep(1000);
+//				} catch (final SocketException se) {
+//					this.terminate();
+//				} catch (final EOFException eof) {
+//					this.terminate();
+				} catch (final Throwable pThrowable) {
+					Debug.e(pThrowable);
+				}
+			}
+		} catch (final Throwable pThrowable) {
+			Debug.e(pThrowable);
+		} finally {
+			this.terminate();
+		}
+	}
+
 	@Override
 	protected void finalize() throws Throwable {
 		this.terminate();
@@ -106,11 +166,17 @@ public abstract class Connection extends Thread {
 	// Methods
 	// ===========================================================
 
+	public void start() {
+		this.mInputThread.start();
+		this.mOutputThread.start();
+	}
+
 	public void terminate() {
 		if (!this.mTerminated.getAndSet(true)) {
 			this.mRunning.set(false);
 
-			this.interrupt();
+			this.mInputThread.interrupt();
+			this.mOutputThread.interrupt();
 
 			this.onTerminate();
 		}
