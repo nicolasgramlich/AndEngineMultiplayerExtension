@@ -6,7 +6,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -139,12 +138,11 @@ public abstract class Connection {
 		try {
 			while (!Thread.interrupted() && this.mRunning.get() && !this.mTerminated.get()) {
 				try {
-					Debug.v("AYE");
-					Thread.sleep(1000);
-//				} catch (final SocketException se) {
-//					this.terminate();
-//				} catch (final EOFException eof) {
-//					this.terminate();
+					this.mConnectionListener.write(this.mDataOutputStream);
+				} catch (final SocketException se) {
+					this.terminate();
+				} catch (final EOFException eof) {
+					this.terminate();
 				} catch (final Throwable pThrowable) {
 					Debug.e(pThrowable);
 				}
@@ -210,6 +208,7 @@ public abstract class Connection {
 		public void onStarted(final Connection pConnection);
 		public void onTerminated(final Connection pConnection);
 
-		public void read(final DataInputStream pDataInputStream) throws IOException;
+		public void read(final DataInputStream pDataInputStream) throws IOException, InterruptedException;
+		public void write(final DataOutputStream pDataOutputStream) throws IOException, InterruptedException;
 	}
 }

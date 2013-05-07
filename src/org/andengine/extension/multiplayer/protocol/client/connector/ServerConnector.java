@@ -3,6 +3,8 @@ package org.andengine.extension.multiplayer.protocol.client.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -15,6 +17,7 @@ import org.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.andengine.extension.multiplayer.protocol.util.MessagePool;
 import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.call.ParameterCallable;
+import org.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich
@@ -35,6 +38,8 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	private final IServerMessageReader<C> mServerMessageReader;
 
 	private final MessagePool<IClientMessage> mClientMessagePool;
+
+	private final BlockingQueue<IClientMessage> mClientMessageQueue = new ArrayBlockingQueue<IClientMessage>(100, true); // TODO See if LinkedBlockingQueue works better
 
 	private final ParameterCallable<IServerConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ServerConnector.IServerConnectorListener<C>>() {
 		@Override
@@ -126,6 +131,14 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		this.mServerMessageReader.recycleMessage(serverMessage);
 	}
 
+	@Override
+	public void write(final DataOutputStream pDataOutputStream) throws IOException, InterruptedException {
+		final IClientMessage clientMessage = this.mClientMessageQueue.take();
+		clientMessage.write(pDataOutputStream);
+		pDataOutputStream.flush();
+		this.mClientMessagePool.recycleMessage(clientMessage);
+	}
+
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -142,11 +155,8 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		this.mServerMessageReader.registerMessageHandler(pFlag, pServerMessageHandler);
 	}
 
-	public synchronized void sendClientMessage(final IClientMessage pClientMessage) throws IOException { // TODO Will no more throw IOException since it's not blocking anymore -> ExceptionCallback?
-		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
-		pClientMessage.write(dataOutputStream);
-		dataOutputStream.flush();
-		this.mClientMessagePool.recycleMessage(pClientMessage);
+	public synchronized void sendClientMessage(final IClientMessage pClientMessage) {
+		this.mClientMessageQueue.add(pClientMessage);
 	}
 
 	// ===========================================================

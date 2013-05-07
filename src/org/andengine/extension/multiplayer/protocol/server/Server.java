@@ -169,15 +169,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		}
 	}
 
-	public synchronized void sendBroadcastServerMessage(final IServerMessage pServerMessage) throws IOException {
+	public synchronized void sendBroadcastServerMessage(final IServerMessage pServerMessage) {
 		if (this.mRunning.get()) {
 			final SmartList<CC> clientConnectors = this.mClientConnectors;
 			for (int i = 0; i < clientConnectors.size(); i++) {
-				try {
-					clientConnectors.get(i).sendServerMessage(pServerMessage);
-				} catch (final IOException e) {
-					this.onException(e);
-				}
+				clientConnectors.get(i).sendServerMessage(pServerMessage);
 			}
 		}
 	}

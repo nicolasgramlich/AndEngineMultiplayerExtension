@@ -3,6 +3,8 @@ package org.andengine.extension.multiplayer.protocol.server.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -35,6 +37,8 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	private final IClientMessageReader<C> mClientMessageReader;
 
 	private final MessagePool<IServerMessage> mServerMessagePool;
+
+	private final BlockingQueue<IServerMessage> mServerMessageQueue = new ArrayBlockingQueue<IServerMessage>(100, true); // TODO See if LinkedBlockingQueue works better
 
 	private final ParameterCallable<IClientConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ClientConnector.IClientConnectorListener<C>>() {
 		@Override
@@ -124,6 +128,14 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		this.mClientMessageReader.recycleMessage(clientMessage);
 	}
 
+	@Override
+	public void write(final DataOutputStream pDataOutputStream) throws IOException, InterruptedException {
+		final IServerMessage serverMessage = this.mServerMessageQueue.take();
+		serverMessage.write(pDataOutputStream);
+		pDataOutputStream.flush();
+		this.mServerMessagePool.recycleMessage(serverMessage);
+	}
+
 	// ===========================================================
 	// Methods
 	// ===========================================================
@@ -140,11 +152,8 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		this.mClientMessageReader.registerMessageHandler(pFlag, pClientMessageHandler);
 	}
 
-	public synchronized void sendServerMessage(final IServerMessage pServerMessage) throws IOException {
-		final DataOutputStream dataOutputStream = this.mConnection.getDataOutputStream();
-		pServerMessage.write(dataOutputStream);
-		dataOutputStream.flush();
-		this.mServerMessagePool.recycleMessage(pServerMessage);
+	public synchronized void sendServerMessage(final IServerMessage pServerMessage) {
+		this.mServerMessageQueue.add(pServerMessage);
 	}
 
 	// ===========================================================
