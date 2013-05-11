@@ -169,11 +169,28 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		}
 	}
 
+	/**
+	 * @deprecated Instead use {@link #sendBroadcastServerMessage(int, IServerMessage)} or {@link #sendBroadcastServerMessage(int, boolean, IServerMessage)()}.
+	 */
+	@Deprecated
 	public synchronized void sendBroadcastServerMessage(final IServerMessage pServerMessage) {
 		if (this.mRunning.get()) {
 			final SmartList<CC> clientConnectors = this.mClientConnectors;
 			for (int i = 0; i < clientConnectors.size(); i++) {
 				clientConnectors.get(i).sendServerMessage(pServerMessage);
+			}
+		}
+	}
+
+	public synchronized void sendBroadcastServerMessage(final int pPriority, final IServerMessage pServerMessage) {
+		this.sendBroadcastServerMessage(pPriority, false, pServerMessage);
+	}
+
+	public synchronized void sendBroadcastServerMessage(final int pPriority, final boolean pPreempt, final IServerMessage pServerMessage) {
+		if (this.mRunning.get()) {
+			final SmartList<CC> clientConnectors = this.mClientConnectors;
+			for (int i = 0; i < clientConnectors.size(); i++) {
+				clientConnectors.get(i).sendServerMessage(pPriority, pPreempt, pServerMessage);
 			}
 		}
 	}
