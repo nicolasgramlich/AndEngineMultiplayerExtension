@@ -182,9 +182,9 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 	public void sendClientMessage(final int pPriority, final boolean pPreempt, final IClientMessage pClientMessage) {
 		try {
 			if (pPreempt) {
-				this.mClientMessageQueue.put(pPriority, pClientMessage);
-			} else {
 				this.mClientMessageQueue.clearAndPut(pPriority, pClientMessage);
+			} else {
+				this.mClientMessageQueue.put(pPriority, pClientMessage);
 			}
 		} catch (final InterruptedException e) {
 			Debug.e(e);
