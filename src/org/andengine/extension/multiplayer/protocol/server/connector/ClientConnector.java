@@ -3,8 +3,6 @@ package org.andengine.extension.multiplayer.protocol.server.connector;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import org.andengine.extension.multiplayer.protocol.adt.message.client.IClientMessage;
 import org.andengine.extension.multiplayer.protocol.adt.message.server.IServerMessage;
@@ -15,8 +13,10 @@ import org.andengine.extension.multiplayer.protocol.server.IClientMessageReader.
 import org.andengine.extension.multiplayer.protocol.shared.Connection;
 import org.andengine.extension.multiplayer.protocol.shared.Connector;
 import org.andengine.extension.multiplayer.protocol.util.MessagePool;
+import org.andengine.extension.multiplayer.protocol.util.MessageQueue;
 import org.andengine.util.adt.list.SmartList;
 import org.andengine.util.call.ParameterCallable;
+import org.andengine.util.debug.Debug;
 
 /**
  * (c) 2010 Nicolas Gramlich
@@ -30,15 +30,21 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 	// Constants
 	// ===========================================================
 
+	public static final int PRIORITY_HIGH = 0;
+	public static final int PRIORITY_MEDIUM = PRIORITY_HIGH + 1;
+	public static final int PRIORITY_LOW = PRIORITY_MEDIUM + 1;
+
+	public static final int PRIORITY_DEFAULT = PRIORITY_MEDIUM;
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
 
-	private final IClientMessageReader<C> mClientMessageReader;
+	protected final IClientMessageReader<C> mClientMessageReader;
 
-	private final MessagePool<IServerMessage> mServerMessagePool;
+	protected final MessagePool<IServerMessage> mServerMessagePool;
 
-	private final BlockingQueue<IServerMessage> mServerMessageQueue = new ArrayBlockingQueue<IServerMessage>(100, true); // TODO See if LinkedBlockingQueue works better
+	protected final MessageQueue<IServerMessage> mServerMessageQueue = new MessageQueue<IServerMessage>(true);
 
 	private final ParameterCallable<IClientConnectorListener<C>> mOnStartedParameterCallable = new ParameterCallable<ClientConnector.IClientConnectorListener<C>>() {
 		@Override
@@ -75,6 +81,14 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 
 		this.mClientMessageReader = pClientMessageReader;
 		this.mServerMessagePool = pServerMessagePool;
+
+		this.initServerMessageQueue();
+	}
+
+	protected void initServerMessageQueue() {
+		this.mServerMessageQueue.addQueue(PRIORITY_HIGH);
+		this.mServerMessageQueue.addQueue(PRIORITY_MEDIUM);
+		this.mServerMessageQueue.addQueue(PRIORITY_LOW);
 	}
 
 	// ===========================================================
@@ -89,7 +103,7 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		return this.mServerMessagePool;
 	}
 
-	public IServerMessage obtainServerMessagePool(final short pFlag) {
+	public IServerMessage obtainServerMessage(final short pFlag) {
 		return this.mServerMessagePool.obtainMessage(pFlag);
 	}
 
@@ -152,8 +166,37 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		this.mClientMessageReader.registerMessageHandler(pFlag, pClientMessageHandler);
 	}
 
-	public synchronized void sendServerMessage(final IServerMessage pServerMessage) {
-		this.mServerMessageQueue.add(pServerMessage);
+	/**
+	 * @deprecated Instead use {@link #sendServerMessage(int, IServerMessage)} or {@link #sendServerMessage(int, boolean, IServerMessage)()}.
+	 */
+	@Deprecated
+	public void sendServerMessage(final IServerMessage pServerMessage) {
+		this.sendServerMessage(PRIORITY_DEFAULT, pServerMessage);
+	}
+
+	public void sendServerMessage(final int pPriority, final IServerMessage pServerMessage) {
+		this.sendServerMessage(pPriority, false, pServerMessage);
+	}
+
+	public void sendServerMessage(final int pPriority, final boolean pPreempt, final IServerMessage pServerMessage) {
+		try {
+			if (pPreempt) {
+				this.mServerMessageQueue.clearAndPut(pPriority, pServerMessage);
+			} else {
+				this.mServerMessageQueue.put(pPriority, pServerMessage);
+			}
+		} catch (final InterruptedException e) {
+			Debug.e(e);
+		}
+		Debug.i(this.getClass().getSimpleName() + ".mServerMessageQueue.size()=" + this.mServerMessageQueue.size());
+	}
+
+	public void clearServerMessages() {
+		this.mServerMessageQueue.clear();
+	}
+
+	public void clearServerMessages(final int pPriority) {
+		this.mServerMessageQueue.clear(pPriority);
 	}
 
 	// ===========================================================
