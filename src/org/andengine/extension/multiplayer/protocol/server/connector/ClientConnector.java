@@ -178,9 +178,9 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		this.sendServerMessage(pPriority, false, pServerMessage);
 	}
 
-	public void sendServerMessage(final int pPriority, final boolean pPreempt, final IServerMessage pServerMessage) {
+	public void sendServerMessage(final int pPriority, final boolean pPreemptive, final IServerMessage pServerMessage) {
 		try {
-			if (pPreempt) {
+			if (pPreemptive) {
 				this.mServerMessageQueue.clearAndPut(pPriority, pServerMessage);
 			} else {
 				this.mServerMessageQueue.put(pPriority, pServerMessage);
