@@ -1,10 +1,10 @@
 package org.andengine.extension.multiplayer.protocol.server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import javax.net.ServerSocketFactory;
+import java.net.SocketException;
 
 import org.andengine.extension.multiplayer.protocol.shared.SocketConnection;
 import org.andengine.extension.multiplayer.protocol.server.connector.ClientConnector;
@@ -32,6 +32,8 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 
 	private final int mPort;
 	private ServerSocket mServerSocket;
+
+	private boolean mReuseAddress;
 
 	// ===========================================================
 	// Constructors
@@ -79,6 +81,10 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 		super.setServerListener(pSocketServerListener);
 	}
 
+	public void setReuseAddress(final boolean pReuseAddress) {
+		this.mReuseAddress = pReuseAddress;
+	}
+
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
@@ -87,7 +93,15 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 
 	@Override
 	protected void onStart() throws IOException {
-		this.mServerSocket = ServerSocketFactory.getDefault().createServerSocket(this.mPort);
+		this.mServerSocket = new ServerSocket();
+		try {
+			if (this.mServerSocket.getReuseAddress() != this.mReuseAddress) {
+				this.mServerSocket.setReuseAddress(this.mReuseAddress);
+			}
+		} catch (final SocketException e) {
+			Debug.w(e);
+		}
+		this.mServerSocket.bind(new InetSocketAddress(this.mPort));
 		this.getServerListener().onStarted(this);
 	}
 
@@ -103,6 +117,7 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	@Override
 	protected void onTerminate() {
 		SocketUtils.closeSocket(this.mServerSocket);
+
 		this.getServerListener().onTerminated(this);
 	}
 
