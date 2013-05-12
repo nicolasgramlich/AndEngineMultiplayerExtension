@@ -186,11 +186,11 @@ public abstract class Server<C extends Connection, CC extends ClientConnector<C>
 		this.sendBroadcastServerMessage(pPriority, false, pServerMessage);
 	}
 
-	public synchronized void sendBroadcastServerMessage(final int pPriority, final boolean pPreempt, final IServerMessage pServerMessage) {
+	public synchronized void sendBroadcastServerMessage(final int pPriority, final boolean pPreemptive, final IServerMessage pServerMessage) {
 		if (this.mRunning.get()) {
 			final SmartList<CC> clientConnectors = this.mClientConnectors;
 			for (int i = 0; i < clientConnectors.size(); i++) {
-				clientConnectors.get(i).sendServerMessage(pPriority, pPreempt, pServerMessage);
+				clientConnectors.get(i).sendServerMessage(pPriority, pPreemptive, pServerMessage);
 			}
 		}
 	}
