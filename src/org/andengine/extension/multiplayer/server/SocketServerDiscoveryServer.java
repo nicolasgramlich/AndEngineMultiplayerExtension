@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.nio.channels.DatagramChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.andengine.extension.multiplayer.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
@@ -62,6 +64,9 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 		(byte)'y'
 	};
 
+	private static final int BIND_RETRY_COUNT = 25;
+	private static final int BIND_RETRY_DELAY = 100;
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -76,6 +81,8 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 	protected ISocketServerDiscoveryServerListener<T> mSocketServerDiscoveryServerListener;
 	protected AtomicBoolean mRunning = new AtomicBoolean(false);
 	protected AtomicBoolean mTerminated = new AtomicBoolean(false);
+
+	private boolean mReuseAddress;
 
 	// ===========================================================
 	// Constructors
@@ -126,6 +133,10 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 
 	public ISocketServerDiscoveryServerListener<T> getSocketServerDiscoveryServerListener() {
 		return this.mSocketServerDiscoveryServerListener;
+	}
+
+	public void setReuseAddress(final boolean pReuseAddress) {
+		this.mReuseAddress = pReuseAddress;
 	}
 
 	// ===========================================================
@@ -186,8 +197,37 @@ public abstract class SocketServerDiscoveryServer<T extends IDiscoveryData> exte
 		this.mDatagramSocket.send(new DatagramPacket(discoveryResponseData, discoveryResponseData.length, pDatagramPacket.getAddress(), pDatagramPacket.getPort()));
 	}
 
-	protected void onStart() throws SocketException {
-		this.mDatagramSocket = new DatagramSocket(this.mDiscoveryPort);
+	protected void onStart() throws IOException {
+		/* Repeatedly try to bind (since when quickly terminating the starting a new server in sequence, blocks the TCP socket for a while): */
+		for (int i = 0; i <= BIND_RETRY_COUNT; i++) {
+			final DatagramChannel channel = DatagramChannel.open();
+			this.mDatagramSocket = channel.socket();
+
+			try {
+				if (this.mDatagramSocket.getReuseAddress() != this.mReuseAddress) {
+					this.mDatagramSocket.setReuseAddress(this.mReuseAddress);
+				}
+			} catch (final SocketException e) {
+				Debug.w(e);
+			}
+
+			try {
+				this.mDatagramSocket.bind(new InetSocketAddress((InetAddress) null, this.mDiscoveryPort));
+				break;
+			} catch (final SocketException e) {
+				if (i < BIND_RETRY_COUNT) {
+					Debug.w(e);
+				} else {
+					throw e;
+				}
+
+				try {
+					Thread.sleep(BIND_RETRY_DELAY);
+				} catch (final InterruptedException ie) {
+					Debug.w(ie);
+				}
+			}
+		}
 
 		this.mSocketServerDiscoveryServerListener.onStarted(this);
 	}

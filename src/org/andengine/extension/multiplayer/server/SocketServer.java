@@ -1,7 +1,6 @@
 package org.andengine.extension.multiplayer.server;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,8 +26,8 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 	// Constants
 	// ===========================================================
 
-	private static final int RETRY_COUNT = 20;
-	private static final int RETRY_DELAY = 100;
+	private static final int BIND_RETRY_COUNT = 25;
+	private static final int BIND_RETRY_DELAY = 100;
 
 	// ===========================================================
 	// Fields
@@ -97,39 +96,37 @@ public abstract class SocketServer<CC extends ClientConnector<SocketConnection>>
 
 	@Override
 	protected void onStart() throws IOException {
-		this.mServerSocket = new ServerSocket();
+		/* Repeatedly try to bind (since when quickly terminating the starting a new server in sequence, blocks the TCP socket for a while): */
+		for (int i = 0; i <= BIND_RETRY_COUNT; i++) {
+			this.mServerSocket = new ServerSocket();
 
-		try {
-			if (this.mServerSocket.getReuseAddress() != this.mReuseAddress) {
-				this.mServerSocket.setReuseAddress(this.mReuseAddress);
+			try {
+				if (this.mServerSocket.getReuseAddress() != this.mReuseAddress) {
+					this.mServerSocket.setReuseAddress(this.mReuseAddress);
+				}
+			} catch (final SocketException e) {
+				Debug.w(e);
 			}
-		} catch (final SocketException e) {
-			Debug.w(e);
-		}
 
-		/* Repeatedly try to bind */
-		boolean success = false;
-		for (int i = 0; i < RETRY_COUNT && !success; i++) {
 			try {
 				this.mServerSocket.bind(new InetSocketAddress(this.mPort));
-				success = true;
-			} catch (final BindException e) {
-				if (i < RETRY_COUNT - 1) {
+				break;
+			} catch (final SocketException e) {
+				if (i < BIND_RETRY_COUNT) {
 					Debug.w(e);
 				} else {
 					throw e;
 				}
 
 				try {
-					Thread.sleep(RETRY_DELAY);
+					Thread.sleep(BIND_RETRY_DELAY);
 				} catch (final InterruptedException ie) {
 					Debug.w(ie);
 				}
 			}
 		}
-		if (success) {
-			this.getServerListener().onStarted(this);
-		}
+
+		this.getServerListener().onStarted(this);
 	}
 
 	@Override
