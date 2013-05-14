@@ -188,7 +188,6 @@ public class ClientConnector<C extends Connection> extends Connector<C> {
 		} catch (final InterruptedException e) {
 			Debug.e(e);
 		}
-		Debug.i(this.getClass().getSimpleName() + ".mServerMessageQueue.size()=" + this.mServerMessageQueue.size());
 	}
 
 	public void clearServerMessages() {

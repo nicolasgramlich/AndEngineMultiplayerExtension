@@ -189,7 +189,6 @@ public class ServerConnector<C extends Connection> extends Connector<C> {
 		} catch (final InterruptedException e) {
 			Debug.e(e);
 		}
-		Debug.i(this.getClass().getSimpleName() + ".mClientMessageQueue: " + this.mClientMessageQueue.toString());
 	}
 
 	public void clearClientMessages() {
