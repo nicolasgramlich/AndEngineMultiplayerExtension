@@ -6,11 +6,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-import org.andengine.extension.multiplayer.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
+import org.andengine.extension.multiplayer.shared.SocketConnection;
 import org.andengine.extension.multiplayer.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.server.connector.ClientConnector.IClientConnectorListener;
+import org.andengine.extension.multiplayer.server.SocketServer.ISocketServerListener.DefaultSocketServerListener;
 import org.andengine.extension.multiplayer.server.connector.SocketConnectionClientConnector.DefaultSocketConnectionClientConnectorListener;
-import org.andengine.extension.multiplayer.shared.SocketConnection;
 import org.andengine.util.SocketUtils;
 import org.andengine.util.debug.Debug;
 

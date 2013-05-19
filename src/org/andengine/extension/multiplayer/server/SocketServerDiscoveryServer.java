@@ -9,9 +9,9 @@ import java.net.SocketException;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.andengine.extension.multiplayer.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
 import org.andengine.extension.multiplayer.shared.IDiscoveryData;
 import org.andengine.extension.multiplayer.shared.IDiscoveryData.DiscoveryDataFactory;
+import org.andengine.extension.multiplayer.server.SocketServerDiscoveryServer.ISocketServerDiscoveryServerListener.DefaultSocketServerDiscoveryServerListener;
 import org.andengine.util.SocketUtils;
 import org.andengine.util.adt.array.ArrayUtils;
 import org.andengine.util.debug.Debug;
